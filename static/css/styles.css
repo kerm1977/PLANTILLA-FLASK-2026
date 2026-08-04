@@ -1,0 +1,41 @@
+/* =========================================================
+   Estilos base — Mobile First con Flexbox
+   ========================================================= */
+
+html,
+body {
+    height: 100%;
+    margin: 0;
+}
+
+/* Centrado total horizontal y vertical con Flexbox */
+.centrado {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 1rem;
+}
+
+/* Título de cada vista (mobile first) */
+.vista-titulo {
+    font-size: 1.5rem;
+    font-weight: 600;
+    word-break: break-word;
+}
+
+/* Tablets */
+@media (min-width: 768px) {
+    .vista-titulo {
+        font-size: 2.25rem;
+    }
+}
+
+/* Escritorio */
+@media (min-width: 1200px) {
+    .vista-titulo {
+        font-size: 3rem;
+    }
+}

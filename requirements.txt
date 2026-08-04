@@ -1,0 +1,50 @@
+# ── Núcleo ────────────────────────────────────────────────
+flask[async]>=3.0
+python-dotenv>=1.0
+
+# ── Base de datos asíncrona (SQLAlchemy 2.0 + aiosqlite) ──
+sqlalchemy[asyncio]>=2.0
+aiosqlite>=0.20
+greenlet==3.2.4  # 3.5.x crashea en Windows con Python 3.13 en esta máquina
+
+# ── Autenticación y seguridad local ───────────────────────
+flask-bcrypt>=1.0
+flask-login>=0.6
+flask-jwt-extended>=4.6
+flask-wtf>=1.2
+flask-cors>=4.0
+
+# ── Optimización y servicios ──────────────────────────────
+flask-caching>=2.1
+flask-mail>=0.9
+
+# ── OAuth 2.0 / OIDC y cliente HTTP asíncrono ─────────────
+authlib>=1.3
+httpx>=0.27
+
+# ── Logs estructurados ────────────────────────────────────
+loguru>=0.7
+
+# ── Servidor de producción (Windows) ──────────────────────
+waitress>=3.0
+
+# ── Pruebas ───────────────────────────────────────────────
+pytest>=8.0
+pytest-asyncio>=0.23
+
+# ── Opcionales: descomenta según crezca el sitio ──────────
+# flask-migrate>=4.0          # Migraciones con Alembic
+# flask-marshmallow>=1.2      # Serialización JSON
+# flask-smorest>=0.44         # APIs REST + OpenAPI/Swagger
+# flask-security-too>=5.4     # Roles, permisos y confirmación de correo
+# flask-admin>=1.6            # Panel administrativo CRUD
+# flask-babel>=4.0            # Internacionalización (i18n/l10n)
+# flask-apscheduler>=1.13     # Tareas programadas (cron jobs)
+# flask-socketio>=5.3         # WebSockets en tiempo real
+# flask-debugtoolbar>=0.15    # Depuración en desarrollo
+# flask-dance>=7.1            # OAuth con redes sociales via Blueprints
+# celery>=5.4                 # Tareas pesadas en segundo plano
+# redis>=5.0                  # Caché / Token blacklist / Celery broker
+# sentry-sdk[flask]>=2.0      # Monitoreo visual de errores en producción
+# cloudinary>=1.40            # Multimedia desacoplada con CDN
+# hypercorn>=0.17             # Servidor ASGI alternativo
