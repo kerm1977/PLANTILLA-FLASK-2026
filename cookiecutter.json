@@ -1,0 +1,22 @@
+{
+    "project_name": "My Flask App",
+    "project_slug": "{{ cookiecutter.project_name.lower().replace(' ', '_').replace('-', '_') }}",
+    "description": "A Flask web application generated from PLANTILLA-FLASK-2026.",
+    "author_name": "Your Name",
+    "author_email": "you@example.com",
+    "secret_key": "{{ random_ascii_string(32) }}",
+    "jwt_secret_key": "{{ random_ascii_string(32) }}",
+    "use_celery": "no",
+    "use_redis": "no",
+    "use_sentry": "no",
+    "use_github_actions": "no",
+    "port": "5000",
+    "css_framework": "bootstrap",
+    "_copy_without_render": [
+        "*.html",
+        "*.py",
+        "*.css",
+        "*.js"
+    ],
+    "_extensions": ["cookiecutter.extensions.RandomStringExtension"]
+}

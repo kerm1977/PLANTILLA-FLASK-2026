@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% block title %}Eliminar sitio{% endblock %}
+
+{% block content %}
+<style>
+  body {
+    background: linear-gradient(135deg, #0f2027, #203a43, #2c5364) !important;
+    color: #f8f9fa !important;
+  }
+  .ayuda-wrapper {
+    width: 100%;
+    max-width: 720px;
+    padding: 2rem 1rem;
+  }
+  .glass-hero {
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 1.5rem;
+    padding: 2.5rem 1.5rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
+    text-align: center;
+    color: #fff;
+  }
+  .glass-card {
+    background: rgba(255, 255, 255, 0.07);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 1.25rem;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
+    color: #f8f9fa;
+    text-align: center;
+  }
+</style>
+
+<div class="ayuda-wrapper text-start">
+  <div class="glass-hero">
+    <h1 class="vista-titulo mb-3"><i class="bi bi-trash"></i> Eliminar sitio</h1>
+    <p class="lead mb-0">Confirmación {{ paso }} de 4</p>
+  </div>
+
+  <div class="glass-card">
+    <h2 class="h4 mb-3"><strong>{{ site_name }}</strong></h2>
+
+    {% if paso == 1 %}
+      <p class="lead">Lo que vas a hacer no se puede deshacer.</p>
+    {% elif paso == 2 %}
+      <p class="lead">Eliminar va a borrar absolutamente todo el sitio.</p>
+    {% elif paso == 3 %}
+      <p class="lead">¿Estás nuevamente seguro?</p>
+    {% elif paso == 4 %}
+      <p class="lead">Si procedes, ya no tenemos forma de retroceder.</p>
+    {% endif %}
+
+    <form method="POST" action="{{ url_for('generador.eliminar_sitio', slug=slug) }}">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      {% if paso == 4 %}
+        <input type="hidden" name="paso" value="4">
+        <input type="hidden" name="confirmar" value="1">
+      {% else %}
+        <input type="hidden" name="paso" value="{{ paso + 1 }}">
+      {% endif %}
+      <div class="d-flex justify-content-center gap-3 flex-wrap mt-4">
+        <a href="{{ url_for('generador.lista_sitios') }}" class="btn btn-outline-light">Cancelar</a>
+        {% if paso == 4 %}
+          <button type="submit" class="btn btn-danger"><i class="bi bi-trash"></i> OK, eliminar definitivamente</button>
+        {% else %}
+          <button type="submit" class="btn btn-warning">Sí, continuar</button>
+        {% endif %}
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

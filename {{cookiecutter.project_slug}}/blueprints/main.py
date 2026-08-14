@@ -17,3 +17,8 @@ async def dashboard():
 @main_bp.route("/perfil")
 async def perfil():
     return render_template("panel/perfil.html")
+
+
+@main_bp.route("/movil")
+async def movil():
+    return render_template("movil.html")

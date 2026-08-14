@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+{% block title %}Generar sitio{% endblock %}
+
+{% block content %}
+<style>
+  body {
+    background: linear-gradient(135deg, #0f2027, #203a43, #2c5364) !important;
+    color: #f8f9fa !important;
+  }
+  .ayuda-wrapper {
+    width: 100%;
+    max-width: 720px;
+    padding: 2rem 1rem;
+  }
+  .glass-hero {
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 1.5rem;
+    padding: 2.5rem 1.5rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
+    text-align: center;
+    color: #fff;
+  }
+  .glass-card {
+    background: rgba(255, 255, 255, 0.07);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 1.25rem;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
+    color: #f8f9fa;
+  }
+  .glass-card .form-label {
+    color: #fff;
+    font-weight: 500;
+  }
+  .glass-card .form-check-label {
+    color: rgba(255, 255, 255, 0.9);
+  }
+  .btn-generar {
+    font-weight: 600;
+  }
+</style>
+
+<div class="ayuda-wrapper text-start">
+  <div class="glass-hero">
+    <h1 class="vista-titulo mb-3"><i class="bi bi-rocket-takeoff"></i> Generar nuevo sitio</h1>
+    <p class="lead mb-0">Crea un proyecto limpio a partir de esta plantilla.</p>
+  </div>
+
+  <div class="glass-card">
+    <form method="POST" action="{{ url_for('generador.generar') }}">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <div class="mb-3">
+        <label for="project_name" class="form-label">Nombre del proyecto</label>
+        <input type="text" class="form-control" id="project_name" name="project_name" required placeholder="Mi sitio web">
+      </div>
+      <div class="mb-3">
+        <label for="description" class="form-label">Descripción</label>
+        <input type="text" class="form-control" id="description" name="description" placeholder="Breve descripción del sitio">
+      </div>
+      <div class="mb-3">
+        <label for="author_name" class="form-label">Autor</label>
+        <input type="text" class="form-control" id="author_name" name="author_name" placeholder="Tu nombre">
+      </div>
+      <div class="mb-3">
+        <label for="author_email" class="form-label">Email del autor</label>
+        <input type="email" class="form-control" id="author_email" name="author_email" placeholder="correo@ejemplo.com">
+      </div>
+      <div class="mb-3">
+        <label for="port" class="form-label">Puerto</label>
+        <input type="number" class="form-control" id="port" name="port" value="5000" min="1024" max="65535" required>
+      </div>
+      <div class="mb-3">
+        <label for="css_framework" class="form-label">Framework CSS</label>
+        <select class="form-select" id="css_framework" name="css_framework" required>
+          <option value="bootstrap" selected>Bootstrap</option>
+          <option value="foundation">Foundation</option>
+          <option value="bulma">Bulma</option>
+          <option value="tailwind">Tailwind</option>
+        </select>
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Opciones adicionales</label>
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" id="use_celery" name="use_celery" value="yes">
+          <label class="form-check-label" for="use_celery">Celery</label>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" id="use_redis" name="use_redis" value="yes">
+          <label class="form-check-label" for="use_redis">Redis</label>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" id="use_sentry" name="use_sentry" value="yes">
+          <label class="form-check-label" for="use_sentry">Sentry</label>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" id="use_github_actions" name="use_github_actions" value="yes">
+          <label class="form-check-label" for="use_github_actions">GitHub Actions</label>
+        </div>
+      </div>
+      <button type="submit" class="btn btn-warning w-100 btn-generar"><i class="bi bi-rocket-takeoff"></i> Generar sitio</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

@@ -1,8 +1,28 @@
-__pycache__/
-*.py[cod]
+# Entornos y configuración local
 venv/
 .env
+*.env
+
+# Bases de datos generadas
 *.db
+*.sqlite
+*.sqlite3
+
+# Sitios generados (cookiecutter)
+sitios/
+
+# Caché y archivos temporales
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
 .pytest_cache/
-instance/
-.coverage
+.mypy_cache/
+
+# Logs
+*.log
+
+# Sistema
+.DS_Store
+Thumbs.db

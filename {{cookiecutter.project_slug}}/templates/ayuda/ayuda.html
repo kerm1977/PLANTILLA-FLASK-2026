@@ -1,0 +1,152 @@
+{% extends "base.html" %}
+{% block title %}Ayuda{% endblock %}
+
+{% block content %}
+<style>
+  body {
+    background: linear-gradient(135deg, #0f2027, #203a43, #2c5364) !important;
+    color: #f8f9fa !important;
+  }
+  .ayuda-wrapper {
+    width: 100%;
+    max-width: 960px;
+    padding: 2rem 1rem;
+  }
+  .glass-hero {
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 1.5rem;
+    padding: 2.5rem 1.5rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
+    text-align: center;
+    color: #fff;
+  }
+  .glass-hero .lead {
+    color: rgba(255, 255, 255, 0.85);
+    font-size: 1.1rem;
+  }
+  .glass-card {
+    background: rgba(255, 255, 255, 0.07);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 1.25rem;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
+    color: #f8f9fa;
+    transition: transform .25s ease, box-shadow .25s ease;
+  }
+  .glass-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.45);
+  }
+  .glass-card h2 {
+    font-size: 1.35rem;
+    margin-bottom: 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    color: #fff;
+  }
+  .glass-card h2 .bi {
+    font-size: 1.7rem;
+    color: #ffd166;
+  }
+  .glass-code {
+    background: rgba(0, 0, 0, 0.45);
+    color: #e9ecef;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: .75rem;
+    padding: 1rem;
+    overflow-x: auto;
+    margin: .75rem 0 1.25rem;
+    font-size: 0.95rem;
+  }
+  .step-list {
+    list-style: none;
+    padding: 0;
+    counter-reset: step;
+  }
+  .step-list li {
+    position: relative;
+    padding-left: 3rem;
+    margin-bottom: 1.5rem;
+  }
+  .step-list li::before {
+    counter-increment: step;
+    content: counter(step);
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 2rem;
+    height: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 209, 102, .9);
+    color: #1a1a2e;
+    border-radius: 50%;
+    font-weight: 700;
+    font-size: 0.95rem;
+  }
+  .ayuda-link {
+    color: #ffd166;
+    text-decoration: none;
+    border-bottom: 1px dotted #ffd166;
+    font-weight: 600;
+  }
+  .ayuda-link:hover {
+    color: #fff;
+    border-bottom-color: #fff;
+  }
+  .small-hint {
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.7);
+    margin-bottom: 0.5rem;
+  }
+</style>
+
+<div class="ayuda-wrapper text-start">
+  <div class="glass-hero">
+    <h1 class="vista-titulo mb-3"><i class="bi bi-question-circle-fill"></i> Centro de ayuda</h1>
+    <p class="lead mb-0">Todo lo que necesitas para ejecutar el servidor y generar tu proyecto con Cookiecutter.</p>
+  </div>
+
+  <div class="glass-card">
+    <h2><i class="bi bi-terminal"></i> Ejecutar el servidor</h2>
+    <p>Desde la carpeta raíz de esta plantilla:</p>
+    <pre class="glass-code"><code>{% raw %}.\venv\Scripts\python.exe "{{cookiecutter.project_slug}}\app.py"{% endraw %}</code></pre>
+
+    <p>Cuando Cookiecutter haya generado tu proyecto:</p>
+    <pre class="glass-code"><code>.\venv\Scripts\python.exe app.py</code></pre>
+
+    <p>Abre la app en <a class="ayuda-link" href="http://127.0.0.1:5000" target="_blank">http://127.0.0.1:5000</a>.</p>
+  </div>
+
+  <div class="glass-card">
+    <h2><i class="bi bi-magic"></i> Crear un proyecto con Cookiecutter</h2>
+    <ol class="step-list">
+      <li>Instala Cookiecutter:
+        <pre class="glass-code"><code>python -m pip install cookiecutter</code></pre>
+      </li>
+      <li>Genera el proyecto desde esta plantilla:
+        <pre class="glass-code"><code>cookiecutter .</code></pre>
+        <p class="small-hint mb-0">También puedes usar el repositorio remoto:</p>
+        <pre class="glass-code"><code>cookiecutter https://github.com/kerm1977/PLANTILLA-FLASK-2026.git</code></pre>
+      </li>
+      <li>Responde las preguntas en la terminal.</li>
+      <li>Entra a la carpeta generada e instala las dependencias:
+        <pre class="glass-code"><code>python -m venv venv
+.\venv\Scripts\python.exe -m pip install -r requirements.txt</code></pre>
+      </li>
+      <li>Ejecuta el servidor:
+        <pre class="glass-code"><code>.\venv\Scripts\python.exe app.py</code></pre>
+      </li>
+    </ol>
+  </div>
+</div>
+{% endblock %}

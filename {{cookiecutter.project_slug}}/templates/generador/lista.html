@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% block title %}Sitios generados{% endblock %}
+
+{% block content %}
+<style>
+  body {
+    background: linear-gradient(135deg, #0f2027, #203a43, #2c5364) !important;
+    color: #f8f9fa !important;
+  }
+  .ayuda-wrapper {
+    width: 100%;
+    max-width: 960px;
+    padding: 2rem 1rem;
+  }
+  .glass-hero {
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 1.5rem;
+    padding: 2.5rem 1.5rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
+    text-align: center;
+    color: #fff;
+  }
+  .glass-card {
+    background: rgba(255, 255, 255, 0.07);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 1.25rem;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
+    color: #f8f9fa;
+  }
+  .site-item {
+    background: rgba(0, 0, 0, 0.25);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 0.75rem;
+    padding: 1rem;
+    margin-bottom: 0.75rem;
+  }
+  .site-item code {
+    color: #ffd166;
+    font-size: 0.9rem;
+  }
+</style>
+
+<div class="ayuda-wrapper text-start">
+  <div class="glass-hero">
+    <h1 class="vista-titulo mb-3"><i class="bi bi-folder"></i> Sitios generados</h1>
+    <p class="lead mb-0">Cada carpeta es un proyecto independiente listo para usarse.</p>
+  </div>
+
+  <div class="glass-card">
+    {% if sitios %}
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="h5 mb-0">Proyectos creados</h2>
+        <a href="{{ url_for('generador.generar') }}" class="btn btn-warning btn-sm"><i class="bi bi-plus-lg"></i> Nuevo</a>
+      </div>
+      {% for s in sitios %}
+        <div class="site-item">
+          <div class="d-flex flex-column flex-md-row justify-content-between gap-2">
+            <div>
+              <span><i class="bi bi-folder2-open"></i> <strong>{{ s.name }}</strong></span>
+              <span class="badge bg-secondary ms-2">Puerto {{ s.port }}</span>
+            </div>
+            <code class="text-break text-md-end">{{ s.path }}</code>
+          </div>
+          <hr style="border-color: rgba(255, 255, 255, 0.3);" class="my-3">
+          <div class="d-flex justify-content-between align-items-center">
+            <a href="{{ url_for('generador.ejecutar_sitio', slug=s.name) }}" class="btn btn-success btn-sm" target="_blank"><i class="bi bi-play-fill"></i> Ejecutar</a>
+            <a href="{{ url_for('generador.eliminar_sitio', slug=s.name, paso=1) }}" class="btn btn-danger btn-sm"><i class="bi bi-trash"></i> Eliminar</a>
+          </div>
+        </div>
+      {% endfor %}
+    {% else %}
+      <p class="mb-0">No hay sitios generados todavía.</p>
+      <a href="{{ url_for('generador.generar') }}" class="btn btn-warning mt-3"><i class="bi bi-rocket-takeoff"></i> Generar el primero</a>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

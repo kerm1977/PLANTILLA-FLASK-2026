@@ -1,0 +1,19 @@
+{
+  "name": "Flask PWA",
+  "short_name": "FlaskPWA",
+  "description": "Aplicación Flask con acceso a servicios del dispositivo.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#2c5364",
+  "orientation": "portrait",
+  "lang": "es",
+  "icons": [
+    {
+      "src": "/static/icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

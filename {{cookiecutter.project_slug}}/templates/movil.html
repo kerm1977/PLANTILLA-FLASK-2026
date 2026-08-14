@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% block title %}Servicios del dispositivo{% endblock %}
+
+{% block content %}
+<style>
+  .servicio-card {
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(14px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 1rem;
+    padding: 1.25rem;
+    margin-bottom: 1rem;
+    color: #f8f9fa;
+  }
+  .servicio-card h2 {
+    font-size: 1.25rem;
+    margin-bottom: 0.75rem;
+  }
+  .result-box {
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 0.5rem;
+    padding: 0.75rem;
+    min-height: 2.5rem;
+    margin-top: 0.75rem;
+    word-break: break-word;
+  }
+  #camera-video, #camera-canvas, #photo-preview {
+    max-width: 100%;
+    border-radius: 0.5rem;
+    margin-top: 0.75rem;
+  }
+</style>
+
+<div class="ayuda-wrapper text-start">
+  <div class="glass-hero">
+    <h1 class="vista-titulo mb-3"><i class="bi bi-phone"></i> Servicios del dispositivo</h1>
+    <p class="lead mb-0">PWA con acceso a GPS, cámara, biometría y más.</p>
+  </div>
+
+  <div class="servicio-card">
+    <h2><i class="bi bi-geo-alt"></i> GPS / Ubicación</h2>
+    <button class="btn btn-info btn-sm" onclick="getLocation()"><i class="bi bi-geo"></i> Obtener ubicación</button>
+    <div id="gps-result" class="result-box">Pulsa el botón para ver tu ubicación.</div>
+  </div>
+
+  <div class="servicio-card">
+    <h2><i class="bi bi-camera"></i> Cámara</h2>
+    <div class="d-flex gap-2 flex-wrap">
+      <button class="btn btn-primary btn-sm" onclick="startCamera()"><i class="bi bi-play-fill"></i> Iniciar</button>
+      <button class="btn btn-warning btn-sm" onclick="capturePhoto()"><i class="bi bi-camera-fill"></i> Capturar</button>
+      <button class="btn btn-secondary btn-sm" onclick="stopCamera()"><i class="bi bi-stop-fill"></i> Detener</button>
+    </div>
+    <video id="camera-video" class="d-none" autoplay playsinline></video>
+    <canvas id="camera-canvas" class="d-none"></canvas>
+    <img id="photo-preview" class="d-none" alt="Vista previa">
+    <div id="camera-result" class="result-box">Pulsa <b>Iniciar</b> para activar la cámara.</div>
+  </div>
+
+  <div class="servicio-card">
+    <h2><i class="bi bi-fingerprint"></i> Huella / Biometría</h2>
+    <div class="d-flex gap-2 flex-wrap">
+      <button class="btn btn-success btn-sm" onclick="checkBiometric()"><i class="bi bi-check-circle"></i> Verificar soporte</button>
+      <button class="btn btn-outline-success btn-sm" onclick="registerBiometric()"><i class="bi bi-fingerprint"></i> Registrar huella</button>
+    </div>
+    <div id="bio-result" class="result-box">Verifica si el dispositivo soporta biometría.</div>
+  </div>
+
+  <div class="servicio-card">
+    <h2><i class="bi bi-share"></i> Compartir</h2>
+    <button class="btn btn-primary btn-sm" onclick="shareApp()"><i class="bi bi-share-fill"></i> Compartir</button>
+    <div id="share-result" class="result-box">Pulsa para compartir la PWA.</div>
+  </div>
+
+  <div class="servicio-card">
+    <h2><i class="bi bi-phone-vibrate"></i> Vibración</h2>
+    <button class="btn btn-dark btn-sm" onclick="vibrate()"><i class="bi bi-bell"></i> Vibrar</button>
+    <div id="vib-result" class="result-box">Pulsa para hacer vibrar el dispositivo.</div>
+  </div>
+</div>
+{% endblock %}
