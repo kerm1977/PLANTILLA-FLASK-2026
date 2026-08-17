@@ -4,7 +4,7 @@
 
 {% block content %}
 <div class="home-video-wrapper">
-  <video id="home-video" src="{{ url_for('static', filename='wq.mp4') }}" autoplay muted loop playsinline style="width: 100%; display: block;"></video>
+  <video id="home-video" src="{{ home_videos[0] }}" autoplay muted playsinline style="width: 100%; display: block;"></video>
   <div class="video-controls">
     <button id="play-pause" class="btn btn-video" type="button" aria-label="Pausar">
       <i class="bi bi-pause-fill"></i>
@@ -21,6 +21,20 @@
     const playBtn = document.getElementById('play-pause');
     const muteBtn = document.getElementById('mute-btn');
     if (!video || !playBtn || !muteBtn) return;
+    if (video.dataset.i18nReady) return;
+    video.dataset.i18nReady = 'true';
+
+    const playlist = {{ home_videos | tojson }};
+    let playlistIndex = 0;
+    if (playlist.length > 1) {
+      video.addEventListener('ended', function () {
+        playlistIndex = (playlistIndex + 1) % playlist.length;
+        video.src = playlist[playlistIndex];
+        video.play();
+      });
+    } else {
+      video.loop = true;
+    }
 
     function updatePlayIcon() {
       playBtn.innerHTML = video.paused ? '<i class="bi bi-play-fill"></i>' : '<i class="bi bi-pause-fill"></i>';

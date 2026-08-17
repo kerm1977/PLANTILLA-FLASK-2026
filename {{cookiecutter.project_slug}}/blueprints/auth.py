@@ -5,6 +5,7 @@ from sqlalchemy import select
 from wtforms import (
     BooleanField,
     PasswordField,
+    SelectField,
     StringField,
     SubmitField,
 )
@@ -60,6 +61,15 @@ class RegisterForm(FlaskForm):
             EqualTo("password", message="Las contraseñas no coinciden"),
         ],
     )
+    role = SelectField(
+        "Tipo de usuario",
+        choices=[
+            ("regular", "Usuario regular"),
+            ("admin", "Administrador"),
+            ("top", "Superusuario principal"),
+        ],
+        default="regular",
+    )
     submit = SubmitField("Crear cuenta")
 
     def validate(self, extra_validators=None):
@@ -105,6 +115,7 @@ async def login():
             )
             session["email"] = user.email
             session["is_superuser"] = user.is_superuser
+            session["is_top_superuser"] = user.is_top_superuser
             if form.remember.data:
                 session.permanent = True
             flash(f"Bienvenido, {session['username']}", "success")
@@ -115,13 +126,20 @@ async def login():
 
 @auth_bp.route("/registro", methods=["GET", "POST"])
 async def registro():
+    can_assign_role = bool(session.get("is_superuser"))
+    can_assign_top = bool(session.get("is_top_superuser"))
     referrer = request.referrer or ""
     if (
-        url_for("auth.login") not in referrer
+        not can_assign_role
+        and url_for("auth.login") not in referrer
         and url_for("auth.registro") not in referrer
     ):
         return redirect(url_for("auth.login"))
     form = RegisterForm()
+    if not can_assign_top:
+        form.role.choices = [
+            c for c in form.role.choices if c[0] != "top"
+        ]
     if form.validate_on_submit():
         async with async_session() as s:
             email = form.email.data.strip().lower()
@@ -153,14 +171,18 @@ async def registro():
                     password_hash=bcrypt.generate_password_hash(
                         form.password.data
                     ).decode("utf-8"),
-                    is_superuser=False,
+                    is_superuser=can_assign_role and form.role.data in ("admin", "top"),
+                    is_top_superuser=can_assign_top and form.role.data == "top",
                     is_active=True,
                 )
                 s.add(user)
                 await s.commit()
+                if can_assign_role:
+                    flash("Usuario creado", "success")
+                    return redirect(url_for("main.usuarios"))
                 flash("Cuenta creada. Ahora inicia sesión.", "success")
                 return redirect(url_for("auth.login"))
-    return render_template("auth/registro.html", form=form)
+    return render_template("auth/registro.html", form=form, can_assign_role=can_assign_role)
 
 
 @auth_bp.route("/recuperar")

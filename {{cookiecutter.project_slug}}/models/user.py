@@ -24,6 +24,7 @@ class User(Base):
     )
     password_hash: Mapped[str] = mapped_column(String(255))
     is_superuser: Mapped[bool] = mapped_column(default=False, nullable=False)
+    is_top_superuser: Mapped[bool] = mapped_column(default=False, nullable=False)
     is_active: Mapped[bool] = mapped_column(default=True, nullable=False)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), default=lambda: datetime.now(timezone.utc)

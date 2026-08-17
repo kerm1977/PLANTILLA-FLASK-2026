@@ -167,14 +167,38 @@ async def edit_user():
             if not user:
                 flash("Usuario no encontrado", "danger")
                 return redirect(url_for("admin.panel"))
-            if user.email in TOP_SUPERUSERS:
+            if user.is_top_superuser:
                 flash("No puedes modificar a un superusuario principal", "danger")
                 return redirect(url_for("admin.panel"))
             user.is_active = bool(request.form.get("is_active"))
-            if session.get("is_superuser") and session.get("email") in TOP_SUPERUSERS:
+            if session.get("is_top_superuser"):
                 user.is_superuser = bool(request.form.get("is_superuser"))
             await s.commit()
             flash(f"Usuario {user.username or user.email} actualizado", "success")
     else:
         flash("Error al actualizar el usuario", "danger")
-    return redirect(url_for("admin.panel"))
+    return redirect(request.referrer or url_for("admin.panel"))
+
+
+@admin_bp.route("/eliminar_usuario", methods=["POST"])
+@superuser_required
+async def delete_user():
+    user_id = int(request.form.get("user_id", 0))
+    if not user_id:
+        flash("Usuario no encontrado", "danger")
+        return redirect(request.referrer or url_for("admin.panel"))
+    try:
+        async with async_session() as s:
+            user = await s.get(User, user_id)
+            if not user:
+                flash("Usuario no encontrado", "danger")
+                return redirect(request.referrer or url_for("admin.panel"))
+            if user.is_top_superuser:
+                flash("No puedes eliminar a un superusuario principal", "danger")
+                return redirect(request.referrer or url_for("admin.panel"))
+            await s.delete(user)
+            await s.commit()
+            flash(f"Usuario {user.username or user.email} eliminado", "success")
+    except Exception as e:
+        flash(f"Error al eliminar usuario: {e}", "danger")
+    return redirect(request.referrer or url_for("admin.panel"))

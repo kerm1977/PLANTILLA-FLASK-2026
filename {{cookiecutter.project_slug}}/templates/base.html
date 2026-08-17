@@ -9,15 +9,15 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='vendor/bootstrap-icons/bootstrap-icons.min.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/mobile-nav.css') }}">
     <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
     <meta name="theme-color" content="#2c5364">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <script src="{{ url_for('static', filename='js/theme.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 </head>
 <body class="{% if request.endpoint in ('auth.login', 'auth.registro', 'auth.recuperar') %}auth-page{% endif %}{% if request.endpoint == 'auth.login' %} login-page{% endif %}">
-    <nav class="desktop-nav d-none d-lg-flex" aria-label="Navegación escritorio">
+    <nav class="desktop-nav" aria-label="Navegación escritorio">
       <div class="desktop-nav-links">
         <a href="{{ url_for('main.home') }}" class="desktop-nav-link {% if request.endpoint == 'main.home' %}active{% endif %}">
           <i class="bi bi-house-door"></i> Inicio
@@ -30,14 +30,17 @@
         <img src="{{ url_for('static', filename='uploads/logocumbres.png') }}" alt="Logo Cumbres" height="44" onclick="toggleTheme()" title="Cambiar tema" role="button">
       </div>
       <div class="desktop-nav-actions">
-        <select class="form-select form-select-sm lang-select" style="width: auto; min-width: 4.5rem; background: rgba(255,255,255,0.35); border: none; color: var(--bs-body-color);" onchange="if(this.value) window.location.href = this.value;" aria-label="Idioma">
+        <select class="form-select form-select-sm lang-select" style="width: auto; min-width: 4.5rem; background: rgba(255,255,255,0.35); border: none; color: var(--bs-body-color);" onchange="if(this.value) changeLang(this.value);" aria-label="Idioma">
           {% for code in languages %}
-          <option value="{{ url_for('main.set_lang', lang=code) }}" {% if lang == code %}selected{% endif %}>{{ code.upper() }}</option>
+          <option value="{{ url_for('main.set_lang', lang=code, next=request.full_path) }}" {% if lang == code %}selected{% endif %}>{{ code.upper() }}</option>
           {% endfor %}
         </select>
         {% if session.get('user_id') %}
         <a href="{{ url_for('main.perfil') }}" class="desktop-nav-link {% if request.endpoint == 'main.perfil' %}active{% endif %}" title="Perfil">
           <i class="bi bi-person"></i> Perfil
+        </a>
+        <a href="#" class="desktop-nav-link" data-bs-toggle="modal" data-bs-target="#logoutModal" title="{{ _('Cerrar sesión') }}" aria-label="{{ _('Cerrar sesión') }}" role="button">
+          <i class="bi bi-box-arrow-right"></i>
         </a>
         {% else %}
         <a href="{{ url_for('auth.login') }}" class="desktop-nav-link {% if request.endpoint in ('auth.login', 'auth.registro', 'auth.recuperar') %}active{% endif %}" title="Iniciar sesión">
@@ -47,26 +50,27 @@
       </div>
     </nav>
 
-    <div class="mobile-logo d-lg-none" aria-hidden="true">
-      <div class="mobile-logo-wrap">
-        <img src="{{ url_for('static', filename='uploads/logocumbres.png') }}" alt="Logo Cumbres" height="44" onclick="toggleTheme()" title="Cambiar tema" role="button">
-      </div>
-      <select class="form-select form-select-sm lang-select-mobile" style="position: absolute; right: 1rem; top: 0.6rem; width: auto; min-width: 4.2rem; background: rgba(255,255,255,0.35); border: none; color: var(--bs-body-color); z-index: 1200;" onchange="if(this.value) window.location.href = this.value;" aria-label="Idioma">
-        {% for code in languages %}
-        <option value="{{ url_for('main.set_lang', lang=code) }}" {% if lang == code %}selected{% endif %}>{{ code.upper() }}</option>
-        {% endfor %}
-      </select>
-    </div>
 
     <main class="{% block main_class %}centrado{% endblock %}">
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% for category, message in messages %}
-                <div class="alert alert-{{ category }} text-center" role="alert">{{ message }}</div>
-            {% endfor %}
-        {% endwith %}
-
         {% block content %}{% endblock %}
     </main>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <div id="flash-toast-container" class="d-flex flex-column gap-2" style="position: fixed; top: 4.5rem; right: 1rem; z-index: 1050; max-width: 300px;">
+      {% for category, message in messages %}
+      <div class="toast show p-2 flash-toast flash-toast-{{ category }}" role="alert" aria-live="assertive" aria-atomic="true" data-bs-autohide="true" data-bs-delay="3000" style="background: var(--card-bg); color: var(--bs-body-color); border: 1px solid var(--card-border);">
+        <div class="d-flex align-items-start">
+          <div class="toast-body flex-grow-1 p-0">{{ message }}</div>
+          <button type="button" class="btn btn-link p-0 ms-2" data-bs-dismiss="toast" aria-label="{{ _('Cerrar') }}" style="color: var(--bs-body-color); text-decoration: none;">
+            <i class="bi bi-x-lg"></i>
+          </button>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+    {% endwith %}
 
     {% if request.endpoint != 'main.home' %}
     <button class="btn back-button" type="button" onclick="history.back()" title="Volver atrás" aria-label="Volver atrás">
@@ -74,110 +78,37 @@
     </button>
     {% endif %}
 
+    {% if session.get('user_id') %}
+    <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="logoutModalLabel">{{ _("Cerrar sesión") }}</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{{ _('Cerrar') }}"></button>
+          </div>
+          <div class="modal-body">
+            <p class="mb-0">{{ _("¿Estás seguro de que deseas salir?") }}</p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ _("Cancelar") }}</button>
+            <a href="{{ url_for('auth.logout') }}" class="btn btn-danger">{{ _("Cerrar sesión") }}</a>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+
     <script src="{{ url_for('static', filename='vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/pwa.js') }}"></script>
-
-    <!-- Magic Navigation Menu (móvil) -->
-    <nav class="mobile-nav d-lg-none" aria-label="Navegación móvil">
-      <ul>
-        <li class="list {% if request.endpoint == 'main.home' %}active{% endif %}">
-          <a href="{{ url_for('main.home') }}">
-            <span class="icon"><i class="bi bi-house-door"></i></span>
-            <span class="text">Inicio</span>
-          </a>
-        </li>
-        <li class="list {% if (session.get('user_id') and request.endpoint == 'main.perfil') or (not session.get('user_id') and request.endpoint in ('auth.login', 'auth.registro', 'auth.recuperar')) %}active{% endif %}">
-          <a href="{% if session.get('user_id') %}{{ url_for('main.perfil') }}{% else %}{{ url_for('auth.login') }}{% endif %}">
-            <span class="icon"><i class="bi bi-person"></i></span>
-            <span class="text">Perfil</span>
-          </a>
-        </li>
-        {% if session.get('user_id') %}
-        <li class="list {% if request.endpoint == 'main.dashboard' %}active{% endif %}">
-          <a href="{{ url_for('main.dashboard') }}">
-            <span class="icon"><i class="bi bi-grid"></i></span>
-            <span class="text">Panel</span>
-          </a>
-        </li>
-        {% if session.get('is_superuser') %}
-        <li class="list {% if request.endpoint == 'admin.panel' %}active{% endif %}">
-          <a href="{{ url_for('admin.panel') }}">
-            <span class="icon"><i class="bi bi-shield-lock"></i></span>
-            <span class="text">Admin</span>
-          </a>
-        </li>
-        {% else %}
-        <li class="list">
-          <a href="#">
-            <span class="icon"><i class="bi bi-gear"></i></span>
-            <span class="text">Ajustes</span>
-          </a>
-        </li>
-        {% endif %}
-        <li class="list">
-          <a href="{{ url_for('auth.logout') }}">
-            <span class="icon"><i class="bi bi-box-arrow-right"></i></span>
-            <span class="text">Salir</span>
-          </a>
-        </li>
-        {% endif %}
-        <div class="indicator"></div>
-      </ul>
-    </nav>
-
     <script>
       (function () {
-        const nav = document.querySelector('.mobile-nav');
-        if (!nav) return;
-        const list = nav.querySelectorAll('ul li.list');
-        const indicator = nav.querySelector('.indicator');
-
-        function moveIndicator(skipTransition = false, target = null) {
-          const active = target || nav.querySelector('ul li.active') || list[0];
-          if (!active || !indicator) return;
-          const left = active.offsetLeft + (active.offsetWidth - 70) / 2;
-          if (skipTransition) {
-            indicator.style.transition = 'none';
-            indicator.style.transform = 'translateX(' + left + 'px)';
-            requestAnimationFrame(() => {
-              requestAnimationFrame(() => {
-                indicator.style.transition = '';
-              });
-            });
-          } else {
-            indicator.style.transform = 'translateX(' + left + 'px)';
-          }
-        }
-
-        function activate(event) {
-          event.preventDefault();
-          const link = this;
-          const li = link.closest('li.list');
-          if (!li) return;
-
-          const wasActive = li.classList.contains('active');
-          if (!wasActive) {
-            moveIndicator(false, li);
-          }
-
-          const href = link.getAttribute('href');
-          if (href && href !== '#' && !wasActive) {
-            setTimeout(() => {
-              window.location.href = link.href;
-            }, 300);
-          }
-        }
-
-        list.forEach((item) => {
-          const a = item.querySelector('a');
-          if (a) a.addEventListener('click', activate);
+        const toasts = document.querySelectorAll('#flash-toast-container .toast');
+        toasts.forEach(function (el) {
+          const t = new bootstrap.Toast(el, { autohide: true, delay: 3000 });
+          t.show();
         });
-
-        moveIndicator(true);
-        window.addEventListener('resize', () => moveIndicator(true));
-        window.addEventListener('pageshow', () => moveIndicator(true));
       })();
     </script>
+    <script src="{{ url_for('static', filename='js/pwa.js') }}"></script>
+
 </body>
 </html>

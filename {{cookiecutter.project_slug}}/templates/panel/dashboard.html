@@ -1,6 +1,281 @@
 {% extends "base.html" %}
-{% block title %}Dashboard{% endblock %}
+{% block title %}{{ _('Administración de tema') }}{% endblock %}
+{% block main_class %}top-main{% endblock %}
 
 {% block content %}
-<h1 class="vista-titulo"><i class="bi bi-speedometer2"></i> Este es el Dashboard</h1>
+<div class="perfil-view">
+  <h2 class="vista-titulo text-center mb-4">
+    <i class="bi bi-palette"></i> {{ _('Administración de tema') }}
+  </h2>
+
+  <button type="button" class="collapsible-tab" data-bs-toggle="collapse" data-bs-target="#temaSection" aria-expanded="true" aria-controls="temaSection">
+    <span><i class="bi bi-palette2 me-2"></i>{{ _('Tema actual') }}</span>
+    <i class="bi bi-chevron-down collapsible-tab-icon"></i>
+  </button>
+  <div class="collapse show" id="temaSection">
+    <div class="perfil-data">
+      <div class="perfil-row">
+        <span class="perfil-label">{{ _('Tema actual') }}</span>
+        <span class="perfil-value" id="current-theme" data-light="{{ _('Claro') }}" data-dark="{{ _('Oscuro') }}">—</span>
+      </div>
+      <div class="text-center mt-4">
+        <button type="button" class="btn btn-outline-primary me-2" onclick="window.setTheme('light')">
+          <i class="bi bi-sun"></i> {{ _('Claro') }}
+        </button>
+        <button type="button" class="btn btn-outline-primary" onclick="window.setTheme('dark')">
+          <i class="bi bi-moon"></i> {{ _('Oscuro') }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <button type="button" class="collapsible-tab mt-3" data-bs-toggle="collapse" data-bs-target="#videoSection" aria-expanded="true" aria-controls="videoSection">
+    <span><i class="bi bi-film me-2"></i>{{ _('Video inicial') }}</span>
+    <i class="bi bi-chevron-down collapsible-tab-icon"></i>
+  </button>
+  <div class="collapse show" id="videoSection">
+  <p class="text-center text-muted small mb-3 mt-3">
+    {{ _('Puedes agregar de 1 a 3 videos que se reproducirán en orden en la página de inicio. El video debe tener una relación de aspecto 16:9 (por ejemplo, 1920x1080 o 1280x720) para que se vea correctamente sin recortes.') }}
+  </p>
+
+  <div class="home-video-thumbs">
+    {% for s in home_slots %}
+    <div class="home-video-thumb">
+      <span class="home-video-thumb-badge">{{ s.slot }}</span>
+      {% if s.url %}
+        <video src="{{ s.url }}" muted preload="metadata"></video>
+        <div class="home-video-thumb-actions">
+          <form method="POST" action="{{ url_for('main.dashboard') }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <input type="hidden" name="move" value="1">
+            <input type="hidden" name="slot_a" value="{{ s.slot }}">
+            <input type="hidden" name="slot_b" value="{{ s.slot - 1 }}">
+            <button type="submit" class="btn btn-sm btn-outline-secondary" title="{{ _('Mover a la izquierda') }}" {% if s.slot == 1 %}disabled{% endif %}>
+              <i class="bi bi-arrow-left"></i>
+            </button>
+          </form>
+          <form method="POST" action="{{ url_for('main.dashboard') }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <input type="hidden" name="remove_slot" value="{{ s.slot }}">
+            <button type="submit" class="btn btn-sm btn-outline-danger" title="{{ _('Eliminar') }}" data-confirm="{{ _('¿Eliminar este video?') }}">
+              <i class="bi bi-trash"></i>
+            </button>
+          </form>
+          <form method="POST" action="{{ url_for('main.dashboard') }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <input type="hidden" name="move" value="1">
+            <input type="hidden" name="slot_a" value="{{ s.slot }}">
+            <input type="hidden" name="slot_b" value="{{ s.slot + 1 }}">
+            <button type="submit" class="btn btn-sm btn-outline-secondary" title="{{ _('Mover a la derecha') }}" {% if s.slot == home_slots|length %}disabled{% endif %}>
+              <i class="bi bi-arrow-right"></i>
+            </button>
+          </form>
+        </div>
+      {% else %}
+        <div class="home-video-thumb-empty">
+          <i class="bi bi-camera-video-off"></i>
+          <span class="small">{{ _('Sin video') }}</span>
+        </div>
+      {% endif %}
+    </div>
+    {% endfor %}
+  </div>
+
+  {% set slots_full = home_slots | selectattr('url') | list | length >= home_slots | length %}
+  {% if slots_full %}
+  <p class="text-center text-muted small">
+    <i class="bi bi-info-circle"></i> {{ _('Ya hay 3 videos. Elimina uno para poder agregar otro.') }}
+  </p>
+  {% else %}
+  <form method="POST" action="{{ url_for('main.dashboard') }}" enctype="multipart/form-data" class="text-center">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <div class="mb-3 d-flex justify-content-center">
+      <input type="file" name="home_video" id="home_video" class="form-control" style="max-width: 320px;" accept="video/mp4,video/webm,video/ogg" required>
+    </div>
+    <button type="submit" class="btn btn-success">
+      <i class="bi bi-upload"></i> {{ _('Subir video') }}
+    </button>
+  </form>
+  {% endif %}
+  </div>
+
+  <button type="button" class="collapsible-tab mt-3" data-bs-toggle="collapse" data-bs-target="#traduccionesSection" aria-expanded="true" aria-controls="traduccionesSection">
+    <span><i class="bi bi-translate me-2"></i>{{ _('Traducciones') }}</span>
+    <i class="bi bi-chevron-down collapsible-tab-icon"></i>
+  </button>
+  <div class="collapse show" id="traduccionesSection">
+    <p class="text-center text-muted small mb-3 mt-3">
+      {{ _('Escanea las plantillas y el código en busca de textos nuevos (llamadas a la función de traducción) y los agrega como pendientes a cada idioma. No sobrescribe las traducciones ya existentes.') }}
+    </p>
+    <ul class="list-unstyled text-center mb-3">
+      {% for lang, st in translation_status.items() %}
+      <li class="small">
+        <strong>{{ lang.upper() }}</strong> —
+        {{ _('total') }}: {{ st.total }},
+        {{ _('pendientes') }}: {{ st.missing }}
+      </li>
+      {% endfor %}
+    </ul>
+    <form method="POST" action="{{ url_for('main.dashboard') }}" class="text-center">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <input type="hidden" name="sync_translations" value="1">
+      <button type="submit" class="btn btn-success">
+        <i class="bi bi-arrow-repeat"></i> {{ _('Actualizar traducciones') }}
+      </button>
+    </form>
+  </div>
+
+  <button type="button" class="collapsible-tab mt-3" data-bs-toggle="collapse" data-bs-target="#redSection" aria-expanded="false" aria-controls="redSection">
+    <span><i class="bi bi-hdd-network me-2"></i>{{ _('Administración de red') }}</span>
+    <i class="bi bi-chevron-down collapsible-tab-icon"></i>
+  </button>
+  <div class="collapse" id="redSection">
+    <p class="text-center text-muted small mb-3 mt-3">
+      {{ _('Configura y genera los archivos necesarios para subir esta aplicación a PythonAnywhere.') }}
+    </p>
+
+    <h6 class="mt-4 mb-2"><i class="bi bi-gear"></i> {{ _('Datos de la cuenta PythonAnywhere') }}</h6>
+    <form method="POST" action="{{ url_for('main.dashboard') }}" class="row g-3 justify-content-center" id="networkForm">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <div class="col-md-5">
+        <label class="form-label small">{{ _('Usuario de PythonAnywhere') }}</label>
+        <input type="text" name="pa_username" class="form-control" value="{{ deploy_config.pa_username }}" placeholder="miusuario">
+      </div>
+      <div class="col-md-5">
+        <label class="form-label small">{{ _('Nombre del proyecto (carpeta)') }}</label>
+        <input type="text" name="project_slug" class="form-control" value="{{ deploy_config.project_slug }}">
+      </div>
+      <div class="col-md-5">
+        <label class="form-label small">{{ _('Versión de Python') }}</label>
+        <select name="python_version" class="form-select">
+          {% for v in pa_python_versions %}
+          <option value="{{ v }}" {% if v == deploy_config.python_version %}selected{% endif %}>{{ v }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-md-5">
+        <label class="form-label small">{{ _('Dominio') }}</label>
+        <input type="text" name="domain" class="form-control" value="{{ deploy_config.domain }}" placeholder="miusuario.pythonanywhere.com">
+      </div>
+      <div class="col-12 text-center d-flex flex-wrap gap-2 justify-content-center">
+        <button type="submit" name="save_network_config" value="1" class="btn btn-success">
+          <i class="bi bi-save"></i> {{ _('Guardar configuración') }}
+        </button>
+        <button type="submit" name="download_wsgi" value="1" class="btn btn-outline-primary">
+          <i class="bi bi-file-earmark-arrow-down"></i> {{ _('Descargar wsgi.py') }}
+        </button>
+      </div>
+    </form>
+
+    <hr class="my-4">
+
+    <h6 class="mb-2"><i class="bi bi-key"></i> {{ _('Variables de entorno (.env de producción)') }}</h6>
+    <form method="POST" action="{{ url_for('main.dashboard') }}" class="row g-3 justify-content-center">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <div class="col-md-5">
+        <label class="form-label small">SECRET_KEY</label>
+        <div class="input-group">
+          <input type="text" name="secret_key" id="secretKeyInput" class="form-control" autocomplete="off">
+          <button type="button" class="btn btn-outline-secondary" id="genSecretKey" title="{{ _('Generar') }}">
+            <i class="bi bi-shuffle"></i>
+          </button>
+        </div>
+      </div>
+      <div class="col-md-5">
+        <label class="form-label small">JWT_SECRET_KEY</label>
+        <div class="input-group">
+          <input type="text" name="jwt_secret_key" id="jwtSecretKeyInput" class="form-control" autocomplete="off">
+          <button type="button" class="btn btn-outline-secondary" id="genJwtKey" title="{{ _('Generar') }}">
+            <i class="bi bi-shuffle"></i>
+          </button>
+        </div>
+      </div>
+      <div class="col-md-5">
+        <label class="form-label small">DATABASE_URL</label>
+        <input type="text" name="database_url" class="form-control" placeholder="sqlite+aiosqlite:///app.db">
+      </div>
+      <div class="col-md-5">
+        <label class="form-label small">CORS_ORIGINS</label>
+        <input type="text" name="cors_origins" class="form-control" value="*">
+      </div>
+      <div class="col-md-3">
+        <label class="form-label small">MAIL_SERVER</label>
+        <input type="text" name="mail_server" class="form-control">
+      </div>
+      <div class="col-md-3">
+        <label class="form-label small">MAIL_PORT</label>
+        <input type="text" name="mail_port" class="form-control" value="587">
+      </div>
+      <div class="col-md-3">
+        <label class="form-label small">MAIL_USERNAME</label>
+        <input type="text" name="mail_username" class="form-control">
+      </div>
+      <div class="col-md-3">
+        <label class="form-label small">MAIL_PASSWORD</label>
+        <input type="password" name="mail_password" class="form-control">
+      </div>
+      <div class="col-12 text-center">
+        <button type="submit" name="download_env" value="1" class="btn btn-outline-primary">
+          <i class="bi bi-file-earmark-arrow-down"></i> {{ _('Descargar .env') }}
+        </button>
+      </div>
+    </form>
+
+    <hr class="my-4">
+
+    <h6 class="mb-2"><i class="bi bi-list-check"></i> {{ _('Pasos para subir el proyecto a PythonAnywhere') }}</h6>
+    <ol class="small">
+      <li>{{ _('Sube el código a PythonAnywhere (Git clone o consola Bash con git pull, o subiendo un .zip desde la pestaña Files).') }}</li>
+      <li>{{ _('En la consola Bash de PythonAnywhere, crea el entorno virtual e instala dependencias:') }}
+        <code>mkvirtualenv --python=/usr/bin/python{{ deploy_config.python_version }} {{ deploy_config.project_slug }}-venv && pip install -r requirements.txt</code>
+      </li>
+      <li>{{ _('Coloca el archivo .env descargado arriba en la raíz del proyecto en PythonAnywhere.') }}</li>
+      <li>{{ _('Ve a la pestaña Web y crea una nueva Web app con configuración manual (Manual configuration), eligiendo la versión de Python') }} {{ deploy_config.python_version }}.</li>
+      <li>{{ _('En Virtualenv, indica la ruta:') }} <code>/home/{{ deploy_config.pa_username or 'TU_USUARIO' }}/.virtualenvs/{{ deploy_config.project_slug }}-venv</code></li>
+      <li>{{ _('En Code &gt; WSGI configuration file, reemplaza el contenido por el archivo wsgi.py descargado arriba.') }}</li>
+      <li>{{ _('En Static files, agrega una entrada con URL') }} <code>/static/</code> {{ _('y Directory') }} <code>/home/{{ deploy_config.pa_username or 'TU_USUARIO' }}/{{ deploy_config.project_slug }}/static/</code></li>
+      <li>{{ _('Pulsa el botón verde Reload para aplicar los cambios y visita tu dominio:') }} <code>{{ deploy_config.domain or (deploy_config.pa_username or 'TU_USUARIO') + '.pythonanywhere.com' }}</code></li>
+    </ol>
+  </div>
+</div>
+
+<script>
+  (function () {
+    const el = document.getElementById('current-theme');
+    const current = document.documentElement.getAttribute('data-bs-theme') || 'light';
+    el.textContent = current === 'dark' ? el.dataset.dark : el.dataset.light;
+  })();
+
+  document.querySelectorAll('button[data-confirm]').forEach(function (btn) {
+    btn.addEventListener('click', function (e) {
+      if (!confirm(btn.dataset.confirm)) {
+        e.preventDefault();
+      }
+    });
+  });
+
+  document.querySelectorAll('.home-video-thumb video').forEach(function (v) {
+    v.addEventListener('loadedmetadata', function () {
+      try { v.currentTime = 0.1; } catch (e) {}
+    });
+  });
+
+  function randomKey() {
+    const bytes = new Uint8Array(32);
+    window.crypto.getRandomValues(bytes);
+    return Array.from(bytes, function (b) { return b.toString(16).padStart(2, '0'); }).join('');
+  }
+  const genSecret = document.getElementById('genSecretKey');
+  const genJwt = document.getElementById('genJwtKey');
+  if (genSecret) {
+    genSecret.addEventListener('click', function () {
+      document.getElementById('secretKeyInput').value = randomKey();
+    });
+  }
+  if (genJwt) {
+    genJwt.addEventListener('click', function () {
+      document.getElementById('jwtSecretKeyInput').value = randomKey();
+    });
+  }
+</script>
 {% endblock %}

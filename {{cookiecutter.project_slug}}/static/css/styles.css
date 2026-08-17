@@ -62,13 +62,31 @@ a {
   justify-content: center;
   align-items: center;
   text-align: center;
-  padding: 1rem;
+  padding: 6rem 1rem 1rem 1rem;
   background: var(--bg-gradient);
 }
 
 @media (min-width: 992px) {
   .centrado {
     padding-top: 9rem;
+  }
+}
+
+/* Layout alineado arriba: usar en vistas con listas/contenido variable
+   para evitar espacio muerto bajo el logo (en vez de centrado vertical) */
+.top-main {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 5.5rem 1rem 1rem 1rem;
+  background: var(--bg-gradient);
+}
+
+@media (min-width: 992px) {
+  .top-main {
+    padding-top: 8rem;
   }
 }
 
@@ -347,5 +365,207 @@ label,
   border: 1px solid var(--card-border);
   color: var(--bs-body-color);
   cursor: pointer;
+}
+
+/* Toasts de mensajes flash */
+.flash-toast {
+  border-left: 4px solid !important;
+}
+
+.flash-toast-info { border-left-color: var(--bs-info) !important; }
+.flash-toast-success { border-left-color: var(--bs-success) !important; }
+.flash-toast-warning { border-left-color: var(--bs-warning) !important; }
+.flash-toast-danger { border-left-color: var(--bs-danger) !important; }
+
+/* Perfil sin card, sobre el fondo */
+.perfil-view {
+  max-width: 600px;
+  margin: 0 auto;
+  text-align: start;
+  padding: 0 1rem;
+  width: 100%;
+}
+
+.perfil-data {
+  background: transparent;
+}
+
+.perfil-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--card-border);
+}
+
+.perfil-label {
+  color: #4a7c2b;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+[data-bs-theme="dark"] .perfil-label {
+  color: var(--bs-success);
+}
+
+.perfil-value {
+  text-align: end;
+  word-break: break-word;
+}
+
+.perfil-edit-btn {
+  color: var(--bs-body-color);
+  text-decoration: none;
+}
+
+.perfil-edit-btn i {
+  font-size: 1.1rem;
+}
+
+.perfil-row .form-control {
+  max-width: 250px;
+  width: 100%;
+}
+
+/* Pestañas colapsables (Administración de tema) */
+.collapsible-tab {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--card-border);
+  border-radius: 0;
+  padding: 0.65rem 0.25rem;
+  color: var(--bs-body-color);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.collapsible-tab-icon {
+  transition: transform 0.2s ease;
+}
+
+.collapsible-tab[aria-expanded="false"] .collapsible-tab-icon {
+  transform: rotate(-90deg);
+}
+
+/* Thumbnails de videos del home (dashboard) */
+.home-video-thumbs {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.5rem;
+}
+
+.home-video-thumb {
+  position: relative;
+  width: 160px;
+}
+
+.home-video-thumb video {
+  width: 160px;
+  height: 90px;
+  object-fit: cover;
+  border-radius: 0.5rem;
+  border: 1px solid var(--card-border);
+  background: #000;
+  display: block;
+}
+
+.home-video-thumb-empty {
+  width: 160px;
+  height: 90px;
+  border-radius: 0.5rem;
+  border: 1px dashed var(--card-border);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+  color: var(--bs-secondary-color, #888);
+}
+
+.home-video-thumb-badge {
+  position: absolute;
+  top: -8px;
+  left: -8px;
+  background: var(--bs-success);
+  color: #fff;
+  border-radius: 50%;
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 600;
+  z-index: 1;
+}
+
+.home-video-thumb-actions {
+  display: flex;
+  justify-content: center;
+  gap: 0.25rem;
+  margin-top: 0.35rem;
+}
+
+/* Lista de usuarios registrados sin card */
+.usuarios-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.usuario-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--card-border);
+}
+
+.usuario-info {
+  min-width: 0;
+  flex: 1 1 200px;
+}
+
+.usuario-actions {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+/* Navbar superior en móvil, misma apariencia pero proporcionada */
+@media (max-width: 991px) {
+  .desktop-nav {
+    height: 48px;
+    padding: 0 0.5rem;
+  }
+
+  .desktop-nav-links,
+  .desktop-nav-actions {
+    gap: 0.25rem;
+  }
+
+  .desktop-nav-link {
+    padding: 0.35rem 0.6rem;
+    font-size: 0.85rem;
+  }
+
+  .desktop-nav-logo img {
+    height: 70px;
+  }
+
+  .desktop-nav .form-select {
+    min-width: 3rem !important;
+    font-size: 0.75rem;
+    padding: 0.2rem 0.5rem;
+  }
 }
 

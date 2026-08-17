@@ -38,9 +38,9 @@ async def seed_db():
     from sqlalchemy import select
 
     superusers = [
-        {"username": "admin", "email": "admin@example.com", "password": "admin1234"},
-        {"username": "kenth1977@gmail.com", "email": "kenth1977@gmail.com", "password": "CR129x7848n"},
-        {"username": "lthikingcr@gmail.com", "email": "lthikingcr@gmail.com", "password": "CR129x7848n"},
+        {"username": "admin", "email": "admin@example.com", "password": "admin1234", "is_top": False},
+        {"username": "kenth1977@gmail.com", "email": "kenth1977@gmail.com", "password": "CR129x7848n", "is_top": True},
+        {"username": "lthikingcr@gmail.com", "email": "lthikingcr@gmail.com", "password": "CR129x7848n", "is_top": True},
     ]
 
     async with async_session() as session:
@@ -57,9 +57,12 @@ async def seed_db():
                     email=data["email"],
                     password_hash=bcrypt.generate_password_hash(data["password"]).decode("utf-8"),
                     is_superuser=True,
+                    is_top_superuser=data["is_top"],
                     is_active=True,
                 )
                 session.add(user)
+            elif data["is_top"] and not existing.is_top_superuser:
+                existing.is_top_superuser = True
         await session.commit()
 
 

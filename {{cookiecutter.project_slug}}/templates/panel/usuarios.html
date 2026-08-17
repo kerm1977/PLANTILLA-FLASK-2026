@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block title %}{{ _('Usuarios registrados') }}{% endblock %}
+{% block main_class %}top-main{% endblock %}
+
+{% block content %}
+<div class="perfil-view" style="max-width: 800px;">
+  <h2 class="mb-4 text-center d-flex justify-content-center align-items-center gap-2">
+    <i class="bi bi-people"></i>
+    <span>{{ _('Datos de usuarios registrados') }}</span>
+  </h2>
+
+  <div class="text-end mb-3">
+    <a href="{{ url_for('auth.registro') }}" class="btn btn-sm btn-success">
+      <i class="bi bi-plus-lg"></i> {{ _('Crear usuario') }}
+    </a>
+  </div>
+
+  <div class="usuarios-list">
+    {% for u in users %}
+    {% set u_top = u.is_top_superuser %}
+    <div class="usuario-row">
+      <a href="{{ url_for('main.usuario_detalle', user_id=u.id) }}" class="usuario-info text-decoration-none" style="color: inherit;">
+        <strong>{{ u.first_name or u.username or u.email }} {{ u.first_last_name or '' }}</strong>
+        <span class="text-muted small d-block">{{ u.email }}</span>
+        {% if u_top %}<span class="badge bg-warning text-dark ms-1">{{ _('Principal') }}</span>{% endif %}
+      </a>
+      <div class="usuario-actions">
+        <form method="POST" action="{{ url_for('admin.edit_user') }}" class="d-flex gap-2 align-items-center flex-wrap">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <input type="hidden" name="user_id" value="{{ u.id }}">
+          <div class="form-check form-check-inline m-0">
+            <input class="form-check-input" type="checkbox" name="is_superuser" id="isSuper{{ u.id }}" {{ 'checked' if u.is_superuser else '' }} {% if u_top or not can_assign_top %}disabled{% endif %}>
+            <label class="form-check-label small perfil-label" for="isSuper{{ u.id }}">{{ _('Super') }}</label>
+          </div>
+          <div class="form-check form-check-inline m-0">
+            <input class="form-check-input" type="checkbox" name="is_active" id="isActive{{ u.id }}" {{ 'checked' if u.is_active else '' }} {% if u_top %}disabled{% endif %}>
+            <label class="form-check-label small perfil-label" for="isActive{{ u.id }}">{{ _('Activo') }}</label>
+          </div>
+          <button type="submit" class="btn btn-sm btn-primary" title="{{ _('Actualizar') }}">
+            <i class="bi bi-check-lg"></i>
+          </button>
+        </form>
+        <form method="POST" action="{{ url_for('admin.delete_user') }}" class="d-inline" data-confirm="{{ _('¿Eliminar este usuario?') }}">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <input type="hidden" name="user_id" value="{{ u.id }}">
+          <button type="submit" class="btn btn-sm btn-danger" title="{{ _('Eliminar') }}" {% if u_top %}disabled{% endif %}>
+            <i class="bi bi-trash"></i>
+          </button>
+        </form>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+<script>
+  document.querySelectorAll('form[data-confirm]').forEach(function (form) {
+    form.addEventListener('submit', function (e) {
+      if (!confirm(form.dataset.confirm)) {
+        e.preventDefault();
+      }
+    });
+  });
+</script>
+{% endblock %}

@@ -14,4 +14,6 @@
       document.documentElement.getAttribute("data-bs-theme") || "light";
     applyTheme(current === "dark" ? "light" : "dark");
   };
+
+  window.setTheme = applyTheme;
 })();

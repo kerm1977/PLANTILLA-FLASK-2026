@@ -1,22 +1,131 @@
 {% extends "base.html" %}
-{% block title %}Mi perfil{% endblock %}
+{% block title %}{{ _('Mi perfil') }}{% endblock %}
+{% block main_class %}top-main{% endblock %}
 
 {% block content %}
-<div class="perfil-card mx-auto text-start">
-  <h2 class="mb-4 text-center">
-    <i class="bi bi-person-circle"></i> Mi perfil
+<div class="perfil-view" id="perfil-view">
+  <h2 class="mb-4 text-center d-flex justify-content-center align-items-center gap-2">
+    <i class="bi bi-person-circle"></i>
+    <span>{{ _('Mi perfil') }}</span>
+    <button type="button" class="btn btn-link p-0 perfil-edit-btn" onclick="togglePerfilEdit()" aria-label="{{ _('Editar perfil') }}" title="{{ _('Editar perfil') }}">
+      <i class="bi bi-pencil"></i>
+    </button>
   </h2>
 
-  <ul class="list-group list-group-flush rounded-4">
-    <li class="list-group-item"><strong>Nombre:</strong> {{ user.first_name }}</li>
-    <li class="list-group-item"><strong>Primer apellido:</strong> {{ user.first_last_name }}</li>
-    <li class="list-group-item"><strong>Segundo apellido:</strong> {{ user.second_last_name or '—' }}</li>
-    <li class="list-group-item"><strong>Teléfono:</strong> {{ user.phone_number }}</li>
-    <li class="list-group-item"><strong>Correo electrónico:</strong> {{ user.email }}</li>
-    <li class="list-group-item"><strong>Usuario:</strong> {{ user.username or '—' }}</li>
-    <li class="list-group-item"><strong>Número de usuario:</strong> {{ user.user_number or '—' }}</li>
-    <li class="list-group-item"><strong>Superusuario:</strong> {% if user.is_superuser %}Sí{% else %}No{% endif %}</li>
-    <li class="list-group-item"><strong>Activo:</strong> {% if user.is_active %}Sí{% else %}No{% endif %}</li>
-  </ul>
+  <div class="perfil-data">
+    <div class="perfil-row">
+      <span class="perfil-label">{{ _('Nombre') }}</span>
+      <span class="perfil-value">{{ user.first_name or '—' }}</span>
+    </div>
+    <div class="perfil-row">
+      <span class="perfil-label">{{ _('Primer apellido') }}</span>
+      <span class="perfil-value">{{ user.first_last_name or '—' }}</span>
+    </div>
+    <div class="perfil-row">
+      <span class="perfil-label">{{ _('Segundo apellido') }}</span>
+      <span class="perfil-value">{{ user.second_last_name or '—' }}</span>
+    </div>
+    <div class="perfil-row">
+      <span class="perfil-label">{{ _('Teléfono') }}</span>
+      <span class="perfil-value">{{ user.phone_number or '—' }}</span>
+    </div>
+    <div class="perfil-row">
+      <span class="perfil-label">{{ _('Correo electrónico') }}</span>
+      <span class="perfil-value">{{ user.email }}</span>
+    </div>
+    <div class="perfil-row">
+      <span class="perfil-label">{{ _('Usuario') }}</span>
+      <span class="perfil-value">{{ user.username or '—' }}</span>
+    </div>
+    <div class="perfil-row">
+      <span class="perfil-label">{{ _('Número de usuario') }}</span>
+      <span class="perfil-value">{{ user.user_number or '—' }}</span>
+    </div>
+    {% if user.is_superuser %}
+    <div class="perfil-row">
+      <span class="perfil-label">{{ _('Superusuario') }}</span>
+      <span class="perfil-value">{% if user.is_superuser %}{{ _('Sí') }}{% else %}{{ _('No') }}{% endif %}</span>
+    </div>
+    <div class="perfil-row">
+      <span class="perfil-label">{{ _('Activo') }}</span>
+      <span class="perfil-value">{% if user.is_active %}{{ _('Sí') }}{% else %}{{ _('No') }}{% endif %}</span>
+    </div>
+    <div class="perfil-dashboard mt-4">
+      <h4 class="text-center mb-3">
+        <i class="bi bi-speedometer2"></i> {{ _('Dashboard') }}
+      </h4>
+      <a href="{{ url_for('main.usuarios') }}" class="perfil-row text-decoration-none" style="color: inherit;">
+        <span class="perfil-label">{{ _('Usuarios conectados') }}</span>
+        <span class="perfil-value">{{ active_count }}</span>
+      </a>
+      <a href="{{ url_for('main.dashboard') }}" class="perfil-row text-decoration-none" style="color: inherit;">
+        <span class="perfil-label">{{ _('Administración de tema') }}</span>
+        <span class="perfil-value"><i class="bi bi-chevron-right"></i></span>
+      </a>
+    </div>
+    {% endif %}
+  </div>
 </div>
+
+<div class="perfil-view d-none" id="perfil-edit">
+  <h2 class="mb-4 text-center d-flex justify-content-center align-items-center gap-2">
+    <i class="bi bi-person-circle"></i>
+    <span>{{ _('Editar perfil') }}</span>
+    <button type="button" class="btn btn-link p-0 perfil-edit-btn" onclick="togglePerfilEdit()" aria-label="{{ _('Cancelar') }}" title="{{ _('Cancelar') }}">
+      <i class="bi bi-x-lg"></i>
+    </button>
+  </h2>
+
+  <form method="POST" action="{{ url_for('main.perfil') }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <div class="perfil-row">
+      <label class="perfil-label" for="first_name">{{ _('Nombre') }}</label>
+      <input id="first_name" name="first_name" class="form-control" value="{{ user.first_name or '' }}" maxlength="80">
+    </div>
+    <div class="perfil-row">
+      <label class="perfil-label" for="first_last_name">{{ _('Primer apellido') }}</label>
+      <input id="first_last_name" name="first_last_name" class="form-control" value="{{ user.first_last_name or '' }}" maxlength="80">
+    </div>
+    <div class="perfil-row">
+      <label class="perfil-label" for="second_last_name">{{ _('Segundo apellido') }}</label>
+      <input id="second_last_name" name="second_last_name" class="form-control" value="{{ user.second_last_name or '' }}" maxlength="80">
+    </div>
+    <div class="perfil-row">
+      <label class="perfil-label" for="phone_number">{{ _('Teléfono') }}</label>
+      <input id="phone_number" name="phone_number" class="form-control" value="{{ user.phone_number or '' }}" maxlength="40">
+    </div>
+    <div class="perfil-row">
+      <label class="perfil-label" for="email">{{ _('Correo electrónico') }}</label>
+      <input id="email" name="email" type="email" class="form-control" value="{{ user.email or '' }}" maxlength="255">
+    </div>
+    <div class="perfil-row">
+      <label class="perfil-label" for="username">{{ _('Usuario') }}</label>
+      <input id="username" name="username" class="form-control" value="{{ user.username or '' }}" maxlength="80">
+    </div>
+    <div class="perfil-row">
+      <label class="perfil-label" for="user_number">{{ _('Número de usuario') }}</label>
+      <input id="user_number" name="user_number" class="form-control" value="{{ user.user_number or '' }}" maxlength="80">
+    </div>
+    <div class="text-end mt-4">
+      <button type="submit" class="btn btn-success">
+        <i class="bi bi-check-lg"></i> {{ _('Guardar') }}
+      </button>
+    </div>
+  </form>
+</div>
+
+<script>
+  function togglePerfilEdit() {
+    document.getElementById('perfil-view').classList.toggle('d-none');
+    document.getElementById('perfil-edit').classList.toggle('d-none');
+  }
+
+  document.querySelectorAll('form[data-confirm]').forEach(function (form) {
+    form.addEventListener('submit', function (e) {
+      if (!confirm(form.dataset.confirm)) {
+        e.preventDefault();
+      }
+    });
+  });
+</script>
 {% endblock %}

@@ -22,6 +22,12 @@ async def init_db():
     """Crea tablas e índices automáticamente al arrancar la aplicación."""
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
+        try:
+            await conn.exec_driver_sql(
+                "ALTER TABLE users ADD COLUMN is_top_superuser BOOLEAN DEFAULT 0 NOT NULL"
+            )
+        except Exception:
+            pass
 
 
 async def close_db():

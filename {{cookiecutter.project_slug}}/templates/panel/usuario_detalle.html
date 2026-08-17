@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}{{ u.first_name or u.username or u.email }}{% endblock %}
+{% block main_class %}top-main{% endblock %}
+
+{% block content %}
+<div class="perfil-view">
+  <h2 class="mb-4 text-center d-flex justify-content-center align-items-center gap-2">
+    <i class="bi bi-person-circle"></i>
+    <span>{{ u.first_name or u.username or u.email }} {{ u.first_last_name or '' }}</span>
+  </h2>
+
+  <div class="perfil-data">
+    <div class="perfil-row">
+      <span class="perfil-label">{{ _('Nombre') }}</span>
+      <span class="perfil-value">{{ u.first_name or '—' }}</span>
+    </div>
+    <div class="perfil-row">
+      <span class="perfil-label">{{ _('Primer apellido') }}</span>
+      <span class="perfil-value">{{ u.first_last_name or '—' }}</span>
+    </div>
+    <div class="perfil-row">
+      <span class="perfil-label">{{ _('Segundo apellido') }}</span>
+      <span class="perfil-value">{{ u.second_last_name or '—' }}</span>
+    </div>
+    <div class="perfil-row">
+      <span class="perfil-label">{{ _('Teléfono') }}</span>
+      <span class="perfil-value">{{ u.phone_number or '—' }}</span>
+    </div>
+    <div class="perfil-row">
+      <span class="perfil-label">{{ _('Correo electrónico') }}</span>
+      <span class="perfil-value">{{ u.email }}</span>
+    </div>
+    <div class="perfil-row">
+      <span class="perfil-label">{{ _('Usuario') }}</span>
+      <span class="perfil-value">{{ u.username or '—' }}</span>
+    </div>
+    <div class="perfil-row">
+      <span class="perfil-label">{{ _('Número de usuario') }}</span>
+      <span class="perfil-value">{{ u.user_number or '—' }}</span>
+    </div>
+    <div class="perfil-row">
+      <span class="perfil-label">{{ _('Superusuario') }}</span>
+      <span class="perfil-value">{% if u.is_superuser %}{{ _('Sí') }}{% else %}{{ _('No') }}{% endif %}</span>
+    </div>
+    <div class="perfil-row">
+      <span class="perfil-label">{{ _('Activo') }}</span>
+      <span class="perfil-value">{% if u.is_active %}{{ _('Sí') }}{% else %}{{ _('No') }}{% endif %}</span>
+    </div>
+  </div>
+</div>
+{% endblock %}
