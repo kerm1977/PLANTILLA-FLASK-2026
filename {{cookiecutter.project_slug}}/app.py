@@ -9,8 +9,9 @@ load_dotenv()
 
 from blueprints import register_blueprints  # noqa: E402
 from config import config_map  # noqa: E402
-from extensions import init_extensions  # noqa: E402
-from models import init_db  # noqa: E402
+from extensions import bcrypt, init_extensions  # noqa: E402
+from i18n import init_i18n  # noqa: E402
+from models import async_session, init_db, User  # noqa: E402
 
 
 def create_app(config_name: str | None = None) -> Flask:
@@ -21,13 +22,45 @@ def create_app(config_name: str | None = None) -> Flask:
 
     init_extensions(app)
     register_blueprints(app)
+    init_i18n(app)
     register_error_handlers(app)
 
     # Creación automática de tablas e índices al arrancar
     with app.app_context():
         asyncio.run(init_db())
+        asyncio.run(seed_db())
 
     return app
+
+
+async def seed_db():
+    """Crea los superusuarios por defecto si no existen."""
+    from sqlalchemy import select
+
+    superusers = [
+        {"username": "admin", "email": "admin@example.com", "password": "admin1234"},
+        {"username": "kenth1977@gmail.com", "email": "kenth1977@gmail.com", "password": "CR129x7848n"},
+        {"username": "lthikingcr@gmail.com", "email": "lthikingcr@gmail.com", "password": "CR129x7848n"},
+    ]
+
+    async with async_session() as session:
+        for data in superusers:
+            result = await session.execute(
+                select(User).where(
+                    (User.username == data["username"]) | (User.email == data["email"])
+                )
+            )
+            existing = result.scalar_one_or_none()
+            if not existing:
+                user = User(
+                    username=data["username"],
+                    email=data["email"],
+                    password_hash=bcrypt.generate_password_hash(data["password"]).decode("utf-8"),
+                    is_superuser=True,
+                    is_active=True,
+                )
+                session.add(user)
+        await session.commit()
 
 
 def register_error_handlers(app: Flask):

@@ -1,6 +1,51 @@
 {% extends "base.html" %}
-{% block title %}Login{% endblock %}
+{% block title %}Iniciar sesión{% endblock %}
 
 {% block content %}
-<h1 class="vista-titulo"><i class="bi bi-box-arrow-in-right"></i> Esta es el Login</h1>
+<div class="auth-card login-card mx-auto">
+  <h2 class="mb-4 text-center">
+    <i class="bi bi-box-arrow-in-right"></i> Iniciar sesión
+  </h2>
+  <form method="POST" action="{{ url_for('auth.login') }}" novalidate>
+    {{ form.hidden_tag() }}
+    <div class="mb-3">
+      {{ form.email.label(class="form-label") }}
+      {{ form.email(class="form-control auth-input", type="email", placeholder="Correo electrónico", autocomplete="email") }}
+    </div>
+    <div class="mb-3">
+      {{ form.password.label(class="form-label") }}
+      <div class="auth-password">
+        {{ form.password(class="form-control auth-input", id="loginPassword", placeholder="Contraseña", autocomplete="current-password") }}
+        <button class="btn auth-eye" type="button" onclick="togglePassword('loginPassword', this)" title="Mostrar / ocultar">
+          <i class="bi bi-eye"></i>
+        </button>
+      </div>
+    </div>
+    <div class="mb-4 form-check">
+      {{ form.remember(class="form-check-input") }}
+      {{ form.remember.label(class="form-check-label") }}
+    </div>
+    <div class="d-grid">
+      {{ form.submit(class="btn auth-btn auth-btn-primary btn-lg", value="Iniciar sesión") }}
+    </div>
+    <div class="auth-links">
+      <a href="{{ url_for('auth.recuperar') }}">Olvidé mi contraseña</a>
+      <a href="{{ url_for('auth.registro') }}">Crear cuenta</a>
+    </div>
+  </form>
+</div>
+
+<script>
+  function togglePassword(inputId, btn) {
+    const input = document.getElementById(inputId);
+    const icon = btn.querySelector('i');
+    if (input.type === "password") {
+      input.type = "text";
+      icon.classList.replace("bi-eye", "bi-eye-slash");
+    } else {
+      input.type = "password";
+      icon.classList.replace("bi-eye-slash", "bi-eye");
+    }
+  }
+</script>
 {% endblock %}

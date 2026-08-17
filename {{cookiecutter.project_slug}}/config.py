@@ -39,6 +39,8 @@ class Config:
 
 class DevelopmentConfig(Config):
     DEBUG = True
+    TEMPLATES_AUTO_RELOAD = True
+    SEND_FILE_MAX_AGE_DEFAULT = 0
 
 
 class ProductionConfig(Config):

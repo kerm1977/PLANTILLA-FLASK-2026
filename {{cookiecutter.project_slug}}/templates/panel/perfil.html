@@ -1,6 +1,22 @@
 {% extends "base.html" %}
-{% block title %}Perfil{% endblock %}
+{% block title %}Mi perfil{% endblock %}
 
 {% block content %}
-<h1 class="vista-titulo"><i class="bi bi-person-circle"></i> Este es el Perfil</h1>
+<div class="perfil-card mx-auto text-start">
+  <h2 class="mb-4 text-center">
+    <i class="bi bi-person-circle"></i> Mi perfil
+  </h2>
+
+  <ul class="list-group list-group-flush rounded-4">
+    <li class="list-group-item"><strong>Nombre:</strong> {{ user.first_name }}</li>
+    <li class="list-group-item"><strong>Primer apellido:</strong> {{ user.first_last_name }}</li>
+    <li class="list-group-item"><strong>Segundo apellido:</strong> {{ user.second_last_name or '—' }}</li>
+    <li class="list-group-item"><strong>Teléfono:</strong> {{ user.phone_number }}</li>
+    <li class="list-group-item"><strong>Correo electrónico:</strong> {{ user.email }}</li>
+    <li class="list-group-item"><strong>Usuario:</strong> {{ user.username or '—' }}</li>
+    <li class="list-group-item"><strong>Número de usuario:</strong> {{ user.user_number or '—' }}</li>
+    <li class="list-group-item"><strong>Superusuario:</strong> {% if user.is_superuser %}Sí{% else %}No{% endif %}</li>
+    <li class="list-group-item"><strong>Activo:</strong> {% if user.is_active %}Sí{% else %}No{% endif %}</li>
+  </ul>
+</div>
 {% endblock %}

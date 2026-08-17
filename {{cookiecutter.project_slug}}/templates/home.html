@@ -1,9 +1,51 @@
 {% extends "base.html" %}
-{% block title %}Home{% endblock %}
+{% block title %}Inicio{% endblock %}
+{% block main_class %}home-main{% endblock %}
 
 {% block content %}
-<h1 class="vista-titulo"><i class="bi bi-house-fill"></i> Aquí va el Home</h1>
-{% endblock %}
+<div class="home-video-wrapper">
+  <video id="home-video" src="{{ url_for('static', filename='wq.mp4') }}" autoplay muted loop playsinline controls style="width: 100%; height: auto; display: block;"></video>
+</div>
 
-{# Home no lleva botón de volver atrás #}
-{% block back_button %}{% endblock %}
+<script>
+  (function () {
+    const video = document.getElementById('home-video');
+    if (!video) return;
+    document.addEventListener('keydown', function (e) {
+      if (e.code === 'Space' && !['INPUT', 'TEXTAREA', 'SELECT'].includes(e.target.tagName)) {
+        e.preventDefault();
+        if (video.paused) video.play();
+        else video.pause();
+      }
+    });
+  })();
+</script>
+
+<h1 class="mb-3"><i class="bi bi-house-fill"></i> Bienvenido</h1>
+<p class="lead mb-4">Descubre lo que la app ofrece.</p>
+
+<div class="row row-cols-1 row-cols-md-3 g-4 w-100 mx-auto" style="max-width: 1100px;">
+  <div class="col">
+    <div class="tour-card h-100 text-center">
+      <img src="{{ url_for('static', filename='uploads/elcaminodecr.png') }}" alt="El Camino de Costa Rica" class="tour-img mb-3">
+      <h2 class="h4">{{ _("El Camino de Costa Rica") }}</h2>
+    </div>
+  </div>
+  <div class="col">
+    <div class="tour-card h-100 text-center">
+      <i class="bi bi-globe fs-1 mb-3 d-block text-success"></i>
+      <h2 class="h4">{{ _("Internacional") }}</h2>
+    </div>
+  </div>
+  <div class="col">
+    <div class="tour-card h-100 text-center">
+      <i class="bi bi-signpost-split fs-1 mb-3 d-block text-warning"></i>
+      <h2 class="h4">{{ _("Tours") }}</h2>
+    </div>
+  </div>
+</div>
+
+{% if session.get('user_id') %}
+  <p class="mt-4"><i class="bi bi-person-check"></i> {{ session.get('username') }}</p>
+{% endif %}
+{% endblock %}

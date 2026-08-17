@@ -1,6 +1,81 @@
 {% extends "base.html" %}
-{% block title %}Registro{% endblock %}
+{% block title %}Crear cuenta{% endblock %}
 
 {% block content %}
-<h1 class="vista-titulo"><i class="bi bi-person-plus-fill"></i> Esto es el Registro</h1>
+<div class="auth-card mx-auto">
+  <h2 class="mb-4 text-center">
+    <i class="bi bi-person-plus-fill"></i> Crear cuenta
+  </h2>
+  <form method="POST" action="{{ url_for('auth.registro') }}" novalidate>
+    {{ form.hidden_tag() }}
+    <div class="mb-3">
+      {{ form.first_name.label(class="form-label") }}
+      {{ form.first_name(class="form-control auth-input", placeholder="Nombre", autocomplete="given-name") }}
+    </div>
+    <div class="mb-3">
+      {{ form.first_last_name.label(class="form-label") }}
+      {{ form.first_last_name(class="form-control auth-input", placeholder="Primer apellido", autocomplete="family-name") }}
+    </div>
+    <div class="mb-3">
+      {{ form.second_last_name.label(class="form-label") }}
+      {{ form.second_last_name(class="form-control auth-input", placeholder="Segundo apellido (opcional)", autocomplete="additional-name") }}
+    </div>
+    <div class="mb-3">
+      {{ form.phone_number.label(class="form-label") }}
+      {{ form.phone_number(class="form-control auth-input", placeholder="Teléfono", autocomplete="tel") }}
+    </div>
+    <div class="mb-3">
+      {{ form.email.label(class="form-label") }}
+      {{ form.email(class="form-control auth-input", type="email", placeholder="Correo electrónico", autocomplete="email") }}
+    </div>
+    <div class="mb-3">
+      {{ form.username.label(class="form-label") }}
+      {{ form.username(class="form-control auth-input", placeholder="Usuario", autocomplete="username") }}
+    </div>
+    <div class="mb-3">
+      {{ form.user_number.label(class="form-label") }}
+      {{ form.user_number(class="form-control auth-input", placeholder="Número de usuario", autocomplete="off") }}
+    </div>
+    <p class="small-hint">
+      <i class="bi bi-info-circle"></i> Indica <strong>usuario</strong> o <strong>número de usuario</strong>, no ambos.
+    </p>
+
+    <div class="mb-3">
+      {{ form.password.label(class="form-label") }}
+      <div class="auth-password mb-2">
+        {{ form.password(class="form-control auth-input", id="regPassword", placeholder="Contraseña", autocomplete="new-password") }}
+        <button class="btn auth-eye" type="button" onclick="togglePassword('regPassword', this)" title="Mostrar / ocultar">
+          <i class="bi bi-eye"></i>
+        </button>
+      </div>
+      <div class="auth-password">
+        {{ form.confirm(class="form-control auth-input", id="regConfirm", placeholder="Confirmar contraseña", autocomplete="new-password") }}
+        <button class="btn auth-eye" type="button" onclick="togglePassword('regConfirm', this)" title="Mostrar / ocultar">
+          <i class="bi bi-eye"></i>
+        </button>
+      </div>
+    </div>
+
+    <div class="d-grid">
+      {{ form.submit(class="btn auth-btn auth-btn-success btn-lg", value="Crear cuenta") }}
+    </div>
+    <p class="mt-3 text-center">
+      ¿Ya tienes cuenta? <a href="{{ url_for('auth.login') }}">Inicia sesión</a>
+    </p>
+  </form>
+</div>
+
+<script>
+  function togglePassword(inputId, btn) {
+    const input = document.getElementById(inputId);
+    const icon = btn.querySelector('i');
+    if (input.type === "password") {
+      input.type = "text";
+      icon.classList.replace("bi-eye", "bi-eye-slash");
+    } else {
+      input.type = "password";
+      icon.classList.replace("bi-eye-slash", "bi-eye");
+    }
+  }
+</script>
 {% endblock %}

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es" data-bs-theme="light">
+<html lang="{{ lang }}" data-bs-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,13 +8,57 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='vendor/bootstrap/css/bootstrap.min.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='vendor/bootstrap-icons/bootstrap-icons.min.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/mobile-nav.css') }}">
     <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
     <meta name="theme-color" content="#2c5364">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
+    <script src="{{ url_for('static', filename='js/theme.js') }}"></script>
 </head>
-<body>
-    <main class="centrado">
+<body class="{% if request.endpoint in ('auth.login', 'auth.registro', 'auth.recuperar') %}auth-page{% endif %}{% if request.endpoint == 'auth.login' %} login-page{% endif %}">
+    <nav class="desktop-nav d-none d-lg-flex" aria-label="Navegación escritorio">
+      <div class="desktop-nav-links">
+        <a href="{{ url_for('main.home') }}" class="desktop-nav-link {% if request.endpoint == 'main.home' %}active{% endif %}">
+          <i class="bi bi-house-door"></i> Inicio
+        </a>
+        <a href="{{ url_for('main.caminatas') }}" class="desktop-nav-link {% if request.endpoint == 'main.caminatas' %}active{% endif %}">
+          <i class="bi bi-geo-alt"></i> Caminatas
+        </a>
+      </div>
+      <div class="desktop-nav-logo">
+        <img src="{{ url_for('static', filename='uploads/logocumbres.png') }}" alt="Logo Cumbres" height="44" onclick="toggleTheme()" title="Cambiar tema" role="button">
+      </div>
+      <div class="desktop-nav-actions">
+        <select class="form-select form-select-sm lang-select" style="width: auto; min-width: 4.5rem; background: rgba(255,255,255,0.35); border: none; color: var(--bs-body-color);" onchange="if(this.value) window.location.href = this.value;" aria-label="Idioma">
+          {% for code in languages %}
+          <option value="{{ url_for('main.set_lang', lang=code) }}" {% if lang == code %}selected{% endif %}>{{ code.upper() }}</option>
+          {% endfor %}
+        </select>
+        {% if session.get('user_id') %}
+        <a href="{{ url_for('main.perfil') }}" class="desktop-nav-link {% if request.endpoint == 'main.perfil' %}active{% endif %}" title="Perfil">
+          <i class="bi bi-person"></i> Perfil
+        </a>
+        {% else %}
+        <a href="{{ url_for('auth.login') }}" class="desktop-nav-link {% if request.endpoint in ('auth.login', 'auth.registro', 'auth.recuperar') %}active{% endif %}" title="Iniciar sesión">
+          <i class="bi bi-box-arrow-in-right"></i> Iniciar sesión
+        </a>
+        {% endif %}
+      </div>
+    </nav>
+
+    <div class="mobile-logo d-lg-none" aria-hidden="true">
+      <div class="mobile-logo-wrap">
+        <img src="{{ url_for('static', filename='uploads/logocumbres.png') }}" alt="Logo Cumbres" height="44" onclick="toggleTheme()" title="Cambiar tema" role="button">
+      </div>
+      <select class="form-select form-select-sm lang-select-mobile" style="position: absolute; right: 1rem; top: 0.6rem; width: auto; min-width: 4.2rem; background: rgba(255,255,255,0.35); border: none; color: var(--bs-body-color); z-index: 1200;" onchange="if(this.value) window.location.href = this.value;" aria-label="Idioma">
+        {% for code in languages %}
+        <option value="{{ url_for('main.set_lang', lang=code) }}" {% if lang == code %}selected{% endif %}>{{ code.upper() }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <main class="{% block main_class %}centrado{% endblock %}">
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% for category, message in messages %}
                 <div class="alert alert-{{ category }} text-center" role="alert">{{ message }}</div>
@@ -22,15 +66,118 @@
         {% endwith %}
 
         {% block content %}{% endblock %}
-
-        {% block back_button %}
-        <a href="{{ url_for('main.home') }}" class="btn btn-warning mt-4">
-            <i class="bi bi-arrow-left-circle"></i> Back to Home
-        </a>
-        {% endblock %}
     </main>
+
+    {% if request.endpoint != 'main.home' %}
+    <button class="btn back-button" type="button" onclick="history.back()" title="Volver atrás" aria-label="Volver atrás">
+      <i class="bi bi-arrow-left"></i>
+    </button>
+    {% endif %}
+
     <script src="{{ url_for('static', filename='vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
     <script src="{{ url_for('static', filename='js/pwa.js') }}"></script>
+
+    <!-- Magic Navigation Menu (móvil) -->
+    <nav class="mobile-nav d-lg-none" aria-label="Navegación móvil">
+      <ul>
+        <li class="list {% if request.endpoint == 'main.home' %}active{% endif %}">
+          <a href="{{ url_for('main.home') }}">
+            <span class="icon"><i class="bi bi-house-door"></i></span>
+            <span class="text">Inicio</span>
+          </a>
+        </li>
+        <li class="list {% if (session.get('user_id') and request.endpoint == 'main.perfil') or (not session.get('user_id') and request.endpoint in ('auth.login', 'auth.registro', 'auth.recuperar')) %}active{% endif %}">
+          <a href="{% if session.get('user_id') %}{{ url_for('main.perfil') }}{% else %}{{ url_for('auth.login') }}{% endif %}">
+            <span class="icon"><i class="bi bi-person"></i></span>
+            <span class="text">Perfil</span>
+          </a>
+        </li>
+        {% if session.get('user_id') %}
+        <li class="list {% if request.endpoint == 'main.dashboard' %}active{% endif %}">
+          <a href="{{ url_for('main.dashboard') }}">
+            <span class="icon"><i class="bi bi-grid"></i></span>
+            <span class="text">Panel</span>
+          </a>
+        </li>
+        {% if session.get('is_superuser') %}
+        <li class="list {% if request.endpoint == 'admin.panel' %}active{% endif %}">
+          <a href="{{ url_for('admin.panel') }}">
+            <span class="icon"><i class="bi bi-shield-lock"></i></span>
+            <span class="text">Admin</span>
+          </a>
+        </li>
+        {% else %}
+        <li class="list">
+          <a href="#">
+            <span class="icon"><i class="bi bi-gear"></i></span>
+            <span class="text">Ajustes</span>
+          </a>
+        </li>
+        {% endif %}
+        <li class="list">
+          <a href="{{ url_for('auth.logout') }}">
+            <span class="icon"><i class="bi bi-box-arrow-right"></i></span>
+            <span class="text">Salir</span>
+          </a>
+        </li>
+        {% endif %}
+        <div class="indicator"></div>
+      </ul>
+    </nav>
+
+    <script>
+      (function () {
+        const nav = document.querySelector('.mobile-nav');
+        if (!nav) return;
+        const list = nav.querySelectorAll('ul li.list');
+        const indicator = nav.querySelector('.indicator');
+
+        function moveIndicator(skipTransition = false, target = null) {
+          const active = target || nav.querySelector('ul li.active') || list[0];
+          if (!active || !indicator) return;
+          const left = active.offsetLeft + (active.offsetWidth - 70) / 2;
+          if (skipTransition) {
+            indicator.style.transition = 'none';
+            indicator.style.transform = 'translateX(' + left + 'px)';
+            requestAnimationFrame(() => {
+              requestAnimationFrame(() => {
+                indicator.style.transition = '';
+              });
+            });
+          } else {
+            indicator.style.transform = 'translateX(' + left + 'px)';
+          }
+        }
+
+        function activate(event) {
+          event.preventDefault();
+          const link = this;
+          const li = link.closest('li.list');
+          if (!li) return;
+
+          const wasActive = li.classList.contains('active');
+          if (!wasActive) {
+            moveIndicator(false, li);
+          }
+
+          const href = link.getAttribute('href');
+          if (href && href !== '#' && !wasActive) {
+            setTimeout(() => {
+              window.location.href = link.href;
+            }, 300);
+          }
+        }
+
+        list.forEach((item) => {
+          const a = item.querySelector('a');
+          if (a) a.addEventListener('click', activate);
+        });
+
+        moveIndicator(true);
+        window.addEventListener('resize', () => moveIndicator(true));
+        window.addEventListener('pageshow', () => moveIndicator(true));
+      })();
+    </script>
 </body>
 </html>

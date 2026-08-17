@@ -1,6 +1,249 @@
 {% extends "base.html" %}
-{% block title %}Admin{% endblock %}
+{% block title %}Administración{% endblock %}
+
+{% set is_top = current_user.email in top_superusers %}
 
 {% block content %}
-<h1 class="vista-titulo"><i class="bi bi-shield-lock-fill"></i> Este es el Admin</h1>
+<div class="admin-panel">
+  <h2 class="text-center mb-4"><i class="bi bi-shield-lock-fill"></i> Panel de administración</h2>
+
+  <ul class="nav nav-pills justify-content-center mb-4" id="adminTab" role="tablist">
+    <li class="nav-item" role="presentation">
+      <button class="nav-link active" id="perfil-tab" data-bs-toggle="pill" data-bs-target="#perfil" type="button" role="tab" aria-controls="perfil" aria-selected="true">
+        <i class="bi bi-person"></i> Datos de perfil
+      </button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link" id="usuarios-tab" data-bs-toggle="pill" data-bs-target="#usuarios" type="button" role="tab" aria-controls="usuarios" aria-selected="false">
+        <i class="bi bi-people"></i> Datos de usuarios registrados
+      </button>
+    </li>
+  </ul>
+
+  <div class="tab-content">
+    <div class="tab-pane fade show active" id="perfil" role="tabpanel" aria-labelledby="perfil-tab">
+      <div class="profile-bcard position-relative text-center mb-5">
+        <button type="button" id="editToggle" class="btn btn-link profile-edit-btn position-absolute top-0 end-0" aria-label="Editar">
+          <i class="bi bi-pencil" id="editIcon"></i>
+        </button>
+
+        <div class="profile-avatar mb-3">
+          <i class="bi bi-person-circle display-1"></i>
+        </div>
+
+        <form method="POST" action="{{ url_for('admin.edit_profile') }}" id="profileForm">
+          {{ edit_form.hidden_tag() }}
+          <input type="hidden" name="first_name" id="firstNameInput" value="{{ current_user.first_name or '' }}">
+          <input type="hidden" name="first_last_name" id="firstLastNameInput" value="{{ current_user.first_last_name or '' }}">
+          <input type="hidden" name="second_last_name" id="secondLastNameInput" value="{{ current_user.second_last_name or '' }}">
+          <input type="hidden" name="phone_number" id="phoneInput" value="{{ current_user.phone_number or '' }}">
+          <input type="hidden" name="email" id="emailInput" value="{{ current_user.email or '' }}">
+          <input type="hidden" name="username" id="usernameInput" value="{{ current_user.username or '' }}">
+          <input type="hidden" name="user_number" id="userNumberInput" value="{{ current_user.user_number or '' }}">
+
+          <h3 class="fw-bold profile-name mb-3">
+            <span class="profile-value" contenteditable="false" data-input="firstNameInput" data-placeholder="Nombre">{{ current_user.first_name or '' }}</span>
+            <span class="profile-value" contenteditable="false" data-input="firstLastNameInput" data-placeholder="Primer apellido">{{ current_user.first_last_name or '' }}</span>
+            <span class="profile-value" contenteditable="false" data-input="secondLastNameInput" data-placeholder="Segundo apellido">{{ current_user.second_last_name or '' }}</span>
+          </h3>
+        </form>
+
+        <p class="profile-detail mb-1"><i class="bi bi-envelope me-2"></i>{{ current_user.email or '—' }}</p>
+        <p class="profile-detail mb-1"><i class="bi bi-telephone me-2"></i>{{ current_user.phone_number or '—' }}</p>
+        <p class="profile-detail mb-1"><i class="bi bi-hash me-2"></i>{{ current_user.user_number or '—' }}</p>
+      </div>
+
+      <form method="POST" action="{{ url_for('admin.delete_profile') }}" class="text-center" onsubmit="return confirm('¿Eliminar tu cuenta?');">
+        {{ delete_form.hidden_tag() }}
+        <button type="submit" class="btn btn-sm btn-link text-danger"><i class="bi bi-trash"></i> Eliminar cuenta</button>
+      </form>
+    </div>
+
+    <div class="tab-pane fade" id="usuarios" role="tabpanel" aria-labelledby="usuarios-tab">
+      <h4 class="mb-3"><i class="bi bi-people"></i> Datos de usuarios registrados</h4>
+      <div class="row g-3">
+        {% for u in users %}
+        {% set u_top = u.email in top_superusers %}
+        <div class="col-6 col-md-4">
+          <div class="user-card user-square" data-bs-toggle="modal" data-bs-target="#userModal{{ u.id }}">
+            <div class="d-flex flex-column align-items-center justify-content-center h-100 text-center">
+              <div class="bg-body-tertiary rounded-circle d-flex align-items-center justify-content-center mb-2" style="width:64px;height:64px;">
+                <i class="bi bi-person fs-2 text-secondary"></i>
+              </div>
+              <h6 class="fw-bold mb-1 text-break">{{ u.username or u.email }}</h6>
+              <div class="d-flex flex-wrap justify-content-center gap-1">
+                {% if u.is_superuser %}
+                  {% if u_top %}<span class="badge bg-warning text-dark">Superusuario</span>
+                  {% else %}<span class="badge bg-info text-dark">Administrador</span>
+                  {% endif %}
+                {% else %}
+                  <span class="badge bg-light text-dark">Usuario</span>
+                {% endif %}
+                {% if u.is_active %}<span class="badge bg-success">Activo</span>{% else %}<span class="badge bg-secondary">Inactivo</span>{% endif %}
+              </div>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+
+      {% for u in users %}
+      {% set u_top = u.email in top_superusers %}
+      <div class="modal fade" id="userModal{{ u.id }}" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+          <div class="modal-content glass">
+            <div class="modal-header border-0">
+              <h5 class="modal-title">Detalle del usuario</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <div class="d-flex gap-3 align-items-start mb-3">
+                <div class="bg-body-tertiary rounded-circle d-flex align-items-center justify-content-center" style="width:80px;height:80px;">
+                  <i class="bi bi-person-circle fs-1 text-secondary"></i>
+                </div>
+                <div>
+                  <h5 class="fw-bold mb-0">{{ u.first_name or u.username or u.email }} {{ u.first_last_name or '' }}</h5>
+                  <p class="mb-0 small text-muted">{{ u.email }}</p>
+                </div>
+              </div>
+
+              <div class="row g-2 mb-3">
+                <div class="col-6 col-md-4"><strong class="small">Nombre</strong><p class="mb-0 small">{{ u.first_name or '—' }}</p></div>
+                <div class="col-6 col-md-4"><strong class="small">Primer apellido</strong><p class="mb-0 small">{{ u.first_last_name or '—' }}</p></div>
+                <div class="col-6 col-md-4"><strong class="small">Segundo apellido</strong><p class="mb-0 small">{{ u.second_last_name or '—' }}</p></div>
+                <div class="col-6 col-md-4"><strong class="small">Teléfono</strong><p class="mb-0 small">{{ u.phone_number or '—' }}</p></div>
+                <div class="col-6 col-md-4"><strong class="small">Correo</strong><p class="mb-0 small">{{ u.email or '—' }}</p></div>
+                <div class="col-6 col-md-4"><strong class="small">Número</strong><p class="mb-0 small">{{ u.user_number or '—' }}</p></div>
+              </div>
+
+              <form method="POST" action="{{ url_for('admin.edit_user') }}" class="mb-3">
+                {{ manage_form.hidden_tag() }}
+                <input type="hidden" name="user_id" value="{{ u.id }}">
+                <div class="d-flex flex-wrap gap-3 align-items-center border-bottom pb-3 mb-3">
+                  {% if is_top %}
+                  <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" name="is_superuser" id="isSuper{{ u.id }}" {{ 'checked' if u.is_superuser else '' }} {% if u_top %}disabled{% endif %}>
+                    <label class="form-check-label" for="isSuper{{ u.id }}">Superusuario</label>
+                  </div>
+                  {% endif %}
+                  <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" name="is_active" id="isActive{{ u.id }}" {{ 'checked' if u.is_active else '' }} {% if u_top %}disabled{% endif %}>
+                    <label class="form-check-label" for="isActive{{ u.id }}">Activo</label>
+                  </div>
+                  <button type="submit" class="btn btn-sm btn-primary ms-auto" {% if u_top %}disabled{% endif %}><i class="bi bi-check-lg"></i> Guardar</button>
+                </div>
+              </form>
+
+              <form method="POST" action="{{ url_for('admin.panel') }}" class="password-change" data-user-id="{{ u.id }}">
+                {{ form.hidden_tag() }}
+                <input type="hidden" name="user_id" value="{{ u.id }}">
+                <div class="row g-2 mb-2">
+                  <div class="col-12 col-md-4">
+                    <label for="currentPassword{{ u.id }}" class="form-label small">Contraseña actual</label>
+                    {{ form.current_password(class="form-control rounded-pill current-password", id="currentPassword" ~ u.id) }}
+                  </div>
+                  <div class="col-12 col-md-4">
+                    <label for="newPassword{{ u.id }}" class="form-label small">Nueva contraseña</label>
+                    {{ form.new_password(class="form-control rounded-pill new-password", id="newPassword" ~ u.id, minlength="6", disabled="disabled") }}
+                  </div>
+                  <div class="col-12 col-md-4">
+                    <label for="confirmPassword{{ u.id }}" class="form-label small">Verificar contraseña</label>
+                    {{ form.confirm_password(class="form-control rounded-pill confirm-password", id="confirmPassword" ~ u.id, disabled="disabled") }}
+                  </div>
+                </div>
+                <button type="submit" class="btn btn-warning w-100"><i class="bi bi-key"></i> Cambiar contraseña</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+<div id="samePasswordFlag" data-show="{% if same_password_error %}true{% else %}false{% endif %}" class="d-none"></div>
+
+<div class="modal fade" id="samePasswordModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content glass">
+      <div class="modal-header border-0">
+        <h5 class="modal-title">Contraseña igual</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        No puedes poner la misma contraseña. Ya tienes esa contraseña.
+      </div>
+      <div class="modal-footer border-0">
+        <button type="button" class="btn btn-primary w-100" data-bs-dismiss="modal">Aceptar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    // Contraseñas
+    document.querySelectorAll('.current-password').forEach(function (input) {
+      input.addEventListener('input', function () {
+        var id = this.id.replace('currentPassword', '');
+        var newIn = document.getElementById('newPassword' + id);
+        var confIn = document.getElementById('confirmPassword' + id);
+        var has = this.value.length > 0;
+        newIn.disabled = !has;
+        confIn.disabled = !has;
+        if (!has) {
+          newIn.value = '';
+          confIn.value = '';
+        }
+      });
+    });
+
+    var sameModal = document.getElementById('samePasswordModal');
+    var sameFlag = document.getElementById('samePasswordFlag');
+    if (sameModal && sameFlag && sameFlag.dataset.show === 'true') {
+      new bootstrap.Modal(sameModal).show();
+    }
+
+    // Edición de nombres
+    var editToggle = document.getElementById('editToggle');
+    var editIcon = document.getElementById('editIcon');
+    var fields = document.querySelectorAll('.profile-value');
+    var editing = false;
+
+    if (editToggle && fields.length) {
+      fields.forEach(function (el) {
+        el.addEventListener('keydown', function (e) {
+          if (e.key === 'Enter') {
+            e.preventDefault();
+            editToggle.click();
+          }
+        });
+      });
+
+      editToggle.addEventListener('click', function () {
+        if (!editing) {
+          fields.forEach(function (el) {
+            el.contentEditable = 'true';
+            el.classList.add('editing');
+          });
+          editing = true;
+          editIcon.classList.replace('bi-pencil', 'bi-check-lg');
+          fields[0].focus();
+        } else {
+          fields.forEach(function (el) {
+            el.contentEditable = 'false';
+            el.classList.remove('editing');
+            var input = document.getElementById(el.dataset.input);
+            if (input) input.value = el.innerText.trim();
+          });
+          editing = false;
+          editIcon.classList.replace('bi-check-lg', 'bi-pencil');
+          document.getElementById('profileForm').submit();
+        }
+      });
+    }
+
+  });
+</script>
 {% endblock %}
