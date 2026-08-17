@@ -336,3 +336,53 @@
   padding: 0 1rem 1rem 1rem;
   background: var(--bg-gradient);
 }
+
+.home-video-wrapper {
+  position: relative;
+  width: calc(100% + 2rem);
+  margin: 0 -1rem;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+}
+
+.home-video-wrapper video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.video-controls {
+  position: absolute;
+  bottom: 1rem;
+  left: 1rem;
+  right: 1rem;
+  display: flex;
+  justify-content: space-between;
+  pointer-events: none;
+}
+
+.btn-video {
+  pointer-events: auto;
+  background: rgba(0, 0, 0, 0.4);
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  width: 42px;
+  height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  transition: background 0.2s ease;
+}
+
+.btn-video:hover {
+  background: rgba(0, 0, 0, 0.65);
+}
+
+.btn-video i {
+  font-size: 1.25rem;
+}

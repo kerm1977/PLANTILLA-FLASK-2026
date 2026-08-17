@@ -4,13 +4,46 @@
 
 {% block content %}
 <div class="home-video-wrapper">
-  <video id="home-video" src="{{ url_for('static', filename='wq.mp4') }}" autoplay muted loop playsinline controls style="width: 100%; height: auto; display: block;"></video>
+  <video id="home-video" src="{{ url_for('static', filename='wq.mp4') }}" autoplay muted loop playsinline style="width: 100%; display: block;"></video>
+  <div class="video-controls">
+    <button id="play-pause" class="btn btn-video" type="button" aria-label="Pausar">
+      <i class="bi bi-pause-fill"></i>
+    </button>
+    <button id="mute-btn" class="btn btn-video" type="button" aria-label="Activar sonido">
+      <i class="bi bi-volume-up-fill"></i>
+    </button>
+  </div>
 </div>
 
 <script>
   (function () {
     const video = document.getElementById('home-video');
-    if (!video) return;
+    const playBtn = document.getElementById('play-pause');
+    const muteBtn = document.getElementById('mute-btn');
+    if (!video || !playBtn || !muteBtn) return;
+
+    function updatePlayIcon() {
+      playBtn.innerHTML = video.paused ? '<i class="bi bi-play-fill"></i>' : '<i class="bi bi-pause-fill"></i>';
+      playBtn.setAttribute('aria-label', video.paused ? 'Reproducir' : 'Pausar');
+    }
+
+    function updateMuteIcon() {
+      muteBtn.innerHTML = video.muted ? '<i class="bi bi-volume-up-fill"></i>' : '<i class="bi bi-volume-mute-fill"></i>';
+      muteBtn.setAttribute('aria-label', video.muted ? 'Activar sonido' : 'Silenciar');
+    }
+
+    playBtn.addEventListener('click', function () {
+      if (video.paused) video.play();
+      else video.pause();
+    });
+    muteBtn.addEventListener('click', function () {
+      video.muted = !video.muted;
+    });
+
+    video.addEventListener('play', updatePlayIcon);
+    video.addEventListener('pause', updatePlayIcon);
+    video.addEventListener('volumechange', updateMuteIcon);
+
     document.addEventListener('keydown', function (e) {
       if (e.code === 'Space' && !['INPUT', 'TEXTAREA', 'SELECT'].includes(e.target.tagName)) {
         e.preventDefault();
@@ -18,6 +51,9 @@
         else video.pause();
       }
     });
+
+    updatePlayIcon();
+    updateMuteIcon();
   })();
 </script>
 
