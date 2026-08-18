@@ -7,7 +7,7 @@
     <!-- Bootstrap y Bootstrap Icons 100% locales (sin CDN) -->
     <link rel="stylesheet" href="{{ url_for('static', filename='vendor/bootstrap/css/bootstrap.min.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='vendor/bootstrap-icons/bootstrap-icons.min.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}?v=7">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}">
     <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
     <meta name="theme-color" content="#2c5364">
@@ -22,9 +22,11 @@
         <a href="{{ url_for('main.home') }}" class="desktop-nav-link {% if request.endpoint == 'main.home' %}active{% endif %}">
           <i class="bi bi-house-door"></i> Inicio
         </a>
-        <a href="{{ url_for('main.caminatas') }}" class="desktop-nav-link {% if request.endpoint == 'main.caminatas' %}active{% endif %}">
-          <i class="bi bi-geo-alt"></i> Caminatas
+        {% if quote_button_config.visible %}
+        <a href="{{ url_for('quotes.cotizador') }}" class="desktop-nav-link {% if request.endpoint and request.endpoint.startswith('quotes.') %}active{% endif %}">
+          <i class="bi bi-clipboard2-check"></i> {{ _('Cotizador') }}
         </a>
+        {% endif %}
       </div>
       <div class="desktop-nav-logo">
         <img src="{{ url_for('static', filename='uploads/logocumbres.png') }}" alt="Logo Cumbres" height="44" onclick="toggleTheme()" title="Cambiar tema" role="button">
@@ -55,6 +57,8 @@
         {% block content %}{% endblock %}
     </main>
 
+    {% include 'footer.html' %}
+
     {% with messages = get_flashed_messages(with_categories=true) %}
     {% if messages %}
     <div id="flash-toast-container" class="d-flex flex-column gap-2" style="position: fixed; top: 4.5rem; right: 1rem; z-index: 1050; max-width: 300px;">
@@ -77,6 +81,31 @@
       <i class="bi bi-arrow-left"></i>
     </button>
     {% endif %}
+
+    <a href="{% if whatsapp_config.phone %}https://wa.me/{{ whatsapp_config.phone }}{% else %}#{% endif %}"
+       target="_blank" rel="noopener"
+       class="whatsapp-float{% if not whatsapp_config.phone %} whatsapp-float-disabled{% endif %}"
+       title="WhatsApp" aria-label="WhatsApp">
+      <i class="bi bi-whatsapp"></i>
+    </a>
+
+    <div class="modal fade" id="confirmActionModal" tabindex="-1" aria-labelledby="confirmActionModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="confirmActionModalLabel">{{ _("Confirmar acción") }}</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{{ _('Cerrar') }}"></button>
+          </div>
+          <div class="modal-body">
+            <p class="mb-0" id="confirmActionModalBody"></p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ _("Cancelar") }}</button>
+            <button type="button" class="btn btn-danger" id="confirmActionModalConfirm">{{ _("Confirmar") }}</button>
+          </div>
+        </div>
+      </div>
+    </div>
 
     {% if session.get('user_id') %}
     <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">

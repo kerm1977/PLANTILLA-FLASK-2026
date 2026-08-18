@@ -15,6 +15,7 @@ class User(Base):
     first_last_name: Mapped[str | None] = mapped_column(String(80), nullable=True)
     second_last_name: Mapped[str | None] = mapped_column(String(80), nullable=True)
     phone_number: Mapped[str | None] = mapped_column(String(40), nullable=True)
+    country: Mapped[str | None] = mapped_column(String(80), nullable=True)
     email: Mapped[str] = mapped_column(String(255), unique=True, index=True)
     username: Mapped[str | None] = mapped_column(
         String(80), unique=True, index=True, nullable=True
@@ -23,6 +24,7 @@ class User(Base):
         String(80), unique=True, index=True, nullable=True
     )
     password_hash: Mapped[str] = mapped_column(String(255))
+    extra_data: Mapped[str | None] = mapped_column(String(10000), nullable=True)
     is_superuser: Mapped[bool] = mapped_column(default=False, nullable=False)
     is_top_superuser: Mapped[bool] = mapped_column(default=False, nullable=False)
     is_active: Mapped[bool] = mapped_column(default=True, nullable=False)

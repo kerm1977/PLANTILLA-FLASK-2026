@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}{{ _('Política de privacidad') }}{% endblock %}
+{% block main_class %}top-main{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <h2 class="text-center mb-2">{{ _('Política de Privacidad') }}</h2>
+  <p class="text-center text-muted small mb-4">{{ _('Última actualización:') }} {{ privacy.update_date }}</p>
+
+  <div class="legal-content mb-4">
+    {{ privacy.summary|safe }}
+  </div>
+
+  <div class="accordion" id="privacyAccordion">
+    {% for section in privacy.sections %}
+    <div class="accordion-item border-0 bg-transparent mb-3">
+      <h1 class="h5 text-center fw-bold m-0">
+        <a class="text-decoration-none legal-title d-block w-100 text-center" data-bs-toggle="collapse" href="#privacyCollapse{{ loop.index0 }}" role="button" aria-expanded="{% if loop.first %}true{% else %}false{% endif %}">
+          {{ section.title }}
+        </a>
+      </h1>
+      <hr class="legal-hr my-2">
+      <div id="privacyCollapse{{ loop.index0 }}" class="collapse{% if loop.first %} show{% endif %}" data-bs-parent="#privacyAccordion">
+        <div class="legal-content py-3">
+          {{ section.content|safe }}
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+
+    <div class="accordion-item border-0 bg-transparent mt-5">
+      <h1 class="h5 text-center fw-bold m-0">
+        <a class="text-decoration-none legal-title d-block w-100 text-center" data-bs-toggle="collapse" href="#privacyCollapseContact" role="button" aria-expanded="false">
+          {{ _('Contacto y Ejercicio de Derechos') }}
+        </a>
+      </h1>
+      <div id="privacyCollapseContact" class="collapse" data-bs-parent="#privacyAccordion">
+        <div class="legal-content py-3">
+          {{ privacy.contact|safe }}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

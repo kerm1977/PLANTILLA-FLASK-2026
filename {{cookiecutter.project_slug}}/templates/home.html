@@ -3,8 +3,28 @@
 {% block main_class %}home-main{% endblock %}
 
 {% block content %}
-<div class="home-video-wrapper">
+<div id="home-video-section" class="home-video-wrapper">
+  {% if home_media_mode == 'images' %}
+  <div id="home-image-carousel" class="home-image-carousel">
+    {% for img in home_images %}
+    <img src="{{ img }}" class="home-image-slide{% if loop.first %} active{% endif %}" alt="">
+    {% endfor %}
+  </div>
+  {% else %}
   <video id="home-video" src="{{ home_videos[0] }}" autoplay muted playsinline style="width: 100%; display: block;"></video>
+  {% endif %}
+
+  <div class="hero-overlay hero-align-{{ hero_config.align }}">
+    <div class="hero-content">
+      <h1 class="mb-3 hero-title-size-{{ hero_config.title_size }} hero-desktop-only">{{ _(hero_config.title) }}</h1>
+      {% if hero_config.description %}
+      <p class="lead mb-4 hero-desc-size-{{ hero_config.description_size }} hero-desktop-only">{{ _(hero_config.description) }}</p>
+      {% endif %}
+      <a href="#tours-section" class="btn hero-btn hero-btn-size-{{ hero_config.button_size }}" style="--hero-btn-bg-light: {{ hero_config.button_bg_color_light }}; --hero-btn-color-light: {{ hero_config.button_text_color_light }}; --hero-btn-bg-dark: {{ hero_config.button_bg_color_dark }}; --hero-btn-color-dark: {{ hero_config.button_text_color_dark }}; --hero-btn-hover-bg-light: {{ hero_config.button_hover_bg_color_light }}; --hero-btn-hover-color-light: {{ hero_config.button_hover_text_color_light }}; --hero-btn-hover-bg-dark: {{ hero_config.button_hover_bg_color_dark }}; --hero-btn-hover-color-dark: {{ hero_config.button_hover_text_color_dark }}; --hero-btn-radius: {{ hero_config.button_radius }}px;">{{ _(hero_config.button_text) }}</a>
+    </div>
+  </div>
+
+  {% if home_media_mode != 'images' %}
   <div class="video-controls">
     <button id="play-pause" class="btn btn-video" type="button" aria-label="Pausar">
       <i class="bi bi-pause-fill"></i>
@@ -13,10 +33,33 @@
       <i class="bi bi-volume-up-fill"></i>
     </button>
   </div>
+  {% endif %}
+</div>
+
+<div class="hero-mobile-bar">
+  <h2 class="hero-mobile-title">{{ _(hero_config.title) }}</h2>
+  {% if hero_config.description %}
+  <p class="hero-mobile-desc">{{ _(hero_config.description) }}</p>
+  {% endif %}
 </div>
 
 <script>
   (function () {
+    const carousel = document.getElementById('home-image-carousel');
+    if (carousel && !carousel.dataset.i18nReady) {
+      carousel.dataset.i18nReady = 'true';
+      const slides = carousel.querySelectorAll('.home-image-slide');
+      const intervalMs = {{ (home_image_interval or 10) * 1000 }};
+      let slideIndex = 0;
+      if (slides.length > 1) {
+        setInterval(function () {
+          slides[slideIndex].classList.remove('active');
+          slideIndex = (slideIndex + 1) % slides.length;
+          slides[slideIndex].classList.add('active');
+        }, intervalMs);
+      }
+    }
+
     const video = document.getElementById('home-video');
     const playBtn = document.getElementById('play-pause');
     const muteBtn = document.getElementById('mute-btn');
@@ -71,10 +114,7 @@
   })();
 </script>
 
-<h1 class="mb-3"><i class="bi bi-house-fill"></i> Bienvenido</h1>
-<p class="lead mb-4">Descubre lo que la app ofrece.</p>
-
-<div class="row row-cols-1 row-cols-md-3 g-4 w-100 mx-auto" style="max-width: 1100px;">
+<div id="tours-section" class="row row-cols-1 row-cols-md-3 g-4 w-100 mx-auto mt-4" style="max-width: 1100px;">
   <div class="col">
     <div class="tour-card h-100 text-center">
       <img src="{{ url_for('static', filename='uploads/elcaminodecr.png') }}" alt="El Camino de Costa Rica" class="tour-img mb-3">

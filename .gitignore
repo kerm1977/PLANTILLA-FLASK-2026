@@ -26,3 +26,7 @@ __pycache__/
 # Sistema
 .DS_Store
 Thumbs.db
+
+# Contenido subido por usuarios
+{{cookiecutter.project_slug}}/static/videos/
+{{cookiecutter.project_slug}}/static/images/

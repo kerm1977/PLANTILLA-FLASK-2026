@@ -53,7 +53,7 @@
         <p class="profile-detail mb-1"><i class="bi bi-hash me-2"></i>{{ current_user.user_number or '—' }}</p>
       </div>
 
-      <form method="POST" action="{{ url_for('admin.delete_profile') }}" class="text-center" onsubmit="return confirm('¿Eliminar tu cuenta?');">
+      <form method="POST" action="{{ url_for('admin.delete_profile') }}" class="text-center" data-confirm="{{ _('¿Eliminar tu cuenta?') }}">
         {{ delete_form.hidden_tag() }}
         <button type="submit" class="btn btn-sm btn-link text-danger"><i class="bi bi-trash"></i> Eliminar cuenta</button>
       </form>
@@ -111,7 +111,13 @@
                 <div class="col-6 col-md-4"><strong class="small">Nombre</strong><p class="mb-0 small">{{ u.first_name or '—' }}</p></div>
                 <div class="col-6 col-md-4"><strong class="small">Primer apellido</strong><p class="mb-0 small">{{ u.first_last_name or '—' }}</p></div>
                 <div class="col-6 col-md-4"><strong class="small">Segundo apellido</strong><p class="mb-0 small">{{ u.second_last_name or '—' }}</p></div>
-                <div class="col-6 col-md-4"><strong class="small">Teléfono</strong><p class="mb-0 small">{{ u.phone_number or '—' }}</p></div>
+                <div class="col-6 col-md-4"><strong class="small">Teléfono</strong><p class="mb-0 small">
+                  {% if u.phone_number %}
+                    <a href="https://wa.me/{{ u.phone_number|replace(' ', '')|replace('+', '')|replace('-', '')|replace('(', '')|replace(')', '') }}" target="_blank" rel="noopener" class="text-decoration-none">
+                      <i class="bi bi-whatsapp"></i> {{ u.phone_number }}
+                    </a>
+                  {% else %}—{% endif %}
+                </p></div>
                 <div class="col-6 col-md-4"><strong class="small">Correo</strong><p class="mb-0 small">{{ u.email or '—' }}</p></div>
                 <div class="col-6 col-md-4"><strong class="small">Número</strong><p class="mb-0 small">{{ u.user_number or '—' }}</p></div>
               </div>

@@ -56,3 +56,70 @@ function loadPageFromHtml(html) {
     oldModal.replaceWith(newModal);
   }
 }
+
+/* Confirmaciones consistentes con modal de Bootstrap (nunca confirm()/alert() nativos) */
+(function () {
+  let confirmModal = null;
+  let modalBodyEl = null;
+  let confirmBtn = null;
+  let pendingAction = null;
+
+  function ensureModal() {
+    if (confirmModal) return true;
+    const modalEl = document.getElementById("confirmActionModal");
+    if (!modalEl || typeof bootstrap === "undefined") return false;
+    confirmModal = new bootstrap.Modal(modalEl);
+    modalBodyEl = document.getElementById("confirmActionModalBody");
+    confirmBtn = document.getElementById("confirmActionModalConfirm");
+    confirmBtn.addEventListener("click", function () {
+      confirmModal.hide();
+      const action = pendingAction;
+      pendingAction = null;
+      if (action) action();
+    });
+    return true;
+  }
+
+  function requestConfirm(message, onConfirm) {
+    if (!ensureModal()) {
+      onConfirm();
+      return;
+    }
+    modalBodyEl.textContent = message || "¿Estás seguro?";
+    pendingAction = onConfirm;
+    confirmModal.show();
+  }
+
+  document.addEventListener(
+    "submit",
+    function (e) {
+      const form = e.target;
+      if (!(form instanceof HTMLFormElement)) return;
+      if (!form.hasAttribute("data-confirm") || form.dataset.confirmBypass === "true") return;
+      e.preventDefault();
+      requestConfirm(form.getAttribute("data-confirm"), function () {
+        form.dataset.confirmBypass = "true";
+        if (form.requestSubmit) form.requestSubmit();
+        else form.submit();
+      });
+    },
+    true
+  );
+
+  document.addEventListener(
+    "click",
+    function (e) {
+      const btn = e.target.closest("button[data-confirm]");
+      if (!btn || btn.dataset.confirmBypass === "true") return;
+      e.preventDefault();
+      requestConfirm(btn.getAttribute("data-confirm"), function () {
+        btn.dataset.confirmBypass = "true";
+        btn.click();
+        btn.dataset.confirmBypass = "false";
+      });
+    },
+    true
+  );
+
+  window.requestConfirm = requestConfirm;
+})();

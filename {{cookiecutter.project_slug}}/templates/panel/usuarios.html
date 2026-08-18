@@ -3,22 +3,29 @@
 {% block main_class %}top-main{% endblock %}
 
 {% block content %}
-<div class="perfil-view" style="max-width: 800px;">
-  <h2 class="mb-4 text-center d-flex justify-content-center align-items-center gap-2">
-    <i class="bi bi-people"></i>
-    <span>{{ _('Datos de usuarios registrados') }}</span>
-  </h2>
-
-  <div class="text-end mb-3">
-    <a href="{{ url_for('auth.registro') }}" class="btn btn-sm btn-success">
+<div class="perfil-view" id="usuariosAccordion" style="max-width: 100%;">
+  <div class="d-flex flex-wrap justify-content-between align-items-end gap-3 mb-3">
+    <div class="flex-grow-1" style="min-width: 220px;">
+      <input type="search" id="userSearch" class="form-control auth-input" placeholder="{{ _('Buscar por nombre, apellido, teléfono, país, correo, origen, contacto o rol...') }}">
+    </div>
+    <a href="{{ url_for('auth.registro') }}" class="btn btn-success">
       <i class="bi bi-plus-lg"></i> {{ _('Crear usuario') }}
     </a>
   </div>
 
+  <button type="button" class="collapsible-tab" data-bs-toggle="collapse" data-bs-target="#datosUsuariosSection" aria-expanded="true" aria-controls="datosUsuariosSection">
+    <span><i class="bi bi-people me-2"></i>{{ _('Datos de usuarios registrados') }}</span>
+    <i class="bi bi-chevron-down collapsible-tab-icon"></i>
+  </button>
+  <div class="collapse show" id="datosUsuariosSection" data-bs-parent="#usuariosAccordion">
+    <div class="py-2">
+      <div class="mb-2"></div>
+
   <div class="usuarios-list">
     {% for u in users %}
     {% set u_top = u.is_top_superuser %}
-    <div class="usuario-row">
+    {% set u_origin = _('Cotización') if u.id in quote_user_ids else _('Registro') %}
+    <div class="usuario-row" data-search="{{ ((u.first_name or '') + ' ' + (u.first_last_name or '') + ' ' + (u.second_last_name or '') + ' ' + (u.phone_number or '') + ' ' + (u.country or '') + ' ' + (u.email or '') + ' ' + (u.username or '') + ' ' + (u.user_number or '') + ' ' + (u_origin) + ' ' + ('super' if u.is_superuser else '') + ' ' + ('activo' if u.is_active else 'inactivo'))|trim }}">
       <a href="{{ url_for('main.usuario_detalle', user_id=u.id) }}" class="usuario-info text-decoration-none" style="color: inherit;">
         <strong>{{ u.first_name or u.username or u.email }} {{ u.first_last_name or '' }}</strong>
         <span class="text-muted small d-block">{{ u.email }}</span>
@@ -51,15 +58,152 @@
     </div>
     {% endfor %}
   </div>
+
+    </div>
+  </div>
+
+  <button type="button" class="collapsible-tab" data-bs-toggle="collapse" data-bs-target="#baseDatosSection" aria-expanded="false" aria-controls="baseDatosSection">
+    <span><i class="bi bi-database me-2"></i>{{ _('Base de datos de registros') }}</span>
+    <i class="bi bi-chevron-down collapsible-tab-icon"></i>
+  </button>
+  <div class="collapse" id="baseDatosSection" data-bs-parent="#usuariosAccordion">
+    <div class="py-2">
+
+  <div class="usuarios-list" id="registrosList">
+    {% for u in users %}
+    <div class="usuario-row">
+      <a href="{{ url_for('main.usuario_detalle', user_id=u.id) }}" class="usuario-info text-decoration-none" style="color: inherit;">
+        <strong>{{ u.first_name or '—' }}</strong>
+        <span class="text-muted small d-block">{{ u.phone_number or '—' }}</span>
+      </a>
+      <div class="usuario-actions">
+        <a href="{{ url_for('main.usuario_detalle', user_id=u.id) }}" class="btn btn-sm btn-outline-primary">
+          <i class="bi bi-eye"></i>
+        </a>
+        <form method="POST" action="{{ url_for('admin.delete_user') }}" class="d-inline" data-confirm="{{ _('¿Eliminar este usuario?') }}">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <input type="hidden" name="user_id" value="{{ u.id }}">
+          <button type="submit" class="btn btn-sm btn-danger" title="{{ _('Eliminar') }}" {% if u.is_top_superuser %}disabled{% endif %}>
+            <i class="bi bi-trash"></i>
+          </button>
+        </form>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  <div id="registrosPagination" class="d-flex justify-content-between align-items-center gap-2 mb-3 small"></div>
+
+    </div>
+  </div>
+
+  <button type="button" class="collapsible-tab" data-bs-toggle="collapse" data-bs-target="#cotizacionesSection" aria-expanded="false" aria-controls="cotizacionesSection">
+    <span><i class="bi bi-clipboard2-check me-2"></i>{{ _('Cotizaciones recibidas') }}</span>
+    <i class="bi bi-chevron-down collapsible-tab-icon"></i>
+  </button>
+  <div class="collapse" id="cotizacionesSection" data-bs-parent="#usuariosAccordion">
+    <div class="py-2">
+  <div class="usuarios-list">
+    {% for q in quote_submissions %}
+    <div class="usuario-row">
+      <a href="#" class="usuario-info text-decoration-none" style="color: inherit;" data-bs-toggle="modal" data-bs-target="#quoteModal{{ q.id }}">
+        <strong>{{ q.data.get('first_name', '') }} {{ q.data.get('last_name', '') }}</strong>
+        <span class="text-muted small d-block">{{ q.data.get('whatsapp') or '—' }}</span>
+      </a>
+      <div class="usuario-actions">
+        <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#quoteModal{{ q.id }}">
+          <i class="bi bi-eye"></i>
+        </button>
+        <form method="POST" action="{{ url_for('main.usuarios') }}" class="d-inline" data-confirm="{{ _('¿Eliminar esta cotización?') }}">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <input type="hidden" name="delete_quote_submission" value="{{ q.id }}">
+          <button type="submit" class="btn btn-sm btn-danger" title="{{ _('Eliminar') }}">
+            <i class="bi bi-trash"></i>
+          </button>
+        </form>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  {% for q in quote_submissions %}
+  <div class="modal fade" id="quoteModal{{ q.id }}" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+      <div class="modal-content" style="background: var(--card-bg); color: var(--bs-body-color);">
+        <div class="modal-header">
+          <h5 class="modal-title">{{ _('Cotización') }} #{{ q.id }}</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <ul class="list-group list-group-flush" style="background: transparent;">
+            <li class="list-group-item" style="background: transparent; border-color: var(--bs-border-color);"><strong>{{ _('Fecha') }}:</strong> {{ q.created_at.strftime('%d/%m/%Y %H:%M') if q.created_at else '—' }}</li>
+            <li class="list-group-item" style="background: transparent; border-color: var(--bs-border-color);"><strong>{{ _('Nombre') }}:</strong> {{ q.data.get('first_name', '') }} {{ q.data.get('last_name', '') }}</li>
+            <li class="list-group-item" style="background: transparent; border-color: var(--bs-border-color);"><strong>{{ _('Correo') }}:</strong> {{ q.data.get('email') or '—' }}</li>
+            <li class="list-group-item" style="background: transparent; border-color: var(--bs-border-color);"><strong>{{ _('País') }}:</strong> {{ q.data.get('country') or '—' }}</li>
+            <li class="list-group-item" style="background: transparent; border-color: var(--bs-border-color);"><strong>{{ _('Teléfono') }}:</strong> {{ q.data.get('whatsapp') or '—' }}</li>
+            <li class="list-group-item" style="background: transparent; border-color: var(--bs-border-color);"><strong>{{ _('Respuestas') }}:</strong>
+              <ul class="list-unstyled mt-1 mb-0 ps-2">
+                {% for key, value in q.data.items() %}
+                <li class="small text-break"><strong>{{ key }}:</strong> {{ value }}</li>
+                {% endfor %}
+              </ul>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+    </div>
+  </div>
 </div>
 
 <script>
-  document.querySelectorAll('form[data-confirm]').forEach(function (form) {
-    form.addEventListener('submit', function (e) {
-      if (!confirm(form.dataset.confirm)) {
-        e.preventDefault();
-      }
+(function () {
+  const input = document.getElementById('userSearch');
+  if (!input) return;
+  const rows = document.querySelectorAll('#datosUsuariosSection .usuario-row');
+  input.addEventListener('input', function () {
+    const query = this.value.normalize('NFD').replace(/\\p{Diacritic}/gu, '').toLowerCase();
+    const terms = query.split(/\\s+/).filter(function (t) { return t.length > 0; });
+    rows.forEach(function (row) {
+      const haystack = (row.getAttribute('data-search') || '').toLowerCase();
+      const match = terms.every(function (t) { return haystack.indexOf(t) !== -1; });
+      row.style.display = match ? '' : 'none';
     });
   });
+})();
+
+(function () {
+  const pagination = document.getElementById('registrosPagination');
+  const rows = Array.from(document.querySelectorAll('#registrosList .usuario-row'));
+  if (!pagination || rows.length === 0) return;
+  const perPage = 10;
+  let page = 1;
+  const totalPages = Math.max(1, Math.ceil(rows.length / perPage));
+
+  function render() {
+    const start = (page - 1) * perPage;
+    const end = start + perPage;
+    rows.forEach(function (row, index) {
+      row.classList.toggle('d-none', index < start || index >= end);
+    });
+    const startRecord = rows.length ? start + 1 : 0;
+    const endRecord = Math.min(end, rows.length);
+    pagination.innerHTML = `<span class="text-muted">${startRecord} - ${endRecord} / ${rows.length}</span>
+      <div class="d-flex gap-2">
+        <button type="button" class="btn btn-sm btn-outline-secondary" ${page <= 1 ? 'disabled' : ''} data-page="prev">{{ _('Anterior') }}</button>
+        <button type="button" class="btn btn-sm btn-outline-secondary" ${page >= totalPages ? 'disabled' : ''} data-page="next">{{ _('Siguiente') }}</button>
+      </div>`;
+    pagination.querySelectorAll('button').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        if (btn.dataset.page === 'prev' && page > 1) page--;
+        if (btn.dataset.page === 'next' && page < totalPages) page++;
+        render();
+      });
+    });
+  }
+
+  render();
+})();
 </script>
 {% endblock %}

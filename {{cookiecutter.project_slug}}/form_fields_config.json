@@ -1,0 +1,69 @@
+{
+  "enabled": true,
+  "fields": [
+    {
+      "id": 1,
+      "name": "Nombre",
+      "key": "first_name",
+      "data_type": "text",
+      "required": true,
+      "active": true
+    },
+    {
+      "id": 2,
+      "name": "Primer apellido",
+      "key": "first_last_name",
+      "data_type": "text",
+      "required": true,
+      "active": true
+    },
+    {
+      "id": 3,
+      "name": "Segundo apellido",
+      "key": "second_last_name",
+      "data_type": "text",
+      "required": false,
+      "active": true
+    },
+    {
+      "id": 4,
+      "name": "Teléfono",
+      "key": "phone_number",
+      "data_type": "tel",
+      "required": true,
+      "active": true
+    },
+    {
+      "id": 5,
+      "name": "Usuario",
+      "key": "username",
+      "data_type": "text",
+      "required": false,
+      "active": true
+    },
+    {
+      "id": 6,
+      "name": "Número de usuario",
+      "key": "user_number",
+      "data_type": "text",
+      "required": false,
+      "active": true
+    },
+    {
+      "id": 7,
+      "name": "País",
+      "key": "country",
+      "data_type": "text",
+      "required": false,
+      "active": false
+    },
+    {
+      "id": 8,
+      "name": "Teléfono Emergencia",
+      "key": "tel_fono_emergencia",
+      "data_type": "tel",
+      "required": false,
+      "active": false
+    }
+  ]
+}

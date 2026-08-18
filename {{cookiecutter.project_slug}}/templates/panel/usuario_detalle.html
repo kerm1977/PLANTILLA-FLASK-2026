@@ -3,10 +3,13 @@
 {% block main_class %}top-main{% endblock %}
 
 {% block content %}
-<div class="perfil-view">
+<div class="perfil-view" id="detalle-view">
   <h2 class="mb-4 text-center d-flex justify-content-center align-items-center gap-2">
     <i class="bi bi-person-circle"></i>
     <span>{{ u.first_name or u.username or u.email }} {{ u.first_last_name or '' }}</span>
+    <button type="button" class="btn btn-link p-0 perfil-edit-btn" onclick="toggleDetalleEdit()" aria-label="{{ _('Editar perfil') }}" title="{{ _('Editar perfil') }}">
+      <i class="bi bi-pencil"></i>
+    </button>
   </h2>
 
   <div class="perfil-data">
@@ -28,7 +31,7 @@
     </div>
     <div class="perfil-row">
       <span class="perfil-label">{{ _('Correo electrónico') }}</span>
-      <span class="perfil-value">{{ u.email }}</span>
+      <span class="perfil-value">{{ u.email or '—' }}</span>
     </div>
     <div class="perfil-row">
       <span class="perfil-label">{{ _('Usuario') }}</span>
@@ -39,6 +42,16 @@
       <span class="perfil-value">{{ u.user_number or '—' }}</span>
     </div>
     <div class="perfil-row">
+      <span class="perfil-label">{{ _('País') }}</span>
+      <span class="perfil-value">{{ u.country or '—' }}</span>
+    </div>
+    {% for field in extra_fields %}
+    <div class="perfil-row">
+      <span class="perfil-label">{{ field.name }}</span>
+      <span class="perfil-value">{{ extra.get(field.key) or '—' }}</span>
+    </div>
+    {% endfor %}
+    <div class="perfil-row">
       <span class="perfil-label">{{ _('Superusuario') }}</span>
       <span class="perfil-value">{% if u.is_superuser %}{{ _('Sí') }}{% else %}{{ _('No') }}{% endif %}</span>
     </div>
@@ -48,4 +61,74 @@
     </div>
   </div>
 </div>
+
+<div class="perfil-view d-none" id="detalle-edit">
+  <h2 class="mb-4 text-center d-flex justify-content-center align-items-center gap-2">
+    <i class="bi bi-person-circle"></i>
+    <span>{{ u.first_name or u.username or u.email }} {{ u.first_last_name or '' }}</span>
+    <button type="button" class="btn btn-link p-0 perfil-edit-btn" onclick="toggleDetalleEdit()" aria-label="{{ _('Cancelar') }}" title="{{ _('Cancelar') }}">
+      <i class="bi bi-x-lg"></i>
+    </button>
+  </h2>
+
+  <form method="POST" action="{{ url_for('main.usuario_detalle', user_id=u.id) }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <div class="perfil-row">
+      <label class="perfil-label" for="first_name">{{ _('Nombre') }}</label>
+      <input id="first_name" name="first_name" class="form-control" value="{{ u.first_name or '' }}" maxlength="80">
+    </div>
+    <div class="perfil-row">
+      <label class="perfil-label" for="first_last_name">{{ _('Primer apellido') }}</label>
+      <input id="first_last_name" name="first_last_name" class="form-control" value="{{ u.first_last_name or '' }}" maxlength="80">
+    </div>
+    <div class="perfil-row">
+      <label class="perfil-label" for="second_last_name">{{ _('Segundo apellido') }}</label>
+      <input id="second_last_name" name="second_last_name" class="form-control" value="{{ u.second_last_name or '' }}" maxlength="80">
+    </div>
+    <div class="perfil-row">
+      <label class="perfil-label" for="phone_number">{{ _('Teléfono') }}</label>
+      <input id="phone_number" name="phone_number" class="form-control" value="{{ u.phone_number or '' }}" maxlength="40">
+    </div>
+    <div class="perfil-row">
+      <label class="perfil-label" for="email">{{ _('Correo electrónico') }}</label>
+      <input id="email" name="email" type="email" class="form-control" value="{{ u.email or '' }}" maxlength="255">
+    </div>
+    <div class="perfil-row">
+      <label class="perfil-label" for="username">{{ _('Usuario') }}</label>
+      <input id="username" name="username" class="form-control" value="{{ u.username or '' }}" maxlength="80">
+    </div>
+    <div class="perfil-row">
+      <label class="perfil-label" for="user_number">{{ _('Número de usuario') }}</label>
+      <input id="user_number" name="user_number" class="form-control" value="{{ u.user_number or '' }}" maxlength="80">
+    </div>
+    <div class="perfil-row">
+      <label class="perfil-label" for="country">{{ _('País') }}</label>
+      <input id="country" name="country" class="form-control" value="{{ u.country or '' }}" maxlength="80">
+    </div>
+    <div class="perfil-row align-items-center">
+      <span class="perfil-label flex-grow-1">{{ _('Superusuario') }}</span>
+      <div class="form-check form-switch m-0">
+        <input class="form-check-input" type="checkbox" name="is_superuser" id="is_superuser" {{ 'checked' if u.is_superuser else '' }} {% if u.is_top_superuser or not can_assign_top %}disabled{% endif %}>
+      </div>
+    </div>
+    <div class="perfil-row align-items-center">
+      <span class="perfil-label flex-grow-1">{{ _('Activo') }}</span>
+      <div class="form-check form-switch m-0">
+        <input class="form-check-input" type="checkbox" name="is_active" id="is_active" {{ 'checked' if u.is_active else '' }} {% if u.is_top_superuser %}disabled{% endif %}>
+      </div>
+    </div>
+    <div class="text-end mt-4">
+      <button type="submit" class="btn btn-success">
+        <i class="bi bi-check-lg"></i> {{ _('Guardar') }}
+      </button>
+    </div>
+  </form>
+</div>
+
+<script>
+  function toggleDetalleEdit() {
+    document.getElementById('detalle-view').classList.toggle('d-none');
+    document.getElementById('detalle-edit').classList.toggle('d-none');
+  }
+</script>
 {% endblock %}

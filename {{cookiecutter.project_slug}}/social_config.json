@@ -1,0 +1,18 @@
+{
+  "instagram": {
+    "url": "",
+    "enabled": false
+  },
+  "facebook": {
+    "url": "https://www.facebook.com/LaTribuDeLosLibres/",
+    "enabled": true
+  },
+  "x": {
+    "url": "",
+    "enabled": false
+  },
+  "tiktok": {
+    "url": "",
+    "enabled": false
+  }
+}

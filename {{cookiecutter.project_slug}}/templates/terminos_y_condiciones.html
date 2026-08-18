@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}{{ _('Términos y condiciones') }}{% endblock %}
+{% block main_class %}top-main{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <h2 class="text-center mb-2">{{ terms.title }}</h2>
+  <p class="text-center text-muted small mb-4">{{ terms.subtitle }} | {{ _('Última actualización:') }} {{ terms.update_date }}</p>
+
+  <div class="legal-content mb-4">
+    {{ terms.summary|safe }}
+  </div>
+
+  <div class="accordion" id="termsAccordion">
+    {% for section in terms.sections %}
+    <div class="accordion-item border-0 bg-transparent mb-3">
+      <h1 class="h5 text-center fw-bold m-0">
+        <a class="text-decoration-none legal-title d-block w-100 text-center" data-bs-toggle="collapse" href="#termsCollapse{{ loop.index0 }}" role="button" aria-expanded="{% if loop.first %}true{% else %}false{% endif %}">
+          {{ section.title }}
+        </a>
+      </h1>
+      <hr class="legal-hr my-2">
+      <div id="termsCollapse{{ loop.index0 }}" class="collapse{% if loop.first %} show{% endif %}" data-bs-parent="#termsAccordion">
+        <div class="legal-content py-3">
+          {{ section.content|safe }}
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+
+    <div class="accordion-item border-0 bg-transparent mt-5">
+      <h1 class="h5 text-center fw-bold m-0">
+        <a class="text-decoration-none legal-title d-block w-100 text-center" data-bs-toggle="collapse" href="#termsCollapseContact" role="button" aria-expanded="false">
+          {{ _('Actualización de Términos y Contacto') }}
+        </a>
+      </h1>
+      <div id="termsCollapseContact" class="collapse" data-bs-parent="#termsAccordion">
+        <div class="legal-content py-3">
+          {{ terms.contact|safe }}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

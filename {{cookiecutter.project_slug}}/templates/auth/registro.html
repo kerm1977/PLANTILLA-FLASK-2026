@@ -8,60 +8,58 @@
   </h2>
   <form method="POST" action="{{ url_for('auth.registro') }}" novalidate>
     {{ form.hidden_tag() }}
-    <div class="mb-3">
-      {{ form.first_name.label(class="form-label") }}
-      {{ form.first_name(class="form-control auth-input", placeholder="Nombre", autocomplete="given-name") }}
-    </div>
-    <div class="mb-3">
-      {{ form.first_last_name.label(class="form-label") }}
-      {{ form.first_last_name(class="form-control auth-input", placeholder="Primer apellido", autocomplete="family-name") }}
-    </div>
-    <div class="mb-3">
-      {{ form.second_last_name.label(class="form-label") }}
-      {{ form.second_last_name(class="form-control auth-input", placeholder="Segundo apellido (opcional)", autocomplete="additional-name") }}
-    </div>
-    <div class="mb-3">
-      {{ form.phone_number.label(class="form-label") }}
-      {{ form.phone_number(class="form-control auth-input", placeholder="Teléfono", autocomplete="tel") }}
-    </div>
-    <div class="mb-3">
-      {{ form.email.label(class="form-label") }}
-      {{ form.email(class="form-control auth-input", type="email", placeholder="Correo electrónico", autocomplete="email") }}
-    </div>
-    <div class="mb-3">
-      {{ form.username.label(class="form-label") }}
-      {{ form.username(class="form-control auth-input", placeholder="Usuario", autocomplete="username") }}
-    </div>
-    <div class="mb-3">
-      {{ form.user_number.label(class="form-label") }}
-      {{ form.user_number(class="form-control auth-input", placeholder="Número de usuario", autocomplete="off") }}
-    </div>
-    <p class="small-hint">
-      <i class="bi bi-info-circle"></i> Indica <strong>usuario</strong> o <strong>número de usuario</strong>, no ambos.
-    </p>
 
-    {% if can_assign_role %}
+    {% for field in registro_fields %}
     <div class="mb-3">
-      {{ form.role.label(class="form-label") }}
-      {{ form.role(class="form-select auth-input") }}
+      {% if field.data_type == 'checkbox' %}
+      <div class="form-check">
+        <input class="form-check-input" type="checkbox" name="{{ field.key }}" id="{{ field.key }}" value="1">
+        <label class="form-check-label" for="{{ field.key }}">{{ field.name }}</label>
+      </div>
+      {% else %}
+      <label class="form-label" for="{{ field.key }}">{{ field.name }}</label>
+      {% if field.data_type == 'textarea' %}
+      <textarea name="{{ field.key }}" id="{{ field.key }}" class="form-control auth-input" placeholder="{{ field.name }}" rows="3" {% if field.required %}required{% endif %}></textarea>
+      {% else %}
+      <input type="{{ field.data_type }}" name="{{ field.key }}" id="{{ field.key }}" class="form-control auth-input" placeholder="{{ field.name }}" {% if field.required %}required{% endif %} {% if field.key in ['first_name','first_last_name','second_last_name'] %}data-sanitize="name"{% elif field.key == 'phone_number' %}data-sanitize="digits"{% endif %}>
+      {% endif %}
+      {% endif %}
     </div>
-    {% endif %}
+    {% endfor %}
 
     <div class="mb-3">
-      {{ form.password.label(class="form-label") }}
+      <label class="form-label" for="regEmail">Correo electrónico</label>
+      <input type="email" name="email" id="regEmail" class="form-control auth-input" placeholder="Correo electrónico" autocomplete="email" data-sanitize="email" required>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label" for="regPassword">Contraseña</label>
       <div class="auth-password mb-2">
-        {{ form.password(class="form-control auth-input", id="regPassword", placeholder="Contraseña", autocomplete="new-password") }}
+        <input type="password" name="password" id="regPassword" class="form-control auth-input" placeholder="Contraseña" autocomplete="new-password" required>
         <button class="btn auth-eye" type="button" onclick="togglePassword('regPassword', this)" title="Mostrar / ocultar">
           <i class="bi bi-eye"></i>
         </button>
       </div>
       <div class="auth-password">
-        {{ form.confirm(class="form-control auth-input", id="regConfirm", placeholder="Confirmar contraseña", autocomplete="new-password") }}
+        <input type="password" name="confirm" class="form-control auth-input" id="regConfirm" placeholder="Confirmar contraseña" autocomplete="new-password" required>
         <button class="btn auth-eye" type="button" onclick="togglePassword('regConfirm', this)" title="Mostrar / ocultar">
           <i class="bi bi-eye"></i>
         </button>
       </div>
     </div>
+
+    {% if can_assign_role %}
+    <div class="mb-3">
+      <label class="form-label" for="regRole">Tipo de usuario</label>
+      <select name="role" id="regRole" class="form-select auth-input">
+        <option value="regular">Usuario regular</option>
+        <option value="admin">Administrador</option>
+        {% if can_assign_top %}
+        <option value="top">Superusuario principal</option>
+        {% endif %}
+      </select>
+    </div>
+    {% endif %}
 
     <div class="d-grid">
       {{ form.submit(class="btn auth-btn auth-btn-success btn-lg", value="Crear cuenta") }}
@@ -74,6 +72,7 @@
   </form>
 </div>
 
+<script src="{{ url_for('static', filename='js/sanitizers.js') }}"></script>
 <script>
   function togglePassword(inputId, btn) {
     const input = document.getElementById(inputId);
@@ -86,5 +85,6 @@
       icon.classList.replace("bi-eye-slash", "bi-eye");
     }
   }
+
 </script>
 {% endblock %}

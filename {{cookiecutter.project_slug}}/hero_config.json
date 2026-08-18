@@ -1,0 +1,18 @@
+{
+  "title": "Bienvenidos",
+  "description": "Cumbres Exprerience",
+  "button_text": "Nuestros Tours",
+  "align": "center",
+  "title_size": "md",
+  "description_size": "xl",
+  "button_size": "lg",
+  "button_bg_color_light": "#c6d47a",
+  "button_text_color_light": "#333333",
+  "button_bg_color_dark": "#c6d47a",
+  "button_text_color_dark": "#f1f3f8",
+  "button_hover_bg_color_light": "#ffd6a5",
+  "button_hover_text_color_light": "#222222",
+  "button_hover_bg_color_dark": "#ffd6a5",
+  "button_hover_text_color_dark": "#ffffff",
+  "button_radius": "16"
+}

@@ -1,0 +1,58 @@
+<footer>
+  <section class="ft-main">
+    <div class="ft-main-item">
+      <h2 class="ft-title">{{ _('Quiénes somos') }}</h2>
+      <ul>
+        <li><a href="{{ url_for('main.quienes_somos') }}">{{ _('Nuestra historia') }}</a></li>
+        <li><a href="{{ url_for('main.quienes_somos') }}">{{ _('Misión') }}</a></li>
+        <li><a href="{{ url_for('main.quienes_somos') }}">{{ _('Equipo') }}</a></li>
+      </ul>
+    </div>
+    <div class="ft-main-item">
+      <h2 class="ft-title">{{ _('Blog') }}</h2>
+      <ul>
+        <li><a href="{{ url_for('main.blog') }}">{{ _('Artículos') }}</a></li>
+        <li><a href="{{ url_for('main.blog') }}">{{ _('Noticias') }}</a></li>
+        <li><a href="{{ url_for('main.blog') }}">{{ _('Recomendaciones') }}</a></li>
+      </ul>
+    </div>
+    <div class="ft-main-item">
+      <h2 class="ft-title">{{ _('Afiliados') }}</h2>
+      <ul>
+        <li><a href="{{ url_for('main.afiliados') }}">{{ _('Programa') }}</a></li>
+        <li><a href="{{ url_for('main.afiliados') }}">{{ _('Aliados') }}</a></li>
+        <li><a href="{{ url_for('main.afiliados') }}">{{ _('Beneficios') }}</a></li>
+      </ul>
+    </div>
+    <div class="ft-main-item">
+      <h2 class="ft-title">{{ _('Contáctanos') }}</h2>
+      <p>{{ _('Suscríbete para recibir novedades.') }}</p>
+      <form onsubmit="event.preventDefault();">
+        <input type="email" name="email" placeholder="{{ _('Correo electrónico') }}">
+        <input type="submit" value="{{ _('Suscribirme') }}">
+      </form>
+    </div>
+  </section>
+
+  <section class="ft-social">
+    <ul class="ft-social-list">
+      {% for net, data in social_config.items() %}
+        {% if data.enabled and data.url %}
+        <li>
+          <a href="{{ data.url }}" target="_blank" rel="noopener" aria-label="{{ net }}">
+            <i class="bi bi-{{ social_icons.get(net, 'globe') }}"></i>
+          </a>
+        </li>
+        {% endif %}
+      {% endfor %}
+    </ul>
+    <hr class="ft-legal-hr">
+    <div class="ft-legal-compact">
+      <a href="{{ url_for('main.terminos') }}">{{ _('Términos y condiciones') }}</a>
+      <span class="ft-legal-sep">|</span>
+      <a href="{{ url_for('main.privacidad') }}">{{ _('Política de privacidad') }}</a>
+      <span class="ft-legal-sep">|</span>
+      <span>&copy; 2026</span>
+    </div>
+  </section>
+</footer>

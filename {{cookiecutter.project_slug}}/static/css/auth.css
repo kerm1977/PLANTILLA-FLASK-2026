@@ -141,6 +141,7 @@
 }
 
 .auth-card .form-control,
+.auth-card .form-select,
 .perfil-card .form-control,
 .admin-card .form-control,
 .admin-card .form-select,
@@ -155,6 +156,7 @@
 }
 
 .auth-card .form-control:focus,
+.auth-card .form-select:focus,
 .perfil-card .form-control:focus,
 .admin-card .form-control:focus,
 .admin-card .form-select:focus,
@@ -325,6 +327,29 @@
   }
 }
 
+/* Títulos y contenido de Política de Privacidad y Términos y Condiciones */
+.legal-title {
+  color: #000;
+}
+
+.legal-content {
+  text-align: justify !important;
+}
+
+.legal-hr {
+  border: 0;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  opacity: 1;
+}
+
+[data-bs-theme="dark"] .legal-title {
+  color: var(--bs-body-color);
+}
+
+[data-bs-theme="dark"] .legal-hr {
+  border-top-color: rgba(255, 255, 255, 0.1);
+}
+
 /* Layout del Home con video pegado al borde superior y navbar superpuesto */
 .home-main {
   min-height: 100vh;
@@ -352,6 +377,124 @@
   display: block;
 }
 
+.home-image-carousel {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.home-image-slide {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 0.8s ease;
+}
+
+.home-image-slide.active {
+  opacity: 1;
+}
+
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 1rem;
+  background: linear-gradient(rgba(0, 0, 0, 0.35), rgba(0, 0, 0, 0.35));
+  z-index: 1;
+}
+
+.hero-overlay .hero-content {
+  max-width: 600px;
+  color: #ffffff;
+}
+
+.hero-overlay.hero-align-left {
+  justify-content: flex-start;
+  text-align: left;
+  padding-left: 2rem;
+}
+
+.hero-overlay.hero-align-right {
+  justify-content: flex-end;
+  text-align: right;
+  padding-right: 2rem;
+}
+
+.hero-overlay.hero-align-center {
+  justify-content: center;
+  text-align: center;
+}
+
+.hero-title-size-sm { font-size: 1.4rem; }
+.hero-title-size-md { font-size: 2.25rem; }
+.hero-title-size-lg { font-size: 3rem; }
+.hero-title-size-xl { font-size: 3.75rem; }
+
+.hero-desc-size-sm { font-size: 0.9rem; }
+.hero-desc-size-md { font-size: 1.1rem; }
+.hero-desc-size-lg { font-size: 1.35rem; }
+.hero-desc-size-xl { font-size: 1.6rem; }
+
+.hero-btn-size-sm { font-size: 0.8rem; padding: 8px 18px; }
+.hero-btn-size-md { font-size: 1rem; padding: 12px 28px; }
+.hero-btn-size-lg { font-size: 1.15rem; padding: 14px 34px; }
+.hero-btn-size-xl { font-size: 1.35rem; padding: 16px 40px; }
+
+/* Barra de título/descripción para móvil, pegada al borde inferior del video.
+   En desktop permanece oculta (el título/descripción se muestran en el overlay). */
+.hero-mobile-bar {
+  display: none;
+}
+
+/* En móvil solo se deja el botón sobre el video; título y descripción
+   pasan a la barra pegada debajo del video para que no se vean gigantes. */
+@media (max-width: 767px) {
+  .hero-overlay .hero-desktop-only {
+    display: none;
+  }
+
+  .hero-overlay {
+    padding: 0.75rem;
+  }
+
+  .hero-btn-size-sm,
+  .hero-btn-size-md,
+  .hero-btn-size-lg,
+  .hero-btn-size-xl {
+    font-size: 0.75rem;
+    padding: 7px 16px;
+  }
+
+  .hero-mobile-bar {
+    display: block;
+    width: calc(100% + 2rem);
+    margin: 0 -1rem;
+    padding: 0.6rem 1rem 0.8rem;
+    background: var(--card-bg);
+    border-bottom: 1px solid var(--card-border);
+    text-align: center;
+  }
+
+  .hero-mobile-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin: 0 0 0.2rem;
+    color: var(--bs-body-color);
+  }
+
+  .hero-mobile-desc {
+    font-size: 0.8rem;
+    margin: 0;
+    color: var(--text-muted);
+  }
+}
+
 .video-controls {
   position: absolute;
   bottom: 1rem;
@@ -360,6 +503,7 @@
   display: flex;
   justify-content: space-between;
   pointer-events: none;
+  z-index: 2;
 }
 
 .btn-video {

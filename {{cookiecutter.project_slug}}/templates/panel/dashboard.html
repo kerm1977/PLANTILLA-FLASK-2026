@@ -1,18 +1,41 @@
 {% extends "base.html" %}
-{% block title %}{{ _('Administración de tema') }}{% endblock %}
+{% block title %}{{ _('Administración de sistema') }}{% endblock %}
 {% block main_class %}top-main{% endblock %}
 
+{% set pastel_palette = ['#ffadad', '#ffd6a5', '#fdffb6', '#caffbf', '#9bf6ff', '#a0c4ff', '#bdb2ff', '#ffc6ff', '#f9c687', '#8ecae6', '#c6d47a', '#e57373', '#b5ead7', '#c7ceea', '#ffdac1', '#e2f0cb'] %}
+
+{% macro color_picker(field_name, value, label) %}
+<div class="color-picker" data-color-picker>
+  <label class="form-label small d-block">{{ label }}</label>
+  <input type="hidden" name="{{ field_name }}" class="color-value" value="{{ value }}">
+  <button type="button" class="color-picker-trigger" style="background: {{ value }};" aria-label="{{ label }}"></button>
+  <div class="color-picker-popover d-none">
+    <div class="color-wheel-wrap">
+      <canvas class="color-wheel" width="160" height="160"></canvas>
+      <div class="color-wheel-marker"></div>
+    </div>
+    <input type="range" class="color-lightness form-range" min="0" max="100" value="50">
+    <input type="text" class="color-hex form-control form-control-sm" value="{{ value }}" maxlength="7">
+    <div class="color-pastels">
+      {% for c in pastel_palette %}
+      <div class="color-pastel-swatch" style="background: {{ c }};" data-color="{{ c }}" title="{{ c }}"></div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% endmacro %}
+
 {% block content %}
-<div class="perfil-view">
+<div class="perfil-view" id="dashboardAccordion">
   <h2 class="vista-titulo text-center mb-4">
-    <i class="bi bi-palette"></i> {{ _('Administración de tema') }}
+    <i class="bi bi-gear"></i> {{ _('Administración de sistema') }}
   </h2>
 
-  <button type="button" class="collapsible-tab" data-bs-toggle="collapse" data-bs-target="#temaSection" aria-expanded="true" aria-controls="temaSection">
+  <button type="button" class="collapsible-tab" data-bs-toggle="collapse" data-bs-target="#temaSection" aria-expanded="false" aria-controls="temaSection">
     <span><i class="bi bi-palette2 me-2"></i>{{ _('Tema actual') }}</span>
     <i class="bi bi-chevron-down collapsible-tab-icon"></i>
   </button>
-  <div class="collapse show" id="temaSection">
+  <div class="collapse" id="temaSection" data-bs-parent="#dashboardAccordion">
     <div class="perfil-data">
       <div class="perfil-row">
         <span class="perfil-label">{{ _('Tema actual') }}</span>
@@ -29,12 +52,42 @@
     </div>
   </div>
 
-  <button type="button" class="collapsible-tab mt-3" data-bs-toggle="collapse" data-bs-target="#videoSection" aria-expanded="true" aria-controls="videoSection">
-    <span><i class="bi bi-film me-2"></i>{{ _('Video inicial') }}</span>
+  <button type="button" class="collapsible-tab mt-3" data-bs-toggle="collapse" data-bs-target="#videoSection" aria-expanded="false" aria-controls="videoSection">
+    <span><i class="bi bi-film me-2"></i>{{ _('Ajustes de carrusel') }}</span>
     <i class="bi bi-chevron-down collapsible-tab-icon"></i>
   </button>
-  <div class="collapse show" id="videoSection">
+  <div class="collapse" id="videoSection" data-bs-parent="#dashboardAccordion">
   <p class="text-center text-muted small mb-3 mt-3">
+    {{ _('Elige si la página de inicio muestra un video o un carrusel de imágenes. Si seleccionas imágenes, el video no se utilizará.') }}
+  </p>
+
+  <form method="POST" action="{{ url_for('main.dashboard') }}" class="text-center mb-4">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <div class="btn-group mb-2" role="group" aria-label="{{ _('Modo de contenido inicial') }}">
+      <input type="radio" class="btn-check" name="home_media_mode" id="modeVideo" value="video" autocomplete="off" onchange="document.getElementById('intervalWrapper').style.display='none'; document.getElementById('videoModeBlock').style.display='block'; document.getElementById('imagesModeBlock').style.display='none';" {{ 'checked' if home_media_config.mode == 'video' else '' }}>
+      <label class="btn btn-outline-primary" for="modeVideo"><i class="bi bi-camera-video"></i> {{ _('Video') }}</label>
+
+      <input type="radio" class="btn-check" name="home_media_mode" id="modeImages" value="images" autocomplete="off" onchange="document.getElementById('intervalWrapper').style.display='block'; document.getElementById('videoModeBlock').style.display='none'; document.getElementById('imagesModeBlock').style.display='block';" {{ 'checked' if home_media_config.mode == 'images' else '' }}>
+      <label class="btn btn-outline-primary" for="modeImages"><i class="bi bi-images"></i> {{ _('Imágenes') }}</label>
+    </div>
+
+    <div class="mb-2" id="intervalWrapper" style="{{ 'display:none;' if home_media_config.mode != 'images' else '' }}">
+      <label class="form-label small d-block">{{ _('Cambiar imagen cada') }}</label>
+      <select name="home_media_interval" class="form-select" style="max-width: 200px; margin: 0 auto;">
+        {% for sec in home_image_intervals %}
+        <option value="{{ sec }}" {% if home_media_config.interval == sec %}selected{% endif %}>{{ sec }} {{ _('segundos') }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <button type="submit" name="save_home_media_mode" value="1" class="btn btn-success btn-sm">
+      <i class="bi bi-save"></i> {{ _('Guardar modo') }}
+    </button>
+  </form>
+
+  <div id="videoModeBlock" style="{{ 'display:none;' if home_media_config.mode == 'images' else '' }}">
+  <h6 class="text-center mb-2"><i class="bi bi-camera-video"></i> {{ _('Videos') }}</h6>
+  <p class="text-center text-muted small mb-3">
     {{ _('Puedes agregar de 1 a 3 videos que se reproducirán en orden en la página de inicio. El video debe tener una relación de aspecto 16:9 (por ejemplo, 1920x1080 o 1280x720) para que se vea correctamente sin recortes.') }}
   </p>
 
@@ -99,11 +152,497 @@
   {% endif %}
   </div>
 
-  <button type="button" class="collapsible-tab mt-3" data-bs-toggle="collapse" data-bs-target="#traduccionesSection" aria-expanded="true" aria-controls="traduccionesSection">
+  <div id="imagesModeBlock" style="{{ 'display:none;' if home_media_config.mode != 'images' else '' }}">
+  <h6 class="text-center mb-2"><i class="bi bi-images"></i> {{ _('Imágenes') }}</h6>
+  <p class="text-center text-muted small mb-3">
+    {{ _('Puedes agregar de 1 a 6 imágenes que se mostrarán en carrusel cuando el modo sea "Imágenes".') }}
+  </p>
+
+  <div class="home-video-thumbs">
+    {% for s in home_image_slots %}
+    <div class="home-video-thumb">
+      <span class="home-video-thumb-badge">{{ s.slot }}</span>
+      {% if s.url %}
+        <img src="{{ s.url }}" alt="{{ _('Imagen') }} {{ s.slot }}">
+        <div class="home-video-thumb-actions">
+          <form method="POST" action="{{ url_for('main.dashboard') }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <input type="hidden" name="move_image" value="1">
+            <input type="hidden" name="img_slot_a" value="{{ s.slot }}">
+            <input type="hidden" name="img_slot_b" value="{{ s.slot - 1 }}">
+            <button type="submit" class="btn btn-sm btn-outline-secondary" title="{{ _('Mover a la izquierda') }}" {% if s.slot == 1 %}disabled{% endif %}>
+              <i class="bi bi-arrow-left"></i>
+            </button>
+          </form>
+          <form method="POST" action="{{ url_for('main.dashboard') }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <input type="hidden" name="remove_image_slot" value="{{ s.slot }}">
+            <button type="submit" class="btn btn-sm btn-outline-danger" title="{{ _('Eliminar') }}" data-confirm="{{ _('¿Eliminar esta imagen?') }}">
+              <i class="bi bi-trash"></i>
+            </button>
+          </form>
+          <form method="POST" action="{{ url_for('main.dashboard') }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <input type="hidden" name="move_image" value="1">
+            <input type="hidden" name="img_slot_a" value="{{ s.slot }}">
+            <input type="hidden" name="img_slot_b" value="{{ s.slot + 1 }}">
+            <button type="submit" class="btn btn-sm btn-outline-secondary" title="{{ _('Mover a la derecha') }}" {% if s.slot == home_image_slots|length %}disabled{% endif %}>
+              <i class="bi bi-arrow-right"></i>
+            </button>
+          </form>
+        </div>
+      {% else %}
+        <div class="home-video-thumb-empty">
+          <i class="bi bi-image"></i>
+          <span class="small">{{ _('Sin imagen') }}</span>
+        </div>
+      {% endif %}
+    </div>
+    {% endfor %}
+  </div>
+
+  {% set image_slots_full = home_image_slots | selectattr('url') | list | length >= home_image_slots | length %}
+  {% if image_slots_full %}
+  <p class="text-center text-muted small">
+    <i class="bi bi-info-circle"></i> {{ _('Ya hay 6 imágenes. Elimina una para poder agregar otra.') }}
+  </p>
+  {% else %}
+  <form method="POST" action="{{ url_for('main.dashboard') }}" enctype="multipart/form-data" class="text-center">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <input type="hidden" name="upload_home_image" value="1">
+    <div class="mb-3 d-flex justify-content-center">
+      <input type="file" name="home_image" id="home_image" class="form-control" style="max-width: 320px;" accept="image/jpeg,image/png,image/webp" required>
+    </div>
+    <button type="submit" class="btn btn-success">
+      <i class="bi bi-upload"></i> {{ _('Subir imagen') }}
+    </button>
+  </form>
+  {% endif %}
+  </div>
+  </div>
+
+  <button type="button" class="collapsible-tab mt-3" data-bs-toggle="collapse" data-bs-target="#heroSection" aria-expanded="false" aria-controls="heroSection">
+    <span><i class="bi bi-card-heading me-2"></i>{{ _('Sección Hero (sobre el video)') }}</span>
+    <i class="bi bi-chevron-down collapsible-tab-icon"></i>
+  </button>
+  <div class="collapse" id="heroSection" data-bs-parent="#dashboardAccordion">
+    <p class="text-center text-muted small mb-3 mt-3">
+      {{ _('Edita el título, la descripción y el botón que aparecen superpuestos sobre el video de inicio, además de su alineación y tamaño.') }}
+    </p>
+    <form method="POST" action="{{ url_for('main.dashboard') }}" class="row g-3 justify-content-center">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <div class="col-md-8">
+        <label class="form-label small">{{ _('Título') }}</label>
+        <input type="text" name="hero_title" class="form-control" value="{{ hero_config.title }}">
+      </div>
+      <div class="col-md-8">
+        <label class="form-label small">{{ _('Descripción') }}</label>
+        <textarea name="hero_description" class="form-control" rows="2">{{ hero_config.description }}</textarea>
+      </div>
+      <div class="col-md-8">
+        <label class="form-label small">{{ _('Texto del botón') }}</label>
+        <input type="text" name="hero_button_text" class="form-control" value="{{ hero_config.button_text }}">
+      </div>
+      <div class="col-md-4">
+        <label class="form-label small">{{ _('Alineación') }}</label>
+        <select name="hero_align" class="form-select">
+          <option value="left" {% if hero_config.align == 'left' %}selected{% endif %}>{{ _('Izquierda') }}</option>
+          <option value="center" {% if hero_config.align == 'center' %}selected{% endif %}>{{ _('Centro') }}</option>
+          <option value="right" {% if hero_config.align == 'right' %}selected{% endif %}>{{ _('Derecha') }}</option>
+        </select>
+      </div>
+      <div class="col-md-4">
+        <label class="form-label small">{{ _('Tamaño del título') }}</label>
+        <select name="hero_title_size" class="form-select">
+          <option value="sm" {% if hero_config.title_size == 'sm' %}selected{% endif %}>{{ _('Pequeño') }}</option>
+          <option value="md" {% if hero_config.title_size == 'md' %}selected{% endif %}>{{ _('Mediano') }}</option>
+          <option value="lg" {% if hero_config.title_size == 'lg' %}selected{% endif %}>{{ _('Grande') }}</option>
+          <option value="xl" {% if hero_config.title_size == 'xl' %}selected{% endif %}>{{ _('Extra grande') }}</option>
+        </select>
+      </div>
+      <div class="col-md-4">
+        <label class="form-label small">{{ _('Tamaño de la descripción') }}</label>
+        <select name="hero_description_size" class="form-select">
+          <option value="sm" {% if hero_config.description_size == 'sm' %}selected{% endif %}>{{ _('Pequeño') }}</option>
+          <option value="md" {% if hero_config.description_size == 'md' %}selected{% endif %}>{{ _('Mediano') }}</option>
+          <option value="lg" {% if hero_config.description_size == 'lg' %}selected{% endif %}>{{ _('Grande') }}</option>
+          <option value="xl" {% if hero_config.description_size == 'xl' %}selected{% endif %}>{{ _('Extra grande') }}</option>
+        </select>
+      </div>
+      <div class="col-md-4">
+        <label class="form-label small">{{ _('Tamaño del botón') }}</label>
+        <select name="hero_button_size" class="form-select">
+          <option value="sm" {% if hero_config.button_size == 'sm' %}selected{% endif %}>{{ _('Pequeño') }}</option>
+          <option value="md" {% if hero_config.button_size == 'md' %}selected{% endif %}>{{ _('Mediano') }}</option>
+          <option value="lg" {% if hero_config.button_size == 'lg' %}selected{% endif %}>{{ _('Grande') }}</option>
+          <option value="xl" {% if hero_config.button_size == 'xl' %}selected{% endif %}>{{ _('Extra grande') }}</option>
+        </select>
+      </div>
+      <div class="col-12">
+        <h6 class="mt-2 mb-2"><i class="bi bi-brightness-high"></i> {{ _('Colores del botón · Modo claro') }}</h6>
+      </div>
+      <div class="col-auto text-center">
+        {{ color_picker('hero_button_bg_color_light', hero_config.button_bg_color_light, _('Fondo')) }}
+      </div>
+      <div class="col-auto text-center">
+        {{ color_picker('hero_button_text_color_light', hero_config.button_text_color_light, _('Texto')) }}
+      </div>
+      <div class="col-auto text-center">
+        {{ color_picker('hero_button_hover_bg_color_light', hero_config.button_hover_bg_color_light, _('Fondo (hover)')) }}
+      </div>
+      <div class="col-auto text-center">
+        {{ color_picker('hero_button_hover_text_color_light', hero_config.button_hover_text_color_light, _('Texto (hover)')) }}
+      </div>
+      <div class="col-12">
+        <h6 class="mt-2 mb-2"><i class="bi bi-moon-stars"></i> {{ _('Colores del botón · Modo oscuro') }}</h6>
+      </div>
+      <div class="col-auto text-center">
+        {{ color_picker('hero_button_bg_color_dark', hero_config.button_bg_color_dark, _('Fondo')) }}
+      </div>
+      <div class="col-auto text-center">
+        {{ color_picker('hero_button_text_color_dark', hero_config.button_text_color_dark, _('Texto')) }}
+      </div>
+      <div class="col-auto text-center">
+        {{ color_picker('hero_button_hover_bg_color_dark', hero_config.button_hover_bg_color_dark, _('Fondo (hover)')) }}
+      </div>
+      <div class="col-auto text-center">
+        {{ color_picker('hero_button_hover_text_color_dark', hero_config.button_hover_text_color_dark, _('Texto (hover)')) }}
+      </div>
+      <div class="col-md-4">
+        <label class="form-label small">{{ _('Redondel del botón') }}</label>
+        <select name="hero_button_radius" class="form-select">
+          <option value="0" {% if hero_config.button_radius == '0' %}selected{% endif %}>{{ _('Cuadrado') }}</option>
+          <option value="6" {% if hero_config.button_radius == '6' %}selected{% endif %}>{{ _('Suave') }}</option>
+          <option value="16" {% if hero_config.button_radius == '16' %}selected{% endif %}>{{ _('Redondeado') }}</option>
+          <option value="999" {% if hero_config.button_radius == '999' %}selected{% endif %}>{{ _('Píldora') }}</option>
+        </select>
+      </div>
+      <div class="col-12 text-center">
+        <button type="submit" name="save_hero_config" value="1" class="btn btn-success">
+          <i class="bi bi-save"></i> {{ _('Guardar cambios') }}
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <button type="button" class="collapsible-tab mt-3" data-bs-toggle="collapse" data-bs-target="#whatsappSection" aria-expanded="false" aria-controls="whatsappSection">
+    <span><i class="bi bi-whatsapp me-2"></i>{{ _('Administrar botón de WhatsApp') }}</span>
+    <i class="bi bi-chevron-down collapsible-tab-icon"></i>
+  </button>
+  <div class="collapse" id="whatsappSection" data-bs-parent="#dashboardAccordion">
+    <p class="text-center text-muted small mb-3 mt-3">
+      {{ _('Define el número de teléfono al que redirige el botón flotante de WhatsApp visible en todas las páginas. Escribe solo el código de país y el número, sin espacios ni símbolos (ejemplo: 50688887777).') }}
+    </p>
+    <form method="POST" action="{{ url_for('main.dashboard') }}" class="row g-3 justify-content-center">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <div class="col-md-6">
+        <label class="form-label small">{{ _('Número de WhatsApp (con código de país)') }}</label>
+        <input type="text" name="whatsapp_phone" class="form-control" value="{{ whatsapp_config.phone }}" placeholder="50688887777">
+      </div>
+      <div class="col-12 text-center">
+        <button type="submit" name="save_whatsapp_config" value="1" class="btn btn-success">
+          <i class="bi bi-save"></i> {{ _('Guardar número') }}
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <button type="button" class="collapsible-tab mt-3" data-bs-toggle="collapse" data-bs-target="#socialSection" aria-expanded="false" aria-controls="socialSection">
+    <span><i class="bi bi-share me-2"></i>{{ _('Administrar redes sociales') }}</span>
+    <i class="bi bi-chevron-down collapsible-tab-icon"></i>
+  </button>
+  <div class="collapse" id="socialSection" data-bs-parent="#dashboardAccordion">
+    <p class="text-center text-muted small mb-3 mt-3">
+      {{ _('Agrega el enlace de cada red social y actívala o desactívala con el interruptor. Más adelante se definirá dónde se mostrarán.') }}
+    </p>
+    <form method="POST" action="{{ url_for('main.dashboard') }}" class="row g-3 justify-content-center">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+      <div class="col-md-8 d-flex align-items-center gap-2">
+        <i class="bi bi-instagram fs-4"></i>
+        <input type="url" name="social_instagram_url" class="form-control" value="{{ social_config.instagram.url }}" placeholder="https://instagram.com/usuario">
+        <div class="form-check form-switch m-0">
+          <input class="form-check-input" type="checkbox" role="switch" name="social_instagram_enabled" value="1" id="socialInstagram" {{ 'checked' if social_config.instagram.enabled else '' }}>
+          <label class="form-check-label small" for="socialInstagram">{{ _('Activo') }}</label>
+        </div>
+      </div>
+
+      <div class="col-md-8 d-flex align-items-center gap-2">
+        <i class="bi bi-facebook fs-4"></i>
+        <input type="url" name="social_facebook_url" class="form-control" value="{{ social_config.facebook.url }}" placeholder="https://facebook.com/usuario">
+        <div class="form-check form-switch m-0">
+          <input class="form-check-input" type="checkbox" role="switch" name="social_facebook_enabled" value="1" id="socialFacebook" {{ 'checked' if social_config.facebook.enabled else '' }}>
+          <label class="form-check-label small" for="socialFacebook">{{ _('Activo') }}</label>
+        </div>
+      </div>
+
+      <div class="col-md-8 d-flex align-items-center gap-2">
+        <i class="bi bi-twitter-x fs-4"></i>
+        <input type="url" name="social_x_url" class="form-control" value="{{ social_config.x.url }}" placeholder="https://x.com/usuario">
+        <div class="form-check form-switch m-0">
+          <input class="form-check-input" type="checkbox" role="switch" name="social_x_enabled" value="1" id="socialX" {{ 'checked' if social_config.x.enabled else '' }}>
+          <label class="form-check-label small" for="socialX">{{ _('Activo') }}</label>
+        </div>
+      </div>
+
+      <div class="col-md-8 d-flex align-items-center gap-2">
+        <i class="bi bi-tiktok fs-4"></i>
+        <input type="url" name="social_tiktok_url" class="form-control" value="{{ social_config.tiktok.url }}" placeholder="https://tiktok.com/@usuario">
+        <div class="form-check form-switch m-0">
+          <input class="form-check-input" type="checkbox" role="switch" name="social_tiktok_enabled" value="1" id="socialTiktok" {{ 'checked' if social_config.tiktok.enabled else '' }}>
+          <label class="form-check-label small" for="socialTiktok">{{ _('Activo') }}</label>
+        </div>
+      </div>
+
+      <div class="col-12 text-center">
+        <button type="submit" name="save_social_config" value="1" class="btn btn-success">
+          <i class="bi bi-save"></i> {{ _('Guardar redes sociales') }}
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <button type="button" class="collapsible-tab mt-3" data-bs-toggle="collapse" data-bs-target="#cotizadorSection" aria-expanded="false" aria-controls="cotizadorSection">
+    <span><i class="bi bi-clipboard2-check me-2"></i>{{ _('Administración de cotización') }}</span>
+    <i class="bi bi-chevron-down collapsible-tab-icon"></i>
+  </button>
+  <div class="collapse" id="cotizadorSection" data-bs-parent="#dashboardAccordion">
+    <p class="text-center text-muted small mb-2 mt-3">
+      {{ _('Administra las preguntas del formulario de cotización (wizard). Puedes editar el texto, tipo, opciones y orden, o eliminar y agregar nuevas preguntas.') }}
+    </p>
+
+    <form method="POST" action="{{ url_for('main.dashboard') }}" class="mb-3">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <input type="hidden" name="save_quote_button_config" value="1">
+      <div class="form-check form-switch d-flex justify-content-center align-items-center gap-2 p-2" style="border: 1px solid var(--card-border); border-radius: 0.5rem; background: var(--card-bg);">
+        <input class="form-check-input" type="checkbox" role="switch" id="showQuoteButton" name="quote_button_visible" value="1" {{ 'checked' if quote_button_config.visible else '' }} onchange="this.form.submit()">
+        <label class="form-check-label" for="showQuoteButton">{{ _('Mostrar botón del cotizador en el menú') }}</label>
+      </div>
+    </form>
+
+    <div class="accordion" id="quoteStepsAccordion">
+    {% set current_step = namespace(value=None) %}
+    {% for f in quote_fields %}
+      {% if f.step != current_step.value %}
+        {% if current_step.value is not none %}</div></div></div>{% endif %}
+        {% set current_step.value = f.step %}
+        <div class="quote-step-item">
+          <button class="quote-step-header" type="button" data-bs-toggle="collapse" data-bs-target="#quoteStep{{ f.step }}" aria-expanded="false" aria-controls="quoteStep{{ f.step }}">
+            <i class="bi bi-hash me-1"></i> {{ _('Preguntas') }} {{ f.step }}
+            <i class="bi bi-chevron-down ms-auto step-chevron"></i>
+          </button>
+          <div class="collapse" id="quoteStep{{ f.step }}" data-bs-parent="#quoteStepsAccordion">
+            <div class="d-flex flex-column gap-2 pt-2">
+      {% endif %}
+      <div class="p-2" style="border: 1px solid var(--card-border); border-radius: 0.5rem;">
+        <div>
+          <strong>{{ _(f.label) }}</strong>
+          <span class="badge text-bg-secondary ms-1">{{ f.field_type }}</span>
+          {% if f.required %}<span class="badge text-bg-warning ms-1">{{ _('Requerido') }}</span>{% endif %}
+        </div>
+        <hr class="my-2">
+        <div class="d-flex justify-content-end gap-2">
+          <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#editConfirmModal{{ f.id }}">
+            <i class="bi bi-pencil"></i> {{ _('Editar') }}
+          </button>
+          <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteStep1Modal{{ f.id }}">
+            <i class="bi bi-trash"></i> {{ _('Eliminar') }}
+          </button>
+        </div>
+
+        <div class="modal fade" id="editConfirmModal{{ f.id }}" tabindex="-1" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content" style="background: var(--card-bg); color: var(--bs-body-color);">
+              <div class="modal-header">
+                <h5 class="modal-title">{{ _('Editar pregunta') }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                <p>{{ _('¿Está seguro de que desea editar esta pregunta?') }}</p>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ _('Cancelar') }}</button>
+                <button type="button" class="btn btn-primary" onclick="bootstrap.Modal.getOrCreateInstance(document.getElementById('editConfirmModal{{ f.id }}')).hide(); bootstrap.Collapse.getOrCreateInstance(document.getElementById('editQuoteField{{ f.id }}')).show();">
+                  <i class="bi bi-pencil"></i> {{ _('Sí, editar') }}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal fade" id="deleteStep1Modal{{ f.id }}" tabindex="-1" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content" style="background: var(--card-bg); color: var(--bs-body-color);">
+              <div class="modal-header">
+                <h5 class="modal-title">{{ _('Eliminar pregunta') }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                <p>{{ _('¿Desea eliminar esta pregunta del cotizador?') }}</p>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ _('Cancelar') }}</button>
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#deleteStep2Modal{{ f.id }}">
+                  <i class="bi bi-arrow-right"></i> {{ _('Continuar') }}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal fade" id="deleteStep2Modal{{ f.id }}" tabindex="-1" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content" style="background: var(--card-bg); color: var(--bs-body-color);">
+              <div class="modal-header">
+                <h5 class="modal-title">{{ _('Confirmar eliminación') }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                <p class="text-danger"><i class="bi bi-exclamation-triangle-fill"></i> {{ _('¿Está seguro de que desea eliminar esta pregunta? Esta acción no se puede deshacer.') }}</p>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ _('Cancelar') }}</button>
+                <form method="POST" action="{{ url_for('main.dashboard') }}" class="d-inline">
+                  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                  <button type="submit" name="delete_quote_field" value="{{ f.id }}" class="btn btn-danger">
+                    <i class="bi bi-trash"></i> {{ _('Sí, eliminar') }}
+                  </button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="collapse mt-2" id="editQuoteField{{ f.id }}">
+          <form method="POST" action="{{ url_for('main.dashboard') }}" class="row g-2">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <input type="hidden" name="quote_field_id" value="{{ f.id }}">
+            <div class="col-md-2">
+              <label class="form-label small">{{ _('Paso') }}</label>
+              <input type="number" name="quote_step" class="form-control form-control-sm" value="{{ f.step }}" min="1">
+            </div>
+            <div class="col-md-4">
+              <label class="form-label small">{{ _('Tipo') }}</label>
+              <select name="quote_field_type" class="form-select form-select-sm">
+                {% for ftype in quote_field_types %}
+                <option value="{{ ftype }}" {% if f.field_type == ftype %}selected{% endif %}>{{ ftype }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="col-md-6 d-flex align-items-end">
+              <div class="form-check form-switch m-0">
+                <input class="form-check-input" type="checkbox" role="switch" name="quote_required" value="1" id="required{{ f.id }}" {{ 'checked' if f.required else '' }}>
+                <label class="form-check-label small" for="required{{ f.id }}">{{ _('Requerido') }}</label>
+              </div>
+            </div>
+            <div class="col-12">
+              <label class="form-label small">{{ _('Pregunta / etiqueta') }}</label>
+              <input type="text" name="quote_label" class="form-control form-control-sm" value="{{ f.label }}">
+            </div>
+            <div class="col-12">
+              <label class="form-label small">{{ _('Texto de ayuda (opcional)') }}</label>
+              <textarea name="quote_help_text" class="form-control form-control-sm" rows="2">{{ f.help_text or '' }}</textarea>
+            </div>
+            <div class="col-md-8">
+              <label class="form-label small">{{ _('Opciones (una por línea, solo para tipos de selección)') }}</label>
+              <textarea name="quote_options" class="form-control form-control-sm" rows="3">{{ (f.options or []) | join('\n') }}</textarea>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label small">{{ _('Máximo de opciones a elegir') }}</label>
+              <input type="number" name="quote_max_choices" class="form-control form-control-sm" value="{{ f.max_choices or '' }}" min="1">
+            </div>
+            <div class="col-12 text-end">
+              <button type="submit" name="edit_quote_field" value="1" class="btn btn-sm btn-success">
+                <i class="bi bi-save"></i> {{ _('Guardar pregunta') }}
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    {% endfor %}
+    {% if quote_fields %}</div></div></div>{% endif %}
+    </div>
+
+    <button type="button" class="btn btn-outline-success w-100 mt-3" data-bs-toggle="collapse" data-bs-target="#addQuoteFieldForm">
+      <i class="bi bi-plus-circle"></i> {{ _('Agregar pregunta') }}
+    </button>
+    <div class="collapse mt-2" id="addQuoteFieldForm">
+      <form method="POST" action="{{ url_for('main.dashboard') }}" class="row g-2">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <div class="col-md-4">
+          <label class="form-label small">{{ _('¿A qué sección deseas que pertenezca esta nueva pregunta?') }}</label>
+          {% if quote_fields %}
+          <select name="quote_step" class="form-select form-select-sm" required>
+            {% for step in quote_fields | map(attribute='step') | unique | list | sort %}
+            <option value="{{ step }}">{{ _('Preguntas') }} {{ step }}</option>
+            {% endfor %}
+          </select>
+          {% else %}
+          <input type="number" name="quote_step" class="form-control form-control-sm" value="1" min="1">
+          {% endif %}
+        </div>
+        <div class="col-md-4">
+          <label class="form-label small">{{ _('Tipo') }}</label>
+          <select name="quote_field_type" class="form-select form-select-sm">
+            {% for ftype in quote_field_types %}
+            <option value="{{ ftype }}">{{ ftype }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="col-md-6 d-flex align-items-end">
+          <div class="form-check form-switch m-0">
+            <input class="form-check-input" type="checkbox" role="switch" name="quote_required" value="1" id="newRequired" checked>
+            <label class="form-check-label small" for="newRequired">{{ _('Requerido') }}</label>
+          </div>
+        </div>
+        <div class="col-12">
+          <label class="form-label small">{{ _('Pregunta / etiqueta') }}</label>
+          <input type="text" name="quote_label" class="form-control form-control-sm" placeholder="{{ _('Escribe la pregunta') }}" required>
+        </div>
+        <div class="col-12">
+          <label class="form-label small">{{ _('Texto de ayuda (opcional)') }}</label>
+          <textarea name="quote_help_text" class="form-control form-control-sm" rows="2"></textarea>
+        </div>
+        <div class="col-md-8">
+          <label class="form-label small">{{ _('Opciones (una por línea, solo para tipos de selección)') }}</label>
+          <textarea name="quote_options" class="form-control form-control-sm" rows="3"></textarea>
+        </div>
+        <div class="col-md-4">
+          <label class="form-label small">{{ _('Máximo de opciones a elegir') }}</label>
+          <input type="number" name="quote_max_choices" class="form-control form-control-sm" min="1">
+        </div>
+        <div class="col-12 text-end">
+          <button type="submit" name="add_quote_field" value="1" class="btn btn-sm btn-success">
+            <i class="bi bi-plus-circle"></i> {{ _('Agregar') }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <button type="button" class="collapsible-tab mt-3" data-bs-toggle="collapse" data-bs-target="#quoteEmailSection" aria-expanded="false" aria-controls="quoteEmailSection">
+    <span><i class="bi bi-envelope-at me-2"></i>{{ _('Correo de cotizaciones') }}</span>
+    <i class="bi bi-chevron-down collapsible-tab-icon"></i>
+  </button>
+  <div class="collapse" id="quoteEmailSection" data-bs-parent="#dashboardAccordion">
+    <form method="POST" action="{{ url_for('main.dashboard') }}" class="perfil-row mt-2" style="flex-wrap: wrap;">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <input type="hidden" name="save_quote_email_config" value="1">
+      <div class="perfil-label" style="white-space: normal;">{{ _('Correo electrónico de destino') }}</div>
+      <div class="perfil-value" style="display: flex; gap: 0.5rem; flex-wrap: wrap; justify-content: flex-end;">
+        <input type="email" name="quote_email" class="form-control" value="{{ quote_email_config.email }}" placeholder="correo@ejemplo.com" style="max-width: 280px; min-width: 180px;">
+        <button type="submit" class="btn btn-success">
+          <i class="bi bi-check-lg"></i> {{ _('Guardar') }}
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <button type="button" class="collapsible-tab mt-3" data-bs-toggle="collapse" data-bs-target="#traduccionesSection" aria-expanded="false" aria-controls="traduccionesSection">
     <span><i class="bi bi-translate me-2"></i>{{ _('Traducciones') }}</span>
     <i class="bi bi-chevron-down collapsible-tab-icon"></i>
   </button>
-  <div class="collapse show" id="traduccionesSection">
+  <div class="collapse" id="traduccionesSection" data-bs-parent="#dashboardAccordion">
     <p class="text-center text-muted small mb-3 mt-3">
       {{ _('Escanea las plantillas y el código en busca de textos nuevos (llamadas a la función de traducción) y los agrega como pendientes a cada idioma. No sobrescribe las traducciones ya existentes.') }}
     </p>
@@ -129,7 +668,7 @@
     <span><i class="bi bi-hdd-network me-2"></i>{{ _('Administración de red') }}</span>
     <i class="bi bi-chevron-down collapsible-tab-icon"></i>
   </button>
-  <div class="collapse" id="redSection">
+  <div class="collapse" id="redSection" data-bs-parent="#dashboardAccordion">
     <p class="text-center text-muted small mb-3 mt-3">
       {{ _('Configura y genera los archivos necesarios para subir esta aplicación a PythonAnywhere.') }}
     </p>
@@ -237,6 +776,254 @@
       <li>{{ _('Pulsa el botón verde Reload para aplicar los cambios y visita tu dominio:') }} <code>{{ deploy_config.domain or (deploy_config.pa_username or 'TU_USUARIO') + '.pythonanywhere.com' }}</code></li>
     </ol>
   </div>
+
+  <button type="button" class="collapsible-tab mt-3" data-bs-toggle="collapse" data-bs-target="#formFieldsSection" aria-expanded="{% if request.args.get('section') == 'formFields' %}true{% else %}false{% endif %}" aria-controls="formFieldsSection">
+    <span><i class="bi bi-ui-checks me-2"></i>{{ _('Administración de formulario de registro') }}</span>
+    <i class="bi bi-chevron-down collapsible-tab-icon"></i>
+  </button>
+  <div class="collapse{% if request.args.get('section') == 'formFields' %} show{% endif %}" id="formFieldsSection" data-bs-parent="#dashboardAccordion">
+    <p class="text-center text-muted small mb-2 mt-3">
+      {{ _('Activa o desactiva campos del formulario de registro, marca cuáles son obligatorios y agrega campos personalizados para solicitar más información.') }}
+    </p>
+
+    <form method="POST" action="{{ url_for('main.dashboard') }}" class="perfil-row align-items-center">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <input type="hidden" name="save_form_fields_config" value="1">
+      <span class="perfil-label flex-grow-1">{{ _('Formularios activos') }}</span>
+      <div class="form-check form-switch m-0">
+        <input class="form-check-input" type="checkbox" name="form_fields_enabled" id="formFieldsEnabled" value="1" {{ 'checked' if form_fields_config.enabled else '' }} onchange="this.form.submit()">
+      </div>
+    </form>
+
+    <hr class="my-3">
+
+    <h6 class="text-center mb-3"><i class="bi bi-plus-circle"></i> {{ _('Agregar campo personalizado') }}</h6>
+    <form method="POST" action="{{ url_for('main.dashboard') }}" class="perfil-data">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <input type="hidden" name="add_form_field" value="1">
+      <div class="perfil-row">
+        <label class="perfil-label" for="formFieldName">{{ _('Nombre del campo') }}</label>
+        <input type="text" name="form_field_name" id="formFieldName" class="form-control" maxlength="80">
+      </div>
+      <div class="perfil-row">
+        <label class="perfil-label" for="formFieldType">{{ _('Tipo de dato') }}</label>
+        <select name="form_field_type" id="formFieldType" class="form-select">
+          {% for ft in form_field_types %}
+          <option value="{{ ft }}">{{ form_field_type_labels[ft] }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="perfil-row align-items-center">
+        <span class="perfil-label flex-grow-1">{{ _('Obligatorio') }}</span>
+        <div class="form-check form-switch m-0">
+          <input class="form-check-input" type="checkbox" name="form_field_required" id="formFieldRequired" value="1">
+        </div>
+      </div>
+      <div class="text-end mt-3">
+        <button type="submit" class="btn btn-success btn-sm">
+          <i class="bi bi-plus-lg"></i> {{ _('Agregar campo') }}
+        </button>
+      </div>
+    </form>
+
+    {% if form_fields_config.fields %}
+    <hr class="my-3">
+    <h6 class="text-center mb-2"><i class="bi bi-list-check"></i> {{ _('Campos configurados') }}</h6>
+    <div class="list-group list-group-flush" style="background: transparent;">
+      {% for field in form_fields_config.fields %}
+      <div class="list-group-item d-flex justify-content-between align-items-center gap-2" style="background: transparent; border-color: var(--bs-border-color);">
+        <div class="overflow-hidden">
+          <strong class="d-block text-truncate">{{ field.name }}</strong>
+          <span class="small text-muted">{{ form_field_type_labels[field.data_type] }} — {{ _('Obligatorio') if field.required else _('Opcional') }}</span>
+        </div>
+        <div class="d-flex align-items-center gap-2 flex-shrink-0">
+          <form method="POST" action="{{ url_for('main.dashboard') }}" class="d-inline m-0">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <input type="hidden" name="toggle_form_field" value="1">
+            <input type="hidden" name="toggle_form_field_id" value="{{ field.id }}">
+            <div class="form-check form-switch m-0">
+              <input class="form-check-input" type="checkbox" onchange="this.form.submit()" {{ 'checked' if field.active else '' }}>
+            </div>
+          </form>
+          <form method="POST" action="{{ url_for('main.dashboard') }}" class="d-inline m-0" data-confirm="{{ _('¿Eliminar este campo?') }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <input type="hidden" name="delete_form_field" value="1">
+            <input type="hidden" name="delete_form_field_id" value="{{ field.id }}">
+            <button type="submit" class="btn btn-sm btn-danger">
+              <i class="bi bi-trash"></i>
+            </button>
+          </form>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+  </div>
+
+  <button type="button" class="collapsible-tab mt-3" data-bs-toggle="collapse" data-bs-target="#privacyPolicySection" aria-expanded="{% if request.args.get('section') == 'privacyPolicy' %}true{% else %}false{% endif %}" aria-controls="privacyPolicySection">
+    <span><i class="bi bi-shield-check me-2"></i>{{ _('Administración de políticas de privacidad') }}</span>
+    <i class="bi bi-chevron-down collapsible-tab-icon"></i>
+  </button>
+  <div class="collapse{% if request.args.get('section') == 'privacyPolicy' %} show{% endif %}" id="privacyPolicySection" data-bs-parent="#dashboardAccordion">
+    <p class="text-center text-muted small mb-2 mt-3">
+      {{ _('Edita los puntos de la política de privacidad, cambia la fecha, el resumen y el contacto, o agrega nuevos puntos.') }}
+    </p>
+
+    <form method="POST" action="{{ url_for('main.dashboard') }}" class="perfil-data">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <input type="hidden" name="save_privacy_policy" value="1">
+
+      <div class="perfil-row">
+        <label class="perfil-label" for="privacyUpdateDate">{{ _('Fecha de actualización') }}</label>
+        <input type="text" name="privacy_update_date" id="privacyUpdateDate" class="form-control" value="{{ privacy_config.update_date }}" maxlength="120">
+      </div>
+
+      <div class="perfil-row flex-column align-items-start">
+        <label class="perfil-label w-100" for="privacySummary">{{ _('Resumen general') }}</label>
+        <textarea name="privacy_summary" id="privacySummary" class="form-control" rows="3">{{ privacy_config.summary }}</textarea>
+      </div>
+
+      <div class="perfil-row flex-column align-items-start">
+        <label class="perfil-label w-100" for="privacyContact">{{ _('Contacto y ejercicio de derechos') }}</label>
+        <textarea name="privacy_contact" id="privacyContact" class="form-control" rows="3">{{ privacy_config.contact }}</textarea>
+      </div>
+
+      {% if privacy_config.sections %}
+      <hr class="my-3">
+      <h6 class="text-center mb-3"><i class="bi bi-list-check"></i> {{ _('Puntos configurados') }}</h6>
+      {% for section in privacy_config.sections %}
+      <div class="perfil-row flex-column align-items-start">
+        <div class="d-flex justify-content-between w-100 gap-2 mb-2">
+          <input type="text" name="privacy_title_{{ loop.index0 }}" class="form-control" value="{{ section.title }}" placeholder="{{ _('Título del punto') }}">
+          <form method="POST" action="{{ url_for('main.dashboard') }}" class="d-inline m-0" data-confirm="{{ _('¿Eliminar este punto?') }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <input type="hidden" name="delete_privacy_section" value="1">
+            <input type="hidden" name="delete_privacy_index" value="{{ loop.index0 }}">
+            <button type="submit" class="btn btn-sm btn-danger">
+              <i class="bi bi-trash"></i>
+            </button>
+          </form>
+        </div>
+        <textarea name="privacy_content_{{ loop.index0 }}" class="form-control" rows="5" placeholder="{{ _('Contenido HTML del punto') }}">{{ section.content }}</textarea>
+      </div>
+      {% endfor %}
+      {% endif %}
+
+      <div class="text-end mt-3">
+        <button type="submit" class="btn btn-success btn-sm">
+          <i class="bi bi-check-lg"></i> {{ _('Guardar política') }}
+        </button>
+      </div>
+    </form>
+
+    <hr class="my-3">
+    <h6 class="text-center mb-3"><i class="bi bi-plus-circle"></i> {{ _('Agregar punto') }}</h6>
+    <form method="POST" action="{{ url_for('main.dashboard') }}" class="perfil-data">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <input type="hidden" name="add_privacy_section" value="1">
+      <div class="perfil-row">
+        <label class="perfil-label" for="newPrivacyTitle">{{ _('Título del punto') }}</label>
+        <input type="text" name="new_privacy_title" id="newPrivacyTitle" class="form-control" maxlength="120">
+      </div>
+      <div class="perfil-row flex-column align-items-start">
+        <label class="perfil-label w-100" for="newPrivacyContent">{{ _('Contenido HTML del punto') }}</label>
+        <textarea name="new_privacy_content" id="newPrivacyContent" class="form-control" rows="4"></textarea>
+      </div>
+      <div class="text-end mt-3">
+        <button type="submit" class="btn btn-primary btn-sm">
+          <i class="bi bi-plus-lg"></i> {{ _('Agregar punto') }}
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <button type="button" class="collapsible-tab mt-3" data-bs-toggle="collapse" data-bs-target="#termsConditionsSection" aria-expanded="{% if request.args.get('section') == 'termsConditions' %}true{% else %}false{% endif %}" aria-controls="termsConditionsSection">
+    <span><i class="bi bi-file-text me-2"></i>{{ _('Administración de términos y condiciones') }}</span>
+    <i class="bi bi-chevron-down collapsible-tab-icon"></i>
+  </button>
+  <div class="collapse{% if request.args.get('section') == 'termsConditions' %} show{% endif %}" id="termsConditionsSection" data-bs-parent="#dashboardAccordion">
+    <p class="text-center text-muted small mb-2 mt-3">
+      {{ _('Edita los puntos de los términos y condiciones, cambia el título, subtítulo, fecha, resumen, contacto, o agrega nuevos puntos.') }}
+    </p>
+
+    <form method="POST" action="{{ url_for('main.dashboard') }}" class="perfil-data">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <input type="hidden" name="save_terms_conditions" value="1">
+
+      <div class="perfil-row">
+        <label class="perfil-label" for="termsTitle">{{ _('Título principal') }}</label>
+        <input type="text" name="terms_title" id="termsTitle" class="form-control" value="{{ terms_config.title }}" maxlength="120">
+      </div>
+
+      <div class="perfil-row">
+        <label class="perfil-label" for="termsSubtitle">{{ _('Subtítulo / empresa') }}</label>
+        <input type="text" name="terms_subtitle" id="termsSubtitle" class="form-control" value="{{ terms_config.subtitle }}" maxlength="120">
+      </div>
+
+      <div class="perfil-row">
+        <label class="perfil-label" for="termsUpdateDate">{{ _('Fecha de actualización') }}</label>
+        <input type="text" name="terms_update_date" id="termsUpdateDate" class="form-control" value="{{ terms_config.update_date }}" maxlength="120">
+      </div>
+
+      <div class="perfil-row flex-column align-items-start">
+        <label class="perfil-label w-100" for="termsSummary">{{ _('Marco general') }}</label>
+        <textarea name="terms_summary" id="termsSummary" class="form-control" rows="3">{{ terms_config.summary }}</textarea>
+      </div>
+
+      <div class="perfil-row flex-column align-items-start">
+        <label class="perfil-label w-100" for="termsContact">{{ _('Contacto') }}</label>
+        <textarea name="terms_contact" id="termsContact" class="form-control" rows="3">{{ terms_config.contact }}</textarea>
+      </div>
+
+      {% if terms_config.sections %}
+      <hr class="my-3">
+      <h6 class="text-center mb-3"><i class="bi bi-list-check"></i> {{ _('Puntos configurados') }}</h6>
+      {% for section in terms_config.sections %}
+      <div class="perfil-row flex-column align-items-start">
+        <div class="d-flex justify-content-between w-100 gap-2 mb-2">
+          <input type="text" name="terms_title_{{ loop.index0 }}" class="form-control" value="{{ section.title }}" placeholder="{{ _('Título del punto') }}">
+          <form method="POST" action="{{ url_for('main.dashboard') }}" class="d-inline m-0" data-confirm="{{ _('¿Eliminar este punto?') }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <input type="hidden" name="delete_terms_section" value="1">
+            <input type="hidden" name="delete_terms_index" value="{{ loop.index0 }}">
+            <button type="submit" class="btn btn-sm btn-danger">
+              <i class="bi bi-trash"></i>
+            </button>
+          </form>
+        </div>
+        <textarea name="terms_content_{{ loop.index0 }}" class="form-control" rows="5" placeholder="{{ _('Contenido HTML del punto') }}">{{ section.content }}</textarea>
+      </div>
+      {% endfor %}
+      {% endif %}
+
+      <div class="text-end mt-3">
+        <button type="submit" class="btn btn-success btn-sm">
+          <i class="bi bi-check-lg"></i> {{ _('Guardar términos') }}
+        </button>
+      </div>
+    </form>
+
+    <hr class="my-3">
+    <h6 class="text-center mb-3"><i class="bi bi-plus-circle"></i> {{ _('Agregar punto') }}</h6>
+    <form method="POST" action="{{ url_for('main.dashboard') }}" class="perfil-data">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <input type="hidden" name="add_terms_section" value="1">
+      <div class="perfil-row">
+        <label class="perfil-label" for="newTermsTitle">{{ _('Título del punto') }}</label>
+        <input type="text" name="new_terms_title" id="newTermsTitle" class="form-control" maxlength="120">
+      </div>
+      <div class="perfil-row flex-column align-items-start">
+        <label class="perfil-label w-100" for="newTermsContent">{{ _('Contenido HTML del punto') }}</label>
+        <textarea name="new_terms_content" id="newTermsContent" class="form-control" rows="4"></textarea>
+      </div>
+      <div class="text-end mt-3">
+        <button type="submit" class="btn btn-primary btn-sm">
+          <i class="bi bi-plus-lg"></i> {{ _('Agregar punto') }}
+        </button>
+      </div>
+    </form>
+  </div>
+
 </div>
 
 <script>
@@ -245,14 +1032,6 @@
     const current = document.documentElement.getAttribute('data-bs-theme') || 'light';
     el.textContent = current === 'dark' ? el.dataset.dark : el.dataset.light;
   })();
-
-  document.querySelectorAll('button[data-confirm]').forEach(function (btn) {
-    btn.addEventListener('click', function (e) {
-      if (!confirm(btn.dataset.confirm)) {
-        e.preventDefault();
-      }
-    });
-  });
 
   document.querySelectorAll('.home-video-thumb video').forEach(function (v) {
     v.addEventListener('loadedmetadata', function () {
@@ -277,5 +1056,166 @@
       document.getElementById('jwtSecretKeyInput').value = randomKey();
     });
   }
+
+  // Selector de color personalizado (rueda de matiz/saturación + luminosidad + hex + pastel)
+  (function () {
+    function hslToRgb(h, s, l) {
+      s /= 100; l /= 100;
+      const k = function (n) { return (n + h / 30) % 12; };
+      const a = s * Math.min(l, 1 - l);
+      const f = function (n) {
+        return l - a * Math.max(-1, Math.min(k(n) - 3, Math.min(9 - k(n), 1)));
+      };
+      return [Math.round(255 * f(0)), Math.round(255 * f(8)), Math.round(255 * f(4))];
+    }
+
+    function hslToHex(h, s, l) {
+      const rgb = hslToRgb(h, s, l);
+      const toHex = function (x) { return x.toString(16).padStart(2, '0'); };
+      return '#' + toHex(rgb[0]) + toHex(rgb[1]) + toHex(rgb[2]);
+    }
+
+    function hexToHsl(hex) {
+      let h = hex.replace('#', '');
+      if (h.length === 3) h = h.split('').map(function (c) { return c + c; }).join('');
+      const r = parseInt(h.substr(0, 2), 16) / 255;
+      const g = parseInt(h.substr(2, 2), 16) / 255;
+      const b = parseInt(h.substr(4, 2), 16) / 255;
+      const max = Math.max(r, g, b), min = Math.min(r, g, b);
+      let hh = 0, s = 0;
+      const l = (max + min) / 2;
+      if (max !== min) {
+        const d = max - min;
+        s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+        if (max === r) hh = (g - b) / d + (g < b ? 6 : 0);
+        else if (max === g) hh = (b - r) / d + 2;
+        else hh = (r - g) / d + 4;
+        hh /= 6;
+      }
+      return [hh * 360, s * 100, l * 100];
+    }
+
+    function drawWheel(canvas, lightness) {
+      const ctx = canvas.getContext('2d');
+      const w = canvas.width, h = canvas.height;
+      const cx = w / 2, cy = h / 2, radius = w / 2;
+      const img = ctx.createImageData(w, h);
+      for (let y = 0; y < h; y++) {
+        for (let x = 0; x < w; x++) {
+          const dx = x - cx, dy = y - cy;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          const idx = (y * w + x) * 4;
+          if (dist <= radius) {
+            let angle = Math.atan2(dy, dx) * 180 / Math.PI;
+            if (angle < 0) angle += 360;
+            const sat = Math.min(dist / radius * 100, 100);
+            const rgb = hslToRgb(angle, sat, lightness);
+            img.data[idx] = rgb[0]; img.data[idx + 1] = rgb[1]; img.data[idx + 2] = rgb[2]; img.data[idx + 3] = 255;
+          } else {
+            img.data[idx + 3] = 0;
+          }
+        }
+      }
+      ctx.putImageData(img, 0, 0);
+    }
+
+    function initColorPicker(root) {
+      const hidden = root.querySelector('.color-value');
+      const trigger = root.querySelector('.color-picker-trigger');
+      const popover = root.querySelector('.color-picker-popover');
+      const canvas = root.querySelector('.color-wheel');
+      const marker = root.querySelector('.color-wheel-marker');
+      const lightnessInput = root.querySelector('.color-lightness');
+      const hexInput = root.querySelector('.color-hex');
+      const pastelSwatches = root.querySelectorAll('.color-pastel-swatch');
+      const radius = canvas.width / 2;
+
+      let hsl = hexToHsl(hidden.value || '#ffffff');
+      lightnessInput.value = Math.round(hsl[2]);
+
+      function updateMarker() {
+        const rad = hsl[0] * Math.PI / 180;
+        const dist = (hsl[1] / 100) * radius;
+        marker.style.left = (radius + Math.cos(rad) * dist) + 'px';
+        marker.style.top = (radius + Math.sin(rad) * dist) + 'px';
+      }
+
+      function setColor(hex, skipHexInput) {
+        hidden.value = hex;
+        trigger.style.background = hex;
+        if (!skipHexInput) hexInput.value = hex;
+      }
+
+      function redraw() {
+        drawWheel(canvas, hsl[2]);
+        updateMarker();
+      }
+
+      function pickFromPoint(clientX, clientY) {
+        const rect = canvas.getBoundingClientRect();
+        let dx = clientX - rect.left - radius;
+        let dy = clientY - rect.top - radius;
+        let dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist > radius) { dx = dx * radius / dist; dy = dy * radius / dist; dist = radius; }
+        let angle = Math.atan2(dy, dx) * 180 / Math.PI;
+        if (angle < 0) angle += 360;
+        hsl[0] = angle;
+        hsl[1] = Math.min(dist / radius * 100, 100);
+        const hex = hslToHex(hsl[0], hsl[1], hsl[2]);
+        setColor(hex);
+        updateMarker();
+      }
+
+      let dragging = false;
+      canvas.addEventListener('mousedown', function (e) { dragging = true; pickFromPoint(e.clientX, e.clientY); });
+      window.addEventListener('mousemove', function (e) { if (dragging) pickFromPoint(e.clientX, e.clientY); });
+      window.addEventListener('mouseup', function () { dragging = false; });
+      canvas.addEventListener('touchstart', function (e) { dragging = true; pickFromPoint(e.touches[0].clientX, e.touches[0].clientY); e.preventDefault(); }, { passive: false });
+      canvas.addEventListener('touchmove', function (e) { if (dragging) { pickFromPoint(e.touches[0].clientX, e.touches[0].clientY); e.preventDefault(); } }, { passive: false });
+      window.addEventListener('touchend', function () { dragging = false; });
+
+      lightnessInput.addEventListener('input', function () {
+        hsl[2] = parseFloat(lightnessInput.value);
+        redraw();
+        setColor(hslToHex(hsl[0], hsl[1], hsl[2]));
+      });
+
+      hexInput.addEventListener('change', function () {
+        let val = hexInput.value.trim();
+        if (!/^#?[0-9a-f]{3}([0-9a-f]{3})?$/i.test(val)) { hexInput.value = hidden.value; return; }
+        if (val[0] !== '#') val = '#' + val;
+        hsl = hexToHsl(val);
+        lightnessInput.value = Math.round(hsl[2]);
+        redraw();
+        setColor(val, true);
+      });
+
+      pastelSwatches.forEach(function (sw) {
+        sw.addEventListener('click', function () {
+          const hex = sw.dataset.color;
+          hsl = hexToHsl(hex);
+          lightnessInput.value = Math.round(hsl[2]);
+          redraw();
+          setColor(hex);
+        });
+      });
+
+      trigger.addEventListener('click', function (e) {
+        e.stopPropagation();
+        document.querySelectorAll('.color-picker-popover').forEach(function (p) {
+          if (p !== popover) p.classList.add('d-none');
+        });
+        popover.classList.toggle('d-none');
+      });
+
+      document.addEventListener('click', function (e) {
+        if (!root.contains(e.target)) popover.classList.add('d-none');
+      });
+
+      redraw();
+    }
+
+    document.querySelectorAll('[data-color-picker]').forEach(initColorPicker);
+  })();
 </script>
 {% endblock %}

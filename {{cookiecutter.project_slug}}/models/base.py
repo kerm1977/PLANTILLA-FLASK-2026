@@ -28,6 +28,25 @@ async def init_db():
             )
         except Exception:
             pass
+        try:
+            await conn.exec_driver_sql(
+                "ALTER TABLE users ADD COLUMN country VARCHAR(80)"
+            )
+        except Exception:
+            pass
+        try:
+            await conn.exec_driver_sql(
+                "ALTER TABLE users ADD COLUMN extra_data VARCHAR(10000)"
+            )
+        except Exception:
+            pass
+
+        try:
+            await conn.exec_driver_sql(
+                "ALTER TABLE quote_submissions ADD COLUMN user_id INTEGER REFERENCES users(id)"
+            )
+        except Exception:
+            pass
 
 
 async def close_db():
