@@ -4,6 +4,28 @@
 
 {% set pastel_palette = ['#ffadad', '#ffd6a5', '#fdffb6', '#caffbf', '#9bf6ff', '#a0c4ff', '#bdb2ff', '#ffc6ff', '#f9c687', '#8ecae6', '#c6d47a', '#e57373', '#b5ead7', '#c7ceea', '#ffdac1', '#e2f0cb'] %}
 
+{% macro wysiwyg_editor(name, value, rows=4) %}
+  <textarea name="{{ name }}" id="{{ name }}" class="form-control d-none" rows="{{ rows }}">{{ value|safe }}</textarea>
+  <div class="btn-group flex-wrap w-100 mb-1" role="group" aria-label="Editor WYSIWYG">
+    <button type="button" class="btn btn-sm btn-outline-secondary" data-editor="{{ name }}_editor" data-cmd="bold" title="Negrita"><i class="bi bi-type-bold"></i></button>
+    <button type="button" class="btn btn-sm btn-outline-secondary" data-editor="{{ name }}_editor" data-cmd="italic" title="Cursiva"><i class="bi bi-type-italic"></i></button>
+    <button type="button" class="btn btn-sm btn-outline-secondary" data-editor="{{ name }}_editor" data-cmd="underline" title="Subrayar"><i class="bi bi-type-underline"></i></button>
+    <button type="button" class="btn btn-sm btn-outline-secondary" data-editor="{{ name }}_editor" data-cmd="strikeThrough" title="Tachar"><i class="bi bi-type-strikethrough"></i></button>
+    <button type="button" class="btn btn-sm btn-outline-secondary" data-editor="{{ name }}_editor" data-cmd="justifyLeft" title="Alinear izquierda"><i class="bi bi-text-left"></i></button>
+    <button type="button" class="btn btn-sm btn-outline-secondary" data-editor="{{ name }}_editor" data-cmd="justifyCenter" title="Centrar"><i class="bi bi-text-center"></i></button>
+    <button type="button" class="btn btn-sm btn-outline-secondary" data-editor="{{ name }}_editor" data-cmd="justifyRight" title="Alinear derecha"><i class="bi bi-text-right"></i></button>
+    <button type="button" class="btn btn-sm btn-outline-secondary" data-editor="{{ name }}_editor" data-cmd="justifyFull" title="Justificar"><i class="bi bi-justify"></i></button>
+    <button type="button" class="btn btn-sm btn-outline-secondary" data-editor="{{ name }}_editor" data-cmd="insertUnorderedList" title="Viñetas"><i class="bi bi-list-ul"></i></button>
+    <button type="button" class="btn btn-sm btn-outline-secondary" data-editor="{{ name }}_editor" data-cmd="insertOrderedList" title="Numeración"><i class="bi bi-list-ol"></i></button>
+    {% for h in range(1, 7) %}
+    <button type="button" class="btn btn-sm btn-outline-secondary" data-editor="{{ name }}_editor" data-cmd="formatBlock" data-val="H{{ h }}" title="Título H{{ h }}"><span class="fw-bold small">H{{ h }}</span></button>
+    {% endfor %}
+  </div>
+  <div id="{{ name }}_editor" class="wysiwyg-editor form-control" contenteditable="true" data-target="{{ name }}" style="min-height: {{ rows * 24 }}px; overflow-y: auto;">
+    {{ value|safe }}
+  </div>
+{% endmacro %}
+
 {% macro color_picker(field_name, value, label) %}
 <div class="color-picker" data-color-picker>
   <label class="form-label small d-block">{{ label }}</label>
@@ -866,26 +888,26 @@
   </button>
   <div class="collapse{% if request.args.get('section') == 'privacyPolicy' %} show{% endif %}" id="privacyPolicySection" data-bs-parent="#dashboardAccordion">
     <p class="text-center text-muted small mb-2 mt-3">
-      {{ _('Edita los puntos de la política de privacidad, cambia la fecha, el resumen y el contacto, o agrega nuevos puntos.') }}
+      {{ _('Edita los puntos de la política de privacidad, la fecha, el resumen y el contacto con el editor enriquecido.') }}
     </p>
 
     <form method="POST" action="{{ url_for('main.dashboard') }}" class="perfil-data">
       <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
       <input type="hidden" name="save_privacy_policy" value="1">
 
-      <div class="perfil-row">
-        <label class="perfil-label" for="privacyUpdateDate">{{ _('Fecha de actualización') }}</label>
-        <input type="text" name="privacy_update_date" id="privacyUpdateDate" class="form-control" value="{{ privacy_config.update_date }}" maxlength="120">
+      <div class="perfil-row flex-column align-items-start">
+        <label class="perfil-label w-100" for="privacy_update_date">{{ _('Fecha de actualización') }}</label>
+        {{ wysiwyg_editor('privacy_update_date', privacy_config.update_date, 2) }}
       </div>
 
       <div class="perfil-row flex-column align-items-start">
-        <label class="perfil-label w-100" for="privacySummary">{{ _('Resumen general') }}</label>
-        <textarea name="privacy_summary" id="privacySummary" class="form-control" rows="3">{{ privacy_config.summary }}</textarea>
+        <label class="perfil-label w-100" for="privacy_summary">{{ _('Resumen general') }}</label>
+        {{ wysiwyg_editor('privacy_summary', privacy_config.summary, 5) }}
       </div>
 
       <div class="perfil-row flex-column align-items-start">
-        <label class="perfil-label w-100" for="privacyContact">{{ _('Contacto y ejercicio de derechos') }}</label>
-        <textarea name="privacy_contact" id="privacyContact" class="form-control" rows="3">{{ privacy_config.contact }}</textarea>
+        <label class="perfil-label w-100" for="privacy_contact">{{ _('Contacto y ejercicio de derechos') }}</label>
+        {{ wysiwyg_editor('privacy_contact', privacy_config.contact, 5) }}
       </div>
 
       {% if privacy_config.sections %}
@@ -893,8 +915,8 @@
       <h6 class="text-center mb-3"><i class="bi bi-list-check"></i> {{ _('Puntos configurados') }}</h6>
       {% for section in privacy_config.sections %}
       <div class="perfil-row flex-column align-items-start">
-        <div class="d-flex justify-content-between w-100 gap-2 mb-2">
-          <input type="text" name="privacy_title_{{ loop.index0 }}" class="form-control" value="{{ section.title }}" placeholder="{{ _('Título del punto') }}">
+        <div class="d-flex justify-content-between w-100 align-items-center mb-2">
+          <label class="perfil-label mb-0">{{ _('Título del punto') }}</label>
           <form method="POST" action="{{ url_for('main.dashboard') }}" class="d-inline m-0" data-confirm="{{ _('¿Eliminar este punto?') }}">
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
             <input type="hidden" name="delete_privacy_section" value="1">
@@ -904,7 +926,9 @@
             </button>
           </form>
         </div>
-        <textarea name="privacy_content_{{ loop.index0 }}" class="form-control" rows="5" placeholder="{{ _('Contenido HTML del punto') }}">{{ section.content }}</textarea>
+        {{ wysiwyg_editor('privacy_title_' ~ loop.index0, section.title, 2) }}
+        <label class="perfil-label w-100 mt-2" for="privacy_content_{{ loop.index0 }}">{{ _('Contenido del punto') }}</label>
+        {{ wysiwyg_editor('privacy_content_' ~ loop.index0, section.content, 6) }}
       </div>
       {% endfor %}
       {% endif %}
@@ -921,13 +945,13 @@
     <form method="POST" action="{{ url_for('main.dashboard') }}" class="perfil-data">
       <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
       <input type="hidden" name="add_privacy_section" value="1">
-      <div class="perfil-row">
-        <label class="perfil-label" for="newPrivacyTitle">{{ _('Título del punto') }}</label>
-        <input type="text" name="new_privacy_title" id="newPrivacyTitle" class="form-control" maxlength="120">
+      <div class="perfil-row flex-column align-items-start">
+        <label class="perfil-label w-100" for="new_privacy_title">{{ _('Título del punto') }}</label>
+        {{ wysiwyg_editor('new_privacy_title', '', 2) }}
       </div>
       <div class="perfil-row flex-column align-items-start">
-        <label class="perfil-label w-100" for="newPrivacyContent">{{ _('Contenido HTML del punto') }}</label>
-        <textarea name="new_privacy_content" id="newPrivacyContent" class="form-control" rows="4"></textarea>
+        <label class="perfil-label w-100" for="new_privacy_content">{{ _('Contenido del punto') }}</label>
+        {{ wysiwyg_editor('new_privacy_content', '', 4) }}
       </div>
       <div class="text-end mt-3">
         <button type="submit" class="btn btn-primary btn-sm">
@@ -943,36 +967,36 @@
   </button>
   <div class="collapse{% if request.args.get('section') == 'termsConditions' %} show{% endif %}" id="termsConditionsSection" data-bs-parent="#dashboardAccordion">
     <p class="text-center text-muted small mb-2 mt-3">
-      {{ _('Edita los puntos de los términos y condiciones, cambia el título, subtítulo, fecha, resumen, contacto, o agrega nuevos puntos.') }}
+      {{ _('Edita los puntos de los términos y condiciones, el título, subtítulo, fecha, resumen, contacto y aceptación con el editor enriquecido.') }}
     </p>
 
     <form method="POST" action="{{ url_for('main.dashboard') }}" class="perfil-data">
       <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
       <input type="hidden" name="save_terms_conditions" value="1">
 
-      <div class="perfil-row">
-        <label class="perfil-label" for="termsTitle">{{ _('Título principal') }}</label>
-        <input type="text" name="terms_title" id="termsTitle" class="form-control" value="{{ terms_config.title }}" maxlength="120">
-      </div>
-
-      <div class="perfil-row">
-        <label class="perfil-label" for="termsSubtitle">{{ _('Subtítulo / empresa') }}</label>
-        <input type="text" name="terms_subtitle" id="termsSubtitle" class="form-control" value="{{ terms_config.subtitle }}" maxlength="120">
-      </div>
-
-      <div class="perfil-row">
-        <label class="perfil-label" for="termsUpdateDate">{{ _('Fecha de actualización') }}</label>
-        <input type="text" name="terms_update_date" id="termsUpdateDate" class="form-control" value="{{ terms_config.update_date }}" maxlength="120">
+      <div class="perfil-row flex-column align-items-start">
+        <label class="perfil-label w-100" for="terms_title">{{ _('Título principal') }}</label>
+        {{ wysiwyg_editor('terms_title', terms_config.title, 2) }}
       </div>
 
       <div class="perfil-row flex-column align-items-start">
-        <label class="perfil-label w-100" for="termsSummary">{{ _('Marco general') }}</label>
-        <textarea name="terms_summary" id="termsSummary" class="form-control" rows="3">{{ terms_config.summary }}</textarea>
+        <label class="perfil-label w-100" for="terms_subtitle">{{ _('Subtítulo / empresa') }}</label>
+        {{ wysiwyg_editor('terms_subtitle', terms_config.subtitle, 2) }}
       </div>
 
       <div class="perfil-row flex-column align-items-start">
-        <label class="perfil-label w-100" for="termsContact">{{ _('Contacto') }}</label>
-        <textarea name="terms_contact" id="termsContact" class="form-control" rows="3">{{ terms_config.contact }}</textarea>
+        <label class="perfil-label w-100" for="terms_update_date">{{ _('Fecha de actualización') }}</label>
+        {{ wysiwyg_editor('terms_update_date', terms_config.update_date, 2) }}
+      </div>
+
+      <div class="perfil-row flex-column align-items-start">
+        <label class="perfil-label w-100" for="terms_summary">{{ _('Marco general') }}</label>
+        {{ wysiwyg_editor('terms_summary', terms_config.summary, 5) }}
+      </div>
+
+      <div class="perfil-row flex-column align-items-start">
+        <label class="perfil-label w-100" for="terms_contact">{{ _('Contacto') }}</label>
+        {{ wysiwyg_editor('terms_contact', terms_config.contact, 5) }}
       </div>
 
       {% if terms_config.sections %}
@@ -980,8 +1004,8 @@
       <h6 class="text-center mb-3"><i class="bi bi-list-check"></i> {{ _('Puntos configurados') }}</h6>
       {% for section in terms_config.sections %}
       <div class="perfil-row flex-column align-items-start">
-        <div class="d-flex justify-content-between w-100 gap-2 mb-2">
-          <input type="text" name="terms_title_{{ loop.index0 }}" class="form-control" value="{{ section.title }}" placeholder="{{ _('Título del punto') }}">
+        <div class="d-flex justify-content-between w-100 align-items-center mb-2">
+          <label class="perfil-label mb-0">{{ _('Título del punto') }}</label>
           <form method="POST" action="{{ url_for('main.dashboard') }}" class="d-inline m-0" data-confirm="{{ _('¿Eliminar este punto?') }}">
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
             <input type="hidden" name="delete_terms_section" value="1">
@@ -991,7 +1015,9 @@
             </button>
           </form>
         </div>
-        <textarea name="terms_content_{{ loop.index0 }}" class="form-control" rows="5" placeholder="{{ _('Contenido HTML del punto') }}">{{ section.content }}</textarea>
+        {{ wysiwyg_editor('terms_title_' ~ loop.index0, section.title, 2) }}
+        <label class="perfil-label w-100 mt-2" for="terms_content_{{ loop.index0 }}">{{ _('Contenido del punto') }}</label>
+        {{ wysiwyg_editor('terms_content_' ~ loop.index0, section.content, 6) }}
       </div>
       {% endfor %}
       {% endif %}
@@ -1008,13 +1034,13 @@
     <form method="POST" action="{{ url_for('main.dashboard') }}" class="perfil-data">
       <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
       <input type="hidden" name="add_terms_section" value="1">
-      <div class="perfil-row">
-        <label class="perfil-label" for="newTermsTitle">{{ _('Título del punto') }}</label>
-        <input type="text" name="new_terms_title" id="newTermsTitle" class="form-control" maxlength="120">
+      <div class="perfil-row flex-column align-items-start">
+        <label class="perfil-label w-100" for="new_terms_title">{{ _('Título del punto') }}</label>
+        {{ wysiwyg_editor('new_terms_title', '', 2) }}
       </div>
       <div class="perfil-row flex-column align-items-start">
-        <label class="perfil-label w-100" for="newTermsContent">{{ _('Contenido HTML del punto') }}</label>
-        <textarea name="new_terms_content" id="newTermsContent" class="form-control" rows="4"></textarea>
+        <label class="perfil-label w-100" for="new_terms_content">{{ _('Contenido del punto') }}</label>
+        {{ wysiwyg_editor('new_terms_content', '', 4) }}
       </div>
       <div class="text-end mt-3">
         <button type="submit" class="btn btn-primary btn-sm">
@@ -1216,6 +1242,44 @@
     }
 
     document.querySelectorAll('[data-color-picker]').forEach(initColorPicker);
+  })();
+
+  // WYSIWYG editor básico
+  (function () {
+    document.querySelectorAll('[data-cmd]').forEach(function (btn) {
+      btn.addEventListener('click', function (e) {
+        e.preventDefault();
+        const editor = document.getElementById(this.dataset.editor);
+        if (!editor) return;
+        editor.focus();
+        const cmd = this.dataset.cmd;
+        const val = this.dataset.val || '';
+        document.execCommand(cmd, false, val);
+        const target = document.getElementById(editor.dataset.target);
+        if (target) target.value = editor.innerHTML;
+      });
+    });
+
+    document.querySelectorAll('.wysiwyg-editor').forEach(function (ed) {
+      ed.addEventListener('input', function () {
+        const target = document.getElementById(ed.dataset.target);
+        if (target) target.value = ed.innerHTML;
+      });
+      ed.addEventListener('paste', function (e) {
+        e.preventDefault();
+        const text = (e.clipboardData || window.clipboardData).getData('text/plain');
+        document.execCommand('insertText', false, text);
+      });
+    });
+
+    document.querySelectorAll('form').forEach(function (form) {
+      form.addEventListener('submit', function () {
+        form.querySelectorAll('.wysiwyg-editor').forEach(function (ed) {
+          const target = document.getElementById(ed.dataset.target);
+          if (target) target.value = ed.innerHTML;
+        });
+      });
+    });
   })();
 </script>
 {% endblock %}
