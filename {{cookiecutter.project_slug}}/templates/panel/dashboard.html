@@ -21,7 +21,7 @@
     <button type="button" class="btn btn-sm btn-outline-secondary" data-editor="{{ name }}_editor" data-cmd="formatBlock" data-val="H{{ h }}" title="Título H{{ h }}"><span class="fw-bold small">H{{ h }}</span></button>
     {% endfor %}
   </div>
-  <div id="{{ name }}_editor" class="wysiwyg-editor form-control" contenteditable="true" data-target="{{ name }}" style="min-height: {{ rows * 24 }}px; overflow-y: auto;">
+  <div id="{{ name }}_editor" class="wysiwyg-editor form-control w-100" contenteditable="true" data-target="{{ name }}" style="min-height: {{ rows * 24 }}px; overflow-y: auto;">
     {{ value|safe }}
   </div>
 {% endmacro %}
