@@ -644,6 +644,14 @@ label,
   width: 100%;
 }
 
+.perfil-row .wysiwyg-editor.form-control {
+  max-width: 100%;
+  width: 100%;
+  white-space: normal;
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
+
 /* Cotizador con estilo de perfil (fondo normal, líneas separadoras) */
 .cotizador-view .perfil-row {
   align-items: flex-start;
