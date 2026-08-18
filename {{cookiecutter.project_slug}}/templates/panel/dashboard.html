@@ -887,75 +887,18 @@
     <i class="bi bi-chevron-down collapsible-tab-icon"></i>
   </button>
   <div class="collapse{% if request.args.get('section') == 'privacyPolicy' %} show{% endif %}" id="privacyPolicySection" data-bs-parent="#dashboardAccordion">
-    <p class="text-center text-muted small mb-2 mt-3">
-      {{ _('Edita los puntos de la política de privacidad, la fecha, el resumen y el contacto con el editor enriquecido.') }}
-    </p>
-
     <form method="POST" action="{{ url_for('main.dashboard') }}" class="perfil-data">
       <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
       <input type="hidden" name="save_privacy_policy" value="1">
 
       <div class="perfil-row flex-column align-items-start">
-        <label class="perfil-label w-100" for="privacy_update_date">{{ _('Fecha de actualización') }}</label>
-        {{ wysiwyg_editor('privacy_update_date', privacy_config.update_date, 2) }}
+        <label class="perfil-label w-100" for="privacy_content">{{ _('Contenido de la política de privacidad') }}</label>
+        {{ wysiwyg_editor('privacy_content', privacy_config.content, 20) }}
       </div>
-
-      <div class="perfil-row flex-column align-items-start">
-        <label class="perfil-label w-100" for="privacy_summary">{{ _('Resumen general') }}</label>
-        {{ wysiwyg_editor('privacy_summary', privacy_config.summary, 5) }}
-      </div>
-
-      <div class="perfil-row flex-column align-items-start">
-        <label class="perfil-label w-100" for="privacy_contact">{{ _('Contacto y ejercicio de derechos') }}</label>
-        {{ wysiwyg_editor('privacy_contact', privacy_config.contact, 5) }}
-      </div>
-
-      {% if privacy_config.sections %}
-      <hr class="my-3">
-      <h6 class="text-center mb-3"><i class="bi bi-list-check"></i> {{ _('Puntos configurados') }}</h6>
-      {% for section in privacy_config.sections %}
-      <div class="perfil-row flex-column align-items-start">
-        <div class="d-flex justify-content-between w-100 align-items-center mb-2">
-          <label class="perfil-label mb-0">{{ _('Título del punto') }}</label>
-          <form method="POST" action="{{ url_for('main.dashboard') }}" class="d-inline m-0" data-confirm="{{ _('¿Eliminar este punto?') }}">
-            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-            <input type="hidden" name="delete_privacy_section" value="1">
-            <input type="hidden" name="delete_privacy_index" value="{{ loop.index0 }}">
-            <button type="submit" class="btn btn-sm btn-danger">
-              <i class="bi bi-trash"></i>
-            </button>
-          </form>
-        </div>
-        {{ wysiwyg_editor('privacy_title_' ~ loop.index0, section.title, 2) }}
-        <label class="perfil-label w-100 mt-2" for="privacy_content_{{ loop.index0 }}">{{ _('Contenido del punto') }}</label>
-        {{ wysiwyg_editor('privacy_content_' ~ loop.index0, section.content, 6) }}
-      </div>
-      {% endfor %}
-      {% endif %}
 
       <div class="text-end mt-3">
         <button type="submit" class="btn btn-success btn-sm">
           <i class="bi bi-check-lg"></i> {{ _('Guardar política') }}
-        </button>
-      </div>
-    </form>
-
-    <hr class="my-3">
-    <h6 class="text-center mb-3"><i class="bi bi-plus-circle"></i> {{ _('Agregar punto') }}</h6>
-    <form method="POST" action="{{ url_for('main.dashboard') }}" class="perfil-data">
-      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-      <input type="hidden" name="add_privacy_section" value="1">
-      <div class="perfil-row flex-column align-items-start">
-        <label class="perfil-label w-100" for="new_privacy_title">{{ _('Título del punto') }}</label>
-        {{ wysiwyg_editor('new_privacy_title', '', 2) }}
-      </div>
-      <div class="perfil-row flex-column align-items-start">
-        <label class="perfil-label w-100" for="new_privacy_content">{{ _('Contenido del punto') }}</label>
-        {{ wysiwyg_editor('new_privacy_content', '', 4) }}
-      </div>
-      <div class="text-end mt-3">
-        <button type="submit" class="btn btn-primary btn-sm">
-          <i class="bi bi-plus-lg"></i> {{ _('Agregar punto') }}
         </button>
       </div>
     </form>
@@ -966,85 +909,18 @@
     <i class="bi bi-chevron-down collapsible-tab-icon"></i>
   </button>
   <div class="collapse{% if request.args.get('section') == 'termsConditions' %} show{% endif %}" id="termsConditionsSection" data-bs-parent="#dashboardAccordion">
-    <p class="text-center text-muted small mb-2 mt-3">
-      {{ _('Edita los puntos de los términos y condiciones, el título, subtítulo, fecha, resumen, contacto y aceptación con el editor enriquecido.') }}
-    </p>
-
     <form method="POST" action="{{ url_for('main.dashboard') }}" class="perfil-data">
       <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
       <input type="hidden" name="save_terms_conditions" value="1">
 
       <div class="perfil-row flex-column align-items-start">
-        <label class="perfil-label w-100" for="terms_title">{{ _('Título principal') }}</label>
-        {{ wysiwyg_editor('terms_title', terms_config.title, 2) }}
+        <label class="perfil-label w-100" for="terms_content">{{ _('Contenido de términos y condiciones') }}</label>
+        {{ wysiwyg_editor('terms_content', terms_config.content, 20) }}
       </div>
-
-      <div class="perfil-row flex-column align-items-start">
-        <label class="perfil-label w-100" for="terms_subtitle">{{ _('Subtítulo / empresa') }}</label>
-        {{ wysiwyg_editor('terms_subtitle', terms_config.subtitle, 2) }}
-      </div>
-
-      <div class="perfil-row flex-column align-items-start">
-        <label class="perfil-label w-100" for="terms_update_date">{{ _('Fecha de actualización') }}</label>
-        {{ wysiwyg_editor('terms_update_date', terms_config.update_date, 2) }}
-      </div>
-
-      <div class="perfil-row flex-column align-items-start">
-        <label class="perfil-label w-100" for="terms_summary">{{ _('Marco general') }}</label>
-        {{ wysiwyg_editor('terms_summary', terms_config.summary, 5) }}
-      </div>
-
-      <div class="perfil-row flex-column align-items-start">
-        <label class="perfil-label w-100" for="terms_contact">{{ _('Contacto') }}</label>
-        {{ wysiwyg_editor('terms_contact', terms_config.contact, 5) }}
-      </div>
-
-      {% if terms_config.sections %}
-      <hr class="my-3">
-      <h6 class="text-center mb-3"><i class="bi bi-list-check"></i> {{ _('Puntos configurados') }}</h6>
-      {% for section in terms_config.sections %}
-      <div class="perfil-row flex-column align-items-start">
-        <div class="d-flex justify-content-between w-100 align-items-center mb-2">
-          <label class="perfil-label mb-0">{{ _('Título del punto') }}</label>
-          <form method="POST" action="{{ url_for('main.dashboard') }}" class="d-inline m-0" data-confirm="{{ _('¿Eliminar este punto?') }}">
-            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-            <input type="hidden" name="delete_terms_section" value="1">
-            <input type="hidden" name="delete_terms_index" value="{{ loop.index0 }}">
-            <button type="submit" class="btn btn-sm btn-danger">
-              <i class="bi bi-trash"></i>
-            </button>
-          </form>
-        </div>
-        {{ wysiwyg_editor('terms_title_' ~ loop.index0, section.title, 2) }}
-        <label class="perfil-label w-100 mt-2" for="terms_content_{{ loop.index0 }}">{{ _('Contenido del punto') }}</label>
-        {{ wysiwyg_editor('terms_content_' ~ loop.index0, section.content, 6) }}
-      </div>
-      {% endfor %}
-      {% endif %}
 
       <div class="text-end mt-3">
         <button type="submit" class="btn btn-success btn-sm">
           <i class="bi bi-check-lg"></i> {{ _('Guardar términos') }}
-        </button>
-      </div>
-    </form>
-
-    <hr class="my-3">
-    <h6 class="text-center mb-3"><i class="bi bi-plus-circle"></i> {{ _('Agregar punto') }}</h6>
-    <form method="POST" action="{{ url_for('main.dashboard') }}" class="perfil-data">
-      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-      <input type="hidden" name="add_terms_section" value="1">
-      <div class="perfil-row flex-column align-items-start">
-        <label class="perfil-label w-100" for="new_terms_title">{{ _('Título del punto') }}</label>
-        {{ wysiwyg_editor('new_terms_title', '', 2) }}
-      </div>
-      <div class="perfil-row flex-column align-items-start">
-        <label class="perfil-label w-100" for="new_terms_content">{{ _('Contenido del punto') }}</label>
-        {{ wysiwyg_editor('new_terms_content', '', 4) }}
-      </div>
-      <div class="text-end mt-3">
-        <button type="submit" class="btn btn-primary btn-sm">
-          <i class="bi bi-plus-lg"></i> {{ _('Agregar punto') }}
         </button>
       </div>
     </form>

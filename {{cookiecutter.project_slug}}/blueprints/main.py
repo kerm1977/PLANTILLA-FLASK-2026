@@ -174,12 +174,7 @@ def _privacy_policy_path():
 
 def load_privacy_policy():
     path = _privacy_policy_path()
-    default = {
-        "update_date": "",
-        "summary": "",
-        "sections": [],
-        "contact": "",
-    }
+    default = {"content": ""}
     if not os.path.exists(path):
         return default
     try:
@@ -203,14 +198,7 @@ def _terms_conditions_path():
 
 def load_terms_conditions():
     path = _terms_conditions_path()
-    default = {
-        "title": "Términos y Condiciones del Servicio",
-        "subtitle": "",
-        "update_date": "",
-        "summary": "",
-        "sections": [],
-        "contact": "",
-    }
+    default = {"content": ""}
     if not os.path.exists(path):
         return default
     try:
@@ -876,78 +864,16 @@ async def dashboard():
 
         if "save_privacy_policy" in request.form:
             cfg = load_privacy_policy()
-            cfg["update_date"] = request.form.get("privacy_update_date", "").strip()
-            cfg["summary"] = request.form.get("privacy_summary", "").strip()
-            cfg["contact"] = request.form.get("privacy_contact", "").strip()
-            for i, _ in enumerate(cfg["sections"]):
-                title = request.form.get(f"privacy_title_{i}", "").strip()
-                content = request.form.get(f"privacy_content_{i}", "").strip()
-                if i < len(cfg["sections"]):
-                    cfg["sections"][i]["title"] = title
-                    cfg["sections"][i]["content"] = content
+            cfg["content"] = request.form.get("privacy_content", "").strip()
             save_privacy_policy(cfg)
             flash("Política de privacidad actualizada", "success")
             return redirect(url_for("main.dashboard") + "?section=privacyPolicy")
 
-        if "add_privacy_section" in request.form:
-            cfg = load_privacy_policy()
-            title = request.form.get("new_privacy_title", "").strip()
-            content = request.form.get("new_privacy_content", "").strip()
-            if title or content:
-                cfg["sections"].append({"title": title, "content": content})
-                save_privacy_policy(cfg)
-                flash("Nuevo punto agregado a la política", "success")
-            return redirect(url_for("main.dashboard") + "?section=privacyPolicy")
-
-        if "delete_privacy_section" in request.form:
-            cfg = load_privacy_policy()
-            try:
-                index = int(request.form.get("delete_privacy_index", -1))
-                if 0 <= index < len(cfg["sections"]):
-                    cfg["sections"].pop(index)
-                    save_privacy_policy(cfg)
-                    flash("Punto eliminado", "success")
-            except Exception:
-                pass
-            return redirect(url_for("main.dashboard") + "?section=privacyPolicy")
-
         if "save_terms_conditions" in request.form:
             cfg = load_terms_conditions()
-            cfg["title"] = request.form.get("terms_title", "").strip()
-            cfg["subtitle"] = request.form.get("terms_subtitle", "").strip()
-            cfg["update_date"] = request.form.get("terms_update_date", "").strip()
-            cfg["summary"] = request.form.get("terms_summary", "").strip()
-            cfg["contact"] = request.form.get("terms_contact", "").strip()
-            for i, _ in enumerate(cfg["sections"]):
-                title = request.form.get(f"terms_title_{i}", "").strip()
-                content = request.form.get(f"terms_content_{i}", "").strip()
-                if i < len(cfg["sections"]):
-                    cfg["sections"][i]["title"] = title
-                    cfg["sections"][i]["content"] = content
+            cfg["content"] = request.form.get("terms_content", "").strip()
             save_terms_conditions(cfg)
             flash("Términos y condiciones actualizados", "success")
-            return redirect(url_for("main.dashboard") + "?section=termsConditions")
-
-        if "add_terms_section" in request.form:
-            cfg = load_terms_conditions()
-            title = request.form.get("new_terms_title", "").strip()
-            content = request.form.get("new_terms_content", "").strip()
-            if title or content:
-                cfg["sections"].append({"title": title, "content": content})
-                save_terms_conditions(cfg)
-                flash("Nuevo punto agregado a términos", "success")
-            return redirect(url_for("main.dashboard") + "?section=termsConditions")
-
-        if "delete_terms_section" in request.form:
-            cfg = load_terms_conditions()
-            try:
-                index = int(request.form.get("delete_terms_index", -1))
-                if 0 <= index < len(cfg["sections"]):
-                    cfg["sections"].pop(index)
-                    save_terms_conditions(cfg)
-                    flash("Punto de términos eliminado", "success")
-            except Exception:
-                pass
             return redirect(url_for("main.dashboard") + "?section=termsConditions")
 
     async with async_session() as s:
