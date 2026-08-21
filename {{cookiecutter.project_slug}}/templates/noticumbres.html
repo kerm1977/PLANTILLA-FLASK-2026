@@ -67,19 +67,50 @@
   {% endif %}
 
   {% if posts %}
-    <div class="row g-4">
-      {% for post in posts %}
-      <div class="col-12 col-md-6">
-        <article class="card h-100 border-0 shadow-sm" style="background: var(--card-bg); border: 1px solid var(--card-border);">
-          {% if post.image %}
-          <img src="{{ url_for('static', filename=post.image) }}" alt="{{ post.title }}" class="card-img-top" style="object-fit: cover; max-height: 220px;">
-          {% endif %}
-          <div class="card-body">
-            <h2 class="h4 card-title">{{ post.title }}</h2>
+    <!-- Noticia principal -->
+    {% set post = posts[0] %}
+    <article class="card border-0 shadow-sm rounded-4 mb-4 overflow-hidden" style="background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 1rem;">
+      <div class="row g-0 h-100">
+        {% if post.image %}
+        <div class="col-md-6">
+          <img src="{{ url_for('static', filename=post.image) }}" alt="{{ post.title }}" class="img-fluid w-100 h-100" style="object-fit: cover; min-height: 280px;">
+        </div>
+        {% endif %}
+        <div class="col-md-{% if post.image %}6{% else %}12{% endif %}">
+          <div class="card-body d-flex flex-column h-100">
+            <h2 class="h3 card-title">{{ post.title }}</h2>
             {% if post.summary %}
             <p class="card-text">{{ post.summary|safe }}</p>
             {% endif %}
-            <div class="post-content">{{ post.content|safe }}</div>
+            <div class="post-content flex-grow-1">{{ post.content|safe }}</div>
+            <hr>
+            <div class="d-flex justify-content-between align-items-center small text-muted mt-3">
+              <span><i class="bi bi-person"></i> {{ post.author or 'Cumbres' }}</span>
+              <span><i class="bi bi-clock"></i> {{ post.published_at }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <!-- Más noticias -->
+    {% if posts|length > 1 %}
+    <h3 class="mb-3 h4">{{ _('Más noticias') }}</h3>
+    <div class="row g-4">
+      {% for post in posts[1:] %}
+      <div class="col-12 col-md-6">
+        <article class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden" style="background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 1rem;">
+          {% if post.image %}
+          <img src="{{ url_for('static', filename=post.image) }}" alt="{{ post.title }}" class="card-img-top" style="object-fit: cover; max-height: 180px;">
+          {% endif %}
+          <div class="card-body">
+            <h2 class="h5 card-title">{{ post.title }}</h2>
+            {% if post.summary %}
+            <p class="card-text small text-muted mb-2">{{ post.summary|safe }}</p>
+            {% endif %}
+            <div class="post-content small" style="line-clamp: 4; display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden;">
+              {{ post.content|safe }}
+            </div>
             <hr>
             <div class="d-flex justify-content-between align-items-center small text-muted mt-3">
               <span><i class="bi bi-person"></i> {{ post.author or 'Cumbres' }}</span>
@@ -90,6 +121,7 @@
       </div>
       {% endfor %}
     </div>
+    {% endif %}
   {% else %}
     <p class="text-muted">{{ _('Próximamente encontrarás artículos, noticias y recomendaciones.') }}</p>
   {% endif %}
