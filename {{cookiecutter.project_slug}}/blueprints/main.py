@@ -926,6 +926,7 @@ async def dashboard():
         form_fields_config=load_form_fields_config(),
         form_field_types=FORM_FIELD_TYPES,
         form_field_type_labels=FORM_FIELD_TYPE_LABELS,
+        noticumbres_config=load_noticumbres(),
     )
 
 
@@ -1127,11 +1128,13 @@ async def noticumbres_admin():
         data["posts"] = posts
         save_noticumbres(data)
         flash("Publicación de Noticumbres creada", "success")
-        return redirect(url_for("main.blog"))
+        return redirect(url_for("main.dashboard") + "?section=noticumbresAdmin")
     return render_template(
         "panel/noticumbres.html",
         noticumbres=load_noticumbres(),
     )
+
+
 @main_bp.route("/afiliados")
 async def afiliados():
     return render_template("afiliados.html")

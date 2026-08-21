@@ -2,69 +2,9 @@
 {% block title %}{{ _('Noticumbres') }}{% endblock %}
 {% block main_class %}top-main{% endblock %}
 
-{% macro wysiwyg_editor(name, value, rows=4) %}
-  <textarea name="{{ name }}" id="{{ name }}" class="form-control d-none" rows="{{ rows }}">{{ value|safe }}</textarea>
-  <div class="btn-group flex-wrap w-100 mb-1" role="group" aria-label="Editor WYSIWYG">
-    <button type="button" class="btn btn-sm btn-outline-secondary" data-editor="{{ name }}_editor" data-cmd="bold" title="Negrita"><i class="bi bi-type-bold"></i></button>
-    <button type="button" class="btn btn-sm btn-outline-secondary" data-editor="{{ name }}_editor" data-cmd="italic" title="Cursiva"><i class="bi bi-type-italic"></i></button>
-    <button type="button" class="btn btn-sm btn-outline-secondary" data-editor="{{ name }}_editor" data-cmd="underline" title="Subrayar"><i class="bi bi-type-underline"></i></button>
-    <button type="button" class="btn btn-sm btn-outline-secondary" data-editor="{{ name }}_editor" data-cmd="strikeThrough" title="Tachar"><i class="bi bi-type-strikethrough"></i></button>
-    <button type="button" class="btn btn-sm btn-outline-secondary" data-editor="{{ name }}_editor" data-cmd="justifyLeft" title="Alinear izquierda"><i class="bi bi-text-left"></i></button>
-    <button type="button" class="btn btn-sm btn-outline-secondary" data-editor="{{ name }}_editor" data-cmd="justifyCenter" title="Centrar"><i class="bi bi-text-center"></i></button>
-    <button type="button" class="btn btn-sm btn-outline-secondary" data-editor="{{ name }}_editor" data-cmd="justifyRight" title="Alinear derecha"><i class="bi bi-text-right"></i></button>
-    <button type="button" class="btn btn-sm btn-outline-secondary" data-editor="{{ name }}_editor" data-cmd="justifyFull" title="Justificar"><i class="bi bi-justify"></i></button>
-    <button type="button" class="btn btn-sm btn-outline-secondary" data-editor="{{ name }}_editor" data-cmd="insertUnorderedList" title="Viñetas"><i class="bi bi-list-ul"></i></button>
-    <button type="button" class="btn btn-sm btn-outline-secondary" data-editor="{{ name }}_editor" data-cmd="insertOrderedList" title="Numeración"><i class="bi bi-list-ol"></i></button>
-    {% for h in range(1, 7) %}
-    <button type="button" class="btn btn-sm btn-outline-secondary" data-editor="{{ name }}_editor" data-cmd="formatBlock" data-val="H{{ h }}" title="Título H{{ h }}"><span class="fw-bold small">H{{ h }}</span></button>
-    {% endfor %}
-  </div>
-  <div id="{{ name }}_editor" class="wysiwyg-editor form-control w-100" contenteditable="true" data-target="{{ name }}" style="min-height: {{ rows * 24 }}px; overflow-y: auto;">
-    {{ value|safe }}
-  </div>
-{% endmacro %}
-
 {% block content %}
 <div class="container py-4">
   <h1 class="mb-4">{{ _('Noticumbres') }}</h1>
-
-  {% if session.get('is_superuser') %}
-  <button type="button" class="btn btn-primary mb-4" data-bs-toggle="collapse" data-bs-target="#createNoticumbresForm" aria-expanded="false" aria-controls="createNoticumbresForm">
-    <i class="bi bi-plus-lg"></i> {{ _('Crear noticia') }}
-  </button>
-
-  <div class="collapse mb-4" id="createNoticumbresForm">
-    <form method="POST" action="{{ url_for('main.noticumbres_admin') }}" enctype="multipart/form-data" class="perfil-data">
-      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-
-      <div class="perfil-row flex-column align-items-start">
-        <label class="perfil-label w-100" for="noticumbres_title">{{ _('Título') }}</label>
-        <input type="text" class="form-control" id="noticumbres_title" name="noticumbres_title" required>
-      </div>
-
-      <div class="perfil-row flex-column align-items-start">
-        <label class="perfil-label w-100" for="noticumbres_summary">{{ _('Resumen') }}</label>
-        <textarea class="form-control" id="noticumbres_summary" name="noticumbres_summary" rows="3"></textarea>
-      </div>
-
-      <div class="perfil-row flex-column align-items-start">
-        <label class="perfil-label w-100" for="noticumbres_image">{{ _('Imagen destacada') }}</label>
-        <input type="file" class="form-control" id="noticumbres_image" name="noticumbres_image" accept=".jpg,.jpeg,.png,.webp">
-      </div>
-
-      <div class="perfil-row flex-column align-items-start">
-        <label class="perfil-label w-100" for="noticumbres_content">{{ _('Contenido') }}</label>
-        {{ wysiwyg_editor('noticumbres_content', '', 12) }}
-      </div>
-
-      <div class="text-end mt-3">
-        <button type="submit" class="btn btn-success btn-sm">
-          <i class="bi bi-check-lg"></i> {{ _('Publicar') }}
-        </button>
-      </div>
-    </form>
-  </div>
-  {% endif %}
 
   {% if posts %}
     <!-- Noticia principal -->
@@ -127,43 +67,4 @@
   {% endif %}
 </div>
 
-<script>
-  // WYSIWYG editor básico
-  (function () {
-    document.querySelectorAll('[data-cmd]').forEach(function (btn) {
-      btn.addEventListener('click', function (e) {
-        e.preventDefault();
-        const editor = document.getElementById(this.dataset.editor);
-        if (!editor) return;
-        editor.focus();
-        const cmd = this.dataset.cmd;
-        const val = this.dataset.val || '';
-        document.execCommand(cmd, false, val);
-        const target = document.getElementById(editor.dataset.target);
-        if (target) target.value = editor.innerHTML;
-      });
-    });
-
-    document.querySelectorAll('.wysiwyg-editor').forEach(function (ed) {
-      ed.addEventListener('input', function () {
-        const target = document.getElementById(ed.dataset.target);
-        if (target) target.value = ed.innerHTML;
-      });
-      ed.addEventListener('paste', function (e) {
-        e.preventDefault();
-        const text = (e.clipboardData || window.clipboardData).getData('text/plain');
-        document.execCommand('insertText', false, text);
-      });
-    });
-
-    document.querySelectorAll('form').forEach(function (form) {
-      form.addEventListener('submit', function () {
-        form.querySelectorAll('.wysiwyg-editor').forEach(function (ed) {
-          const target = document.getElementById(ed.dataset.target);
-          if (target) target.value = ed.innerHTML;
-        });
-      });
-    });
-  })();
-</script>
 {% endblock %}
