@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}{{ _('Noticumbres') }}{% endblock %}
+{% block main_class %}top-main{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <h1 class="mb-4">{{ _('Noticumbres') }}</h1>
+
+  {% if posts %}
+    <div class="row g-4">
+      {% for post in posts %}
+      <div class="col-12 col-md-6">
+        <article class="card h-100 border-0 shadow-sm" style="background: var(--card-bg); border: 1px solid var(--card-border);">
+          {% if post.image %}
+          <img src="{{ url_for('static', filename=post.image) }}" alt="{{ post.title }}" class="card-img-top" style="object-fit: cover; max-height: 220px;">
+          {% endif %}
+          <div class="card-body">
+            <h2 class="h4 card-title">{{ post.title }}</h2>
+            <div class="text-muted small mb-2">
+              <i class="bi bi-clock"></i> {{ _('Publicado') }}: {{ post.published_at }}
+              {% if post.updated_at and post.updated_at != post.published_at %}
+              &nbsp;|&nbsp;<i class="bi bi-pencil"></i> {{ _('Modificado') }}: {{ post.updated_at }}
+              {% endif %}
+            </div>
+            {% if post.summary %}
+            <p class="card-text">{{ post.summary|safe }}</p>
+            {% endif %}
+            <div class="post-content">{{ post.content|safe }}</div>
+          </div>
+        </article>
+      </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p class="text-muted">{{ _('Próximamente encontrarás artículos, noticias y recomendaciones.') }}</p>
+  {% endif %}
+</div>
+{% endblock %}

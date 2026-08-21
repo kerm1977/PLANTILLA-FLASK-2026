@@ -1,0 +1,37 @@
+{
+  "posts": [
+    {
+      "id": "post-1",
+      "title": "Lorem Ipsum Dolor",
+      "slug": "lorem-ipsum-dolor",
+      "summary": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+      "content": "<p><strong>Lorem ipsum</strong> dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p><p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>",
+      "image": "",
+      "published_at": "2026-08-18T10:00:00",
+      "updated_at": "2026-08-18T10:00:00",
+      "is_published": true
+    },
+    {
+      "id": "post-2",
+      "title": "Consectetur Adipiscing",
+      "slug": "consectetur-adipiscing",
+      "summary": "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium.",
+      "content": "<p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.</p><p>Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt.</p>",
+      "image": "",
+      "published_at": "2026-08-17T14:30:00",
+      "updated_at": "2026-08-17T14:30:00",
+      "is_published": true
+    },
+    {
+      "id": "post-3",
+      "title": "Ut Labore et Dolore",
+      "slug": "ut-labore-et-dolore",
+      "summary": "At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti.",
+      "content": "<p>At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident.</p><p>Similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga. Et harum quidem rerum facilis est et expedita distinctio.</p>",
+      "image": "",
+      "published_at": "2026-08-16T09:15:00",
+      "updated_at": "2026-08-16T09:15:00",
+      "is_published": true
+    }
+  ]
+}
