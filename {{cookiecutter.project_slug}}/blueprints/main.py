@@ -902,45 +902,6 @@ async def dashboard():
             flash("Términos y condiciones actualizados", "success")
             return redirect(url_for("main.dashboard") + "?section=termsConditions")
 
-        if "save_noticumbres_post" in request.form:
-            title = request.form.get("noticumbres_title", "").strip()
-            summary = request.form.get("noticumbres_summary", "").strip()
-            content = request.form.get("noticumbres_content", "").strip()
-            if not title:
-                flash("El título es obligatorio", "warning")
-                return redirect(url_for("main.dashboard") + "?section=noticumbres")
-            slug = re.sub(r"[^a-z0-9]+", "-", title.lower()).strip("-") or "post"
-            slug = f"{slug}-{int(datetime.now().timestamp())}"
-            image = ""
-            upload = request.files.get("noticumbres_image")
-            if upload and upload.filename:
-                ext = upload.filename.rsplit(".", 1)[-1].lower() if "." in upload.filename else ""
-                if ext in ALLOWED_IMAGE_EXT:
-                    upload_dir = os.path.join(current_app.root_path, "static", "uploads", "noticumbres")
-                    os.makedirs(upload_dir, exist_ok=True)
-                    filename = f"{uuid.uuid4().hex}.{ext}"
-                    upload.save(os.path.join(upload_dir, filename))
-                    image = os.path.join("uploads", "noticumbres", filename).replace("\\", "/")
-                else:
-                    flash("Formato de imagen no permitido", "warning")
-            data = load_noticumbres()
-            posts = data.get("posts", [])
-            now = datetime.now().isoformat(sep=" ", timespec="seconds")
-            posts.insert(0, {
-                "id": str(uuid.uuid4()),
-                "title": title,
-                "slug": slug,
-                "summary": summary,
-                "content": content,
-                "image": image,
-                "published_at": now,
-                "updated_at": now,
-                "is_published": True,
-            })
-            data["posts"] = posts
-            save_noticumbres(data)
-            flash("Publicación de Noticumbres creada", "success")
-            return redirect(url_for("main.dashboard") + "?section=noticumbres")
 
     async with async_session() as s:
         result = await s.execute(select(QuoteField).order_by(QuoteField.step, QuoteField.position))
@@ -965,7 +926,6 @@ async def dashboard():
         form_fields_config=load_form_fields_config(),
         form_field_types=FORM_FIELD_TYPES,
         form_field_type_labels=FORM_FIELD_TYPE_LABELS,
-        noticumbres_config=load_noticumbres(),
     )
 
 
@@ -1114,6 +1074,54 @@ async def blog():
     return render_template(
         "noticumbres.html",
         posts=data.get("posts", []),
+    )
+
+
+@main_bp.route("/panel/noticumbres", methods=["GET", "POST"])
+@superuser_required
+async def noticumbres_admin():
+    if request.method == "POST":
+        title = request.form.get("noticumbres_title", "").strip()
+        summary = request.form.get("noticumbres_summary", "").strip()
+        content = request.form.get("noticumbres_content", "").strip()
+        if not title:
+            flash("El título es obligatorio", "warning")
+            return redirect(url_for("main.noticumbres_admin"))
+        slug = re.sub(r"[^a-z0-9]+", "-", title.lower()).strip("-") or "post"
+        slug = f"{slug}-{int(datetime.now().timestamp())}"
+        image = ""
+        upload = request.files.get("noticumbres_image")
+        if upload and upload.filename:
+            ext = upload.filename.rsplit(".", 1)[-1].lower() if "." in upload.filename else ""
+            if ext in ALLOWED_IMAGE_EXT:
+                upload_dir = os.path.join(current_app.root_path, "static", "uploads", "noticumbres")
+                os.makedirs(upload_dir, exist_ok=True)
+                filename = f"{uuid.uuid4().hex}.{ext}"
+                upload.save(os.path.join(upload_dir, filename))
+                image = os.path.join("uploads", "noticumbres", filename).replace("\\", "/")
+            else:
+                flash("Formato de imagen no permitido", "warning")
+        data = load_noticumbres()
+        posts = data.get("posts", [])
+        now = datetime.now().isoformat(sep=" ", timespec="seconds")
+        posts.insert(0, {
+            "id": str(uuid.uuid4()),
+            "title": title,
+            "slug": slug,
+            "summary": summary,
+            "content": content,
+            "image": image,
+            "published_at": now,
+            "updated_at": now,
+            "is_published": True,
+        })
+        data["posts"] = posts
+        save_noticumbres(data)
+        flash("Publicación de Noticumbres creada", "success")
+        return redirect(url_for("main.noticumbres_admin"))
+    return render_template(
+        "panel/noticumbres.html",
+        noticumbres=load_noticumbres(),
     )
 
 
