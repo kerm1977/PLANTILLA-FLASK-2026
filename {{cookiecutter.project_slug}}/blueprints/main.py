@@ -224,7 +224,7 @@ def _noticumbres_path():
 
 def load_noticumbres():
     path = _noticumbres_path()
-    default = {"posts": []}
+    default = {"config": {}, "posts": []}
     if not os.path.exists(path):
         return default
     try:
@@ -902,6 +902,18 @@ async def dashboard():
             flash("Términos y condiciones actualizados", "success")
             return redirect(url_for("main.dashboard") + "?section=termsConditions")
 
+        if "save_noticumbres_config" in request.form:
+            data = load_noticumbres()
+            data.setdefault("config", {})
+            data["config"]["update_time"] = request.form.get("noticumbres_update_time", "").strip()
+            try:
+                data["config"]["max_posts"] = int(request.form.get("noticumbres_max_posts", "0") or "0")
+            except ValueError:
+                data["config"]["max_posts"] = 0
+            save_noticumbres(data)
+            flash("Configuración de noticias actualizada", "success")
+            return redirect(url_for("main.dashboard") + "?section=noticumbresAdmin")
+
 
     async with async_session() as s:
         result = await s.execute(select(QuoteField).order_by(QuoteField.step, QuoteField.position))
@@ -1128,7 +1140,7 @@ async def noticumbres_admin():
         data["posts"] = posts
         save_noticumbres(data)
         flash("Publicación de Noticumbres creada", "success")
-        return redirect(url_for("main.dashboard") + "?section=noticumbresAdmin")
+        return redirect(url_for("main.noticumbres_admin"))
     return render_template(
         "panel/noticumbres.html",
         noticumbres=load_noticumbres(),

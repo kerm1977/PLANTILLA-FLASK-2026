@@ -931,49 +931,36 @@
     <i class="bi bi-chevron-down collapsible-tab-icon"></i>
   </button>
   <div class="collapse{% if request.args.get('section') == 'noticumbresAdmin' %} show{% endif %}" id="noticumbresAdminSection" data-bs-parent="#dashboardAccordion">
-    <form method="POST" action="{{ url_for('main.noticumbres_admin') }}" enctype="multipart/form-data" class="perfil-data">
+    <form method="POST" action="{{ url_for('main.dashboard') }}" class="perfil-data">
       <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <input type="hidden" name="save_noticumbres_config" value="1">
 
       <div class="perfil-row flex-column align-items-start">
-        <label class="perfil-label w-100" for="noticumbres_title">{{ _('Título') }}</label>
-        <input type="text" class="form-control" id="noticumbres_title" name="noticumbres_title" required>
+        <label class="perfil-label w-100" for="noticumbres_update_time">{{ _('Hora de actualización') }}</label>
+        <input type="time" class="form-control" id="noticumbres_update_time" name="noticumbres_update_time" value="{{ noticumbres_config.config.get('update_time', '') }}">
       </div>
 
       <div class="perfil-row flex-column align-items-start">
-        <label class="perfil-label w-100" for="noticumbres_summary">{{ _('Resumen') }}</label>
-        <textarea class="form-control" id="noticumbres_summary" name="noticumbres_summary" rows="3"></textarea>
+        <label class="perfil-label w-100" for="noticumbres_max_posts">{{ _('Máximo de noticias visibles') }}</label>
+        <input type="number" class="form-control" id="noticumbres_max_posts" name="noticumbres_max_posts" min="0" value="{{ noticumbres_config.config.get('max_posts', '') }}">
       </div>
 
-      <div class="perfil-row flex-column align-items-start">
-        <label class="perfil-label w-100" for="noticumbres_image">{{ _('Imagen destacada') }}</label>
-        <input type="file" class="form-control" id="noticumbres_image" name="noticumbres_image" accept=".jpg,.jpeg,.png,.webp">
+      <div class="perfil-row">
+        <span class="perfil-label">{{ _('Total de publicaciones') }}</span>
+        <span class="perfil-value">{{ noticumbres_config.posts|length }}</span>
       </div>
 
-      <div class="perfil-row flex-column align-items-start">
-        <label class="perfil-label w-100" for="noticumbres_content">{{ _('Contenido') }}</label>
-        {{ wysiwyg_editor('noticumbres_content', '', 12) }}
+      <div class="perfil-row">
+        <span class="perfil-label">{{ _('Publicaciones activas') }}</span>
+        <span class="perfil-value">{{ noticumbres_config.posts | selectattr('is_published') | list | length }}</span>
       </div>
 
       <div class="text-end mt-3">
         <button type="submit" class="btn btn-success btn-sm">
-          <i class="bi bi-check-lg"></i> {{ _('Publicar') }}
+          <i class="bi bi-check-lg"></i> {{ _('Guardar configuración') }}
         </button>
       </div>
     </form>
-
-    {% if noticumbres_config.posts %}
-    <div class="perfil-data mt-3">
-      <h6 class="perfil-label">{{ _('Publicaciones existentes') }}</h6>
-      <ul class="list-group list-group-flush">
-        {% for post in noticumbres_config.posts %}
-        <li class="list-group-item bg-transparent">
-          <strong>{{ post.title }}</strong>
-          <span class="text-muted small">— {{ post.published_at }}</span>
-        </li>
-        {% endfor %}
-      </ul>
-    </div>
-    {% endif %}
   </div>
 
 </div>
