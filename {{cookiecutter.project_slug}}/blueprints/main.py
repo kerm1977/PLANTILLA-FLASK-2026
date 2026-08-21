@@ -1118,13 +1118,11 @@ async def noticumbres_admin():
         data["posts"] = posts
         save_noticumbres(data)
         flash("Publicación de Noticumbres creada", "success")
-        return redirect(url_for("main.noticumbres_admin"))
+        return redirect(url_for("main.blog"))
     return render_template(
         "panel/noticumbres.html",
         noticumbres=load_noticumbres(),
     )
-
-
 @main_bp.route("/afiliados")
 async def afiliados():
     return render_template("afiliados.html")
