@@ -1101,6 +1101,14 @@ async def noticumbres_admin():
                 image = os.path.join("uploads", "noticumbres", filename).replace("\\", "/")
             else:
                 flash("Formato de imagen no permitido", "warning")
+        user_id = session.get("user_id")
+        author = "Administrador"
+        if user_id:
+            async with async_session() as s:
+                user = await s.get(User, user_id)
+                if user:
+                    author = " ".join(p for p in [user.first_name, user.first_last_name, user.second_last_name] if p) or user.username or user.email or "Administrador"
+
         data = load_noticumbres()
         posts = data.get("posts", [])
         now = datetime.now().isoformat(sep=" ", timespec="seconds")
@@ -1110,6 +1118,7 @@ async def noticumbres_admin():
             "slug": slug,
             "summary": summary,
             "content": content,
+            "author": author,
             "image": image,
             "published_at": now,
             "updated_at": now,
