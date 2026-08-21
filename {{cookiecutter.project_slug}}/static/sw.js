@@ -1,11 +1,6 @@
-const CACHE_NAME = 'flask-pwa-v1';
+const CACHE_NAME = 'flask-pwa-v2';
 const URLS_TO_CACHE = [
-  '/',
-  '/movil',
   '/static/manifest.json',
-  '/static/css/styles.css',
-  '/static/js/main.js',
-  '/static/js/pwa.js',
   '/static/icons/icon.svg',
   '/static/vendor/bootstrap/css/bootstrap.min.css',
   '/static/vendor/bootstrap/js/bootstrap.bundle.min.js',
@@ -33,10 +28,24 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
-  if (event.request.method !== 'GET') return;
+  const request = event.request;
+  if (request.method !== 'GET') return;
+
+  const url = new URL(request.url);
+  if (url.origin !== self.location.origin) return;
+
+  const isVendorAsset = url.pathname.startsWith('/static/vendor/')
+    || url.pathname.startsWith('/static/icons/')
+    || url.pathname === '/static/manifest.json';
+
+  if (isVendorAsset) {
+    event.respondWith(
+      caches.match(request).then((cached) => cached || fetch(request))
+    );
+    return;
+  }
+
   event.respondWith(
-    caches.match(event.request).then((cached) => {
-      return cached || fetch(event.request);
-    })
+    fetch(request).catch(() => caches.match(request))
   );
 });

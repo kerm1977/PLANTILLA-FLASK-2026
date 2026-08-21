@@ -58,3 +58,4 @@ La app estará en `http://127.0.0.1:5000`.
 ## Nota técnica
 
 Se fijó `greenlet==3.2.4` porque versiones posteriores crashean con Python 3.13 en Windows para esta máquina.
+ 
