@@ -1,0 +1,7 @@
+/* Escritorio */
+@media (min-width: 1200px) {
+    .vista-titulo {
+        font-size: 3rem;
+    }
+}
+

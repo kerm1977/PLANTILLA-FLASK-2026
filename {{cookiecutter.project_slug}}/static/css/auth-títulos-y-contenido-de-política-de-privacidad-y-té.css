@@ -1,0 +1,23 @@
+/* Títulos y contenido de Política de Privacidad y Términos y Condiciones */
+.legal-title {
+  color: #000;
+}
+
+.legal-content {
+  text-align: justify !important;
+}
+
+.legal-hr {
+  border: 0;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  opacity: 1;
+}
+
+[data-bs-theme="dark"] .legal-title {
+  color: var(--bs-body-color);
+}
+
+[data-bs-theme="dark"] .legal-hr {
+  border-top-color: rgba(255, 255, 255, 0.1);
+}
+

@@ -1,0 +1,8 @@
+/* Título de cada vista (mobile first) */
+.vista-titulo {
+    font-size: 1.5rem;
+    font-weight: 600;
+    word-break: break-word;
+    color: var(--bs-body-color);
+}
+

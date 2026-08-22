@@ -1,0 +1,78 @@
+/* En móvil solo se deja el botón sobre el video; título y descripción
+   pasan a la barra pegada debajo del video para que no se vean gigantes. */
+@media (max-width: 767px) {
+  .hero-overlay .hero-desktop-only {
+    display: none;
+  }
+
+  .hero-overlay {
+    padding: 0.75rem;
+  }
+
+  .hero-btn-size-sm,
+  .hero-btn-size-md,
+  .hero-btn-size-lg,
+  .hero-btn-size-xl {
+    font-size: 0.75rem;
+    padding: 7px 16px;
+  }
+
+  .hero-mobile-bar {
+    display: block;
+    width: calc(100% + 2rem);
+    margin: 0 -1rem;
+    padding: 0.6rem 1rem 0.8rem;
+    background: var(--card-bg);
+    border-bottom: 1px solid var(--card-border);
+    text-align: center;
+  }
+
+  .hero-mobile-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin: 0 0 0.2rem;
+    color: var(--bs-body-color);
+  }
+
+  .hero-mobile-desc {
+    font-size: 0.8rem;
+    margin: 0;
+    color: var(--text-muted);
+  }
+}
+
+.video-controls {
+  position: absolute;
+  bottom: 1rem;
+  left: 1rem;
+  right: 1rem;
+  display: flex;
+  justify-content: space-between;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.btn-video {
+  pointer-events: auto;
+  background: rgba(0, 0, 0, 0.4);
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  width: 42px;
+  height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  transition: background 0.2s ease;
+}
+
+.btn-video:hover {
+  background: rgba(0, 0, 0, 0.65);
+}
+
+.btn-video i {
+  font-size: 1.25rem;
+}

@@ -1,0 +1,6 @@
+/* Barra de título/descripción para móvil, pegada al borde inferior del video.
+   En desktop permanece oculta (el título/descripción se muestran en el overlay). */
+.hero-mobile-bar {
+  display: none;
+}
+

@@ -1,0 +1,159 @@
+/* Barra superior de escritorio */
+.desktop-nav {
+  position: fixed;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1100;
+  width: 100%;
+  max-width: 1100px;
+  height: 64px;
+  padding: 0 1.25rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--card-bg);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--card-border);
+  border-radius: 0 0 1.25rem 1.25rem;
+  box-shadow: var(--shadow);
+  z-index: 1000;
+}
+
+.desktop-nav-links,
+.desktop-nav-actions {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.desktop-nav-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.5rem 0.85rem;
+  border-radius: 2rem;
+  color: var(--bs-body-color);
+  text-decoration: none;
+  font-weight: 500;
+  background: transparent;
+  border: none;
+  transition: background 0.2s, color 0.2s;
+}
+
+.desktop-nav-link:hover,
+.desktop-nav-link.active {
+  background: var(--bs-success);
+  color: #fff;
+}
+
+
+.desktop-nav-logo {
+  position: absolute;
+  top: calc(100% + 1px);
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1000;
+  pointer-events: none;
+}
+
+.desktop-nav-logo img {
+  height: 100px;
+  width: auto;
+  object-fit: contain;
+  display: block;
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+[data-bs-theme="dark"] .desktop-nav-logo img {
+  filter: drop-shadow(0 6px 10px rgba(176, 38, 255, 0.55));
+}
+
+.mobile-logo {
+  text-align: center;
+  padding-top: 50px;
+}
+
+.mobile-logo-wrap {
+  position: relative;
+  display: inline-block;
+  z-index: 1000;
+}
+
+.mobile-logo-wrap img {
+  height: 100px;
+  width: auto;
+  display: block;
+  cursor: pointer;
+}
+
+.mobile-logo-wrap::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 125%;
+  height: 125%;
+  border-radius: 50%;
+  color: rgba(198, 212, 122, 0.95);
+  background: conic-gradient(
+    from 0deg,
+    transparent,
+    currentColor,
+    transparent 55%,
+    currentColor,
+    transparent
+  );
+  -webkit-mask: radial-gradient(transparent 58%, rgba(0, 0, 0, 1) 70%);
+  mask: radial-gradient(transparent 58%, rgba(0, 0, 0, 1) 70%);
+  filter: blur(8px);
+  transform: translate(-50%, -50%) rotate(0deg);
+  z-index: -1;
+  pointer-events: none;
+  animation: logo-glow 4s linear infinite, logo-color 32s linear infinite;
+}
+
+.desktop-nav-logo::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 125%;
+  height: 125%;
+  border-radius: 50%;
+  color: rgba(198, 212, 122, 0.95);
+  background: conic-gradient(
+    from 0deg,
+    transparent,
+    currentColor,
+    transparent 55%,
+    currentColor,
+    transparent
+  );
+  -webkit-mask: radial-gradient(transparent 58%, rgba(0, 0, 0, 1) 70%);
+  mask: radial-gradient(transparent 58%, rgba(0, 0, 0, 1) 70%);
+  filter: blur(8px);
+  transform: translate(-50%, -50%) rotate(0deg);
+  z-index: -1;
+  pointer-events: none;
+  animation: logo-glow 4s linear infinite, logo-color 32s linear infinite;
+}
+
+@keyframes logo-glow {
+  to {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
+}
+
+@keyframes logo-color {
+  0% { color: rgba(198, 212, 122, 0.95); }
+  25% { color: rgba(142, 202, 230, 0.95); }
+  50% { color: rgba(249, 198, 135, 0.95); }
+  75% { color: rgba(255, 238, 88, 0.95); }
+  100% { color: rgba(198, 212, 122, 0.95); }
+}
+

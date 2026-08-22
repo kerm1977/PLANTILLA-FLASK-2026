@@ -1,0 +1,11 @@
+/* Navbar con blur y opacidad leve solo en login (PC) */
+.login-page .desktop-nav {
+  background: rgba(255, 255, 255, 0.55);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+}
+
+[data-bs-theme="dark"] .login-page .desktop-nav {
+  background: rgba(35, 35, 50, 0.45);
+}
+

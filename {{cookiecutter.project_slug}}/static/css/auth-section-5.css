@@ -1,0 +1,50 @@
+/* =========================================================
+   Panel de administración
+   ========================================================= */
+
+.admin-panel {
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+  text-align: start;
+}
+
+.user-card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 1.25rem;
+  padding: 1.25rem;
+  margin-bottom: 1rem;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  color: var(--bs-body-color);
+}
+
+.user-card.user-square {
+  aspect-ratio: 1 / 1;
+  margin-bottom: 0;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.user-card.user-square:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+[data-bs-theme="dark"] .user-card {
+  background: rgba(25, 25, 40, 0.65);
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+.password-group .form-control {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.password-group .btn {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+  border-top-right-radius: 2rem;
+  border-bottom-right-radius: 2rem;
+}
+

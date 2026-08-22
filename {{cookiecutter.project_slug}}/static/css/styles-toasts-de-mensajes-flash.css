@@ -1,0 +1,10 @@
+/* Toasts de mensajes flash */
+.flash-toast {
+  border-left: 4px solid !important;
+}
+
+.flash-toast-info { border-left-color: var(--bs-info) !important; }
+.flash-toast-success { border-left-color: var(--bs-success) !important; }
+.flash-toast-warning { border-left-color: var(--bs-warning) !important; }
+.flash-toast-danger { border-left-color: var(--bs-danger) !important; }
+

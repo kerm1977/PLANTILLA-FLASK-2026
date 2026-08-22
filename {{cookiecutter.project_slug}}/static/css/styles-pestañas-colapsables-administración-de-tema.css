@@ -1,0 +1,24 @@
+/* Pestañas colapsables (Administración de tema) */
+.collapsible-tab {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--card-border);
+  border-radius: 0;
+  padding: 0.65rem 0.25rem;
+  color: var(--bs-body-color);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.collapsible-tab-icon {
+  transition: transform 0.2s ease;
+}
+
+.collapsible-tab[aria-expanded="false"] .collapsible-tab-icon {
+  transform: rotate(-90deg);
+}
+

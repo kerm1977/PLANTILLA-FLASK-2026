@@ -1,0 +1,31 @@
+/* Tarjetas glassmorphism */
+.auth-card,
+.perfil-card,
+.admin-card,
+.hero-card {
+  width: 100%;
+  max-width: 480px;
+  margin: auto;
+  padding: 2rem 1.5rem;
+  border-radius: 1.75rem;
+  background: rgba(255, 255, 255, 0.22);
+  backdrop-filter: blur(28px);
+  -webkit-backdrop-filter: blur(28px);
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  color: var(--bs-body-color);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+}
+
+.login-card {
+  margin-top: 0;
+  margin-bottom: auto;
+}
+
+[data-bs-theme="dark"] .auth-card,
+[data-bs-theme="dark"] .perfil-card,
+[data-bs-theme="dark"] .admin-card,
+[data-bs-theme="dark"] .hero-card {
+  background: rgba(15, 15, 30, 0.42);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+

@@ -1,0 +1,66 @@
+/* Títulos, labels y botones con colores pastel */
+.admin-panel h2,
+.admin-panel h4,
+.modal-title,
+.vista-titulo {
+  color: var(--bs-primary);
+}
+
+label,
+.form-label {
+  color: var(--bs-success);
+}
+
+.back-button {
+  position: fixed;
+  bottom: 100px;
+  left: 1rem;
+  z-index: 1000;
+  width: 3.25rem;
+  height: 3.25rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--card-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--card-border);
+  color: var(--bs-body-color);
+  cursor: pointer;
+  box-shadow: none;
+}
+
+.whatsapp-float {
+  position: fixed;
+  bottom: 100px;
+  right: 1rem;
+  z-index: 1000;
+  width: 3.25rem;
+  height: 3.25rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #25d366;
+  border: none;
+  color: #ffffff;
+  box-shadow: none;
+  font-size: 1.6rem;
+  text-decoration: none;
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.whatsapp-float:hover {
+  background: #1ebd5a;
+  color: #ffffff;
+  transform: scale(1.06);
+  box-shadow: none;
+}
+
+.whatsapp-float-disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+

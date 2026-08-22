@@ -1,0 +1,48 @@
+/* Cotizador con estilo de perfil (fondo normal, líneas separadoras) */
+.cotizador-view .perfil-row {
+  align-items: flex-start;
+}
+
+.cotizador-view .perfil-label {
+  white-space: normal;
+  flex: 0 1 45%;
+  text-align: left;
+  padding-right: 0.5rem;
+}
+
+.cotizador-view .perfil-label-info {
+  flex-basis: 100%;
+  margin-bottom: 0.25rem;
+}
+
+.cotizador-view .perfil-value {
+  flex: 1 0 55%;
+  text-align: right;
+  min-width: 0;
+}
+
+.cotizador-view .perfil-row .form-control,
+.cotizador-view .perfil-row .form-select {
+  max-width: 100%;
+  width: 100%;
+  text-align: left;
+}
+
+.cotizador-view .perfil-row textarea.form-control {
+  min-height: 80px;
+  resize: vertical;
+}
+
+.cotizador-view .quote-options {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.25rem;
+}
+
+.cotizador-view .quote-options .form-check {
+  margin: 0;
+  text-align: left;
+  white-space: nowrap;
+}
+

@@ -1,0 +1,17 @@
+/* Capa fija para ocultar el formulario detrás del logo y navbar en PC */
+@media (min-width: 992px) {
+  .auth-page::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 144px;
+    z-index: 1;
+    pointer-events: none;
+    background: var(--bs-body-bg);
+    -webkit-mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 1) 0, rgba(0, 0, 0, 1) 124px, rgba(0, 0, 0, 0) 144px);
+    mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 1) 0, rgba(0, 0, 0, 1) 124px, rgba(0, 0, 0, 0) 144px);
+  }
+}
+

@@ -1,0 +1,59 @@
+/* Perfil sin card, sobre el fondo */
+.perfil-view {
+  max-width: 600px;
+  margin: 0 auto;
+  text-align: start;
+  padding: 0 1rem;
+  width: 100%;
+}
+
+.perfil-data {
+  background: transparent;
+}
+
+.perfil-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--card-border);
+}
+
+.perfil-label {
+  color: #4a7c2b;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+[data-bs-theme="dark"] .perfil-label {
+  color: var(--bs-success);
+}
+
+.perfil-value {
+  text-align: end;
+  word-break: break-word;
+}
+
+.perfil-edit-btn {
+  color: var(--bs-body-color);
+  text-decoration: none;
+}
+
+.perfil-edit-btn i {
+  font-size: 1.1rem;
+}
+
+.perfil-row .form-control {
+  max-width: 250px;
+  width: 100%;
+}
+
+.perfil-row .wysiwyg-editor.form-control {
+  max-width: 100%;
+  width: 100%;
+  white-space: normal;
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
+

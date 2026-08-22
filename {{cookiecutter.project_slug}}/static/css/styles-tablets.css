@@ -1,0 +1,7 @@
+/* Tablets */
+@media (min-width: 768px) {
+    .vista-titulo {
+        font-size: 2.25rem;
+    }
+}
+

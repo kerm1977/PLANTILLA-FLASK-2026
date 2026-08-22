@@ -1,0 +1,18 @@
+/* Centrado total horizontal y vertical con Flexbox */
+.centrado {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: calc(6rem + 80px) 1rem 400px 1rem;
+  background: var(--bg-gradient);
+}
+
+@media (min-width: 992px) {
+  .centrado {
+    padding-top: calc(9rem + 80px);
+  }
+}
+

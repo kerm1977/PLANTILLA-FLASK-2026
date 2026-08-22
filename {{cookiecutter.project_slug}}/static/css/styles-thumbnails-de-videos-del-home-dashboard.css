@@ -1,0 +1,62 @@
+/* Thumbnails de videos del home (dashboard) */
+.home-video-thumbs {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.5rem;
+}
+
+.home-video-thumb {
+  position: relative;
+  width: 160px;
+}
+
+.home-video-thumb video,
+.home-video-thumb img {
+  width: 160px;
+  height: 90px;
+  object-fit: cover;
+  border-radius: 0.5rem;
+  border: 1px solid var(--card-border);
+  background: #000;
+  display: block;
+}
+
+.home-video-thumb-empty {
+  width: 160px;
+  height: 90px;
+  border-radius: 0.5rem;
+  border: 1px dashed var(--card-border);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+  color: var(--bs-secondary-color, #888);
+}
+
+.home-video-thumb-badge {
+  position: absolute;
+  top: -8px;
+  left: -8px;
+  background: var(--bs-success);
+  color: #fff;
+  border-radius: 50%;
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 600;
+  z-index: 1;
+}
+
+.home-video-thumb-actions {
+  display: flex;
+  justify-content: center;
+  gap: 0.25rem;
+  margin-top: 0.35rem;
+}
+

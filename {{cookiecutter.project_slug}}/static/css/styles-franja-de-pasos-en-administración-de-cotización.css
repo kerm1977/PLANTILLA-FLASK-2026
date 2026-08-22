@@ -1,0 +1,41 @@
+/* Franja de pasos en administración de cotización */
+.quote-step-header {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  margin-bottom: 0.5rem;
+  background-color: #adb5bd;
+  color: #fff;
+  border: none;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  transition: background 0.2s ease;
+}
+
+[data-bs-theme="dark"] .quote-step-header {
+  background-color: #6c757d;
+}
+
+.quote-step-header:hover,
+.quote-step-header:focus {
+  background-color: #868e96;
+}
+
+[data-bs-theme="dark"] .quote-step-header:hover,
+[data-bs-theme="dark"] .quote-step-header:focus {
+  background-color: #495057;
+}
+
+.quote-step-header .step-chevron {
+  transition: transform 0.2s ease;
+}
+
+.quote-step-header[aria-expanded="true"] .step-chevron {
+  transform: rotate(180deg);
+}
+
+.quote-step-item {
+  margin-bottom: 1rem;
+}
+

@@ -1,0 +1,76 @@
+/* Tablas tipo tarjeta en móvil y respeto al tema */
+.table-mobile-cards {
+  background-color: var(--bs-body-bg);
+  color: var(--bs-body-color);
+}
+
+.table-mobile-cards thead th {
+  background-color: var(--bs-body-bg);
+  color: var(--bs-body-color);
+  border-color: var(--bs-border-color);
+}
+
+@media (max-width: 767.98px) {
+  .table-mobile-cards,
+  .table-mobile-cards thead,
+  .table-mobile-cards tbody,
+  .table-mobile-cards th,
+  .table-mobile-cards td,
+  .table-mobile-cards tr {
+    display: block;
+  }
+
+  .table-mobile-cards thead tr {
+    position: absolute;
+    top: -9999px;
+    left: -9999px;
+  }
+
+  .table-mobile-cards tr {
+    margin-bottom: 0.5rem;
+    padding: 0.5rem;
+    border: 1px solid var(--bs-border-color);
+    border-radius: 0.4rem;
+    background-color: var(--bs-body-bg);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+  }
+
+  .table-mobile-cards td {
+    border: none;
+    border-bottom: 1px solid var(--bs-border-color);
+    position: relative;
+    padding-left: 40%;
+    padding-top: 0.25rem;
+    padding-bottom: 0.25rem;
+    min-height: 1.6rem;
+    font-size: 0.9rem;
+  }
+
+  .table-mobile-cards td:last-child {
+    border-bottom: none;
+  }
+
+  .table-mobile-cards td.no-label {
+    padding-left: 0.5rem;
+    padding-top: 0.5rem;
+    padding-bottom: 0.25rem;
+    text-align: end;
+  }
+
+  .table-mobile-cards td.no-label::before {
+    display: none;
+  }
+
+  .table-mobile-cards td::before {
+    content: attr(data-label);
+    position: absolute;
+    top: 0.25rem;
+    left: 0.5rem;
+    width: 35%;
+    font-weight: bold;
+    white-space: nowrap;
+    color: var(--bs-body-color);
+    font-size: 0.85rem;
+  }
+}
+

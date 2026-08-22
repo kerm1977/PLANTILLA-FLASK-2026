@@ -1,0 +1,24 @@
+/* Layout alineado arriba: usar en vistas con listas/contenido variable
+   para evitar espacio muerto bajo el logo (en vez de centrado vertical) */
+.top-main {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: calc(5.5rem + 80px) 1rem 400px 1rem;
+  background: var(--bg-gradient);
+}
+
+@media (min-width: 992px) {
+  .top-main {
+    padding-top: calc(8rem + 80px);
+  }
+}
+
+@media (max-width: 991px) {
+  #dashboardAccordion {
+    margin-top: 80px;
+  }
+}
+

@@ -1,0 +1,59 @@
+/* =========================================================
+   Temas pastel claro/oscuro + glassmorphism
+   ========================================================= */
+
+:root {
+  --bs-body-bg: #ecece6;
+  --bs-body-color: #212529;
+  --bs-primary: #8ecae6;
+  --bs-success: #c6d47a;
+  --bs-warning: #f9c687;
+  --bs-danger: #e57373;
+  --bg-gradient: linear-gradient(125deg, #efefea 0%, #e5e5df 100%);
+  --card-bg: rgba(255, 255, 255, 0.80);
+  --card-border: rgba(255, 255, 255, 0.90);
+  --input-bg: rgba(255, 255, 255, 0.92);
+  --input-color: #212529;
+  --input-border: rgba(0, 0, 0, 0.08);
+  --text-muted: #6c757d;
+  --link-color: #4db6e6;
+  --shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+}
+
+[data-bs-theme="dark"] {
+  --bs-body-bg: #2a2a2e;
+  --bs-body-color: #f1f3f8;
+  --bs-primary: #8ecae6;
+  --bs-success: #c6d47a;
+  --bs-warning: #f9c687;
+  --bs-danger: #ef9a9a;
+  --bg-gradient: linear-gradient(125deg, #2d2d31 0%, #27272b 100%);
+  --card-bg: rgba(35, 35, 50, 0.65);
+  --card-border: rgba(255, 255, 255, 0.20);
+  --input-bg: rgba(0, 0, 0, 0.25);
+  --input-color: #f1f3f8;
+  --input-border: rgba(255, 255, 255, 0.15);
+  --text-muted: #adb5bd;
+  --link-color: #9ecfff;
+  --shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+}
+
+html {
+  height: 100%;
+}
+
+body {
+  min-height: 100vh;
+  margin: 0;
+}
+
+body {
+  background: var(--bg-gradient) no-repeat;
+  color: var(--bs-body-color);
+  transition: color 0.25s ease;
+}
+
+a {
+  color: var(--link-color);
+}
+

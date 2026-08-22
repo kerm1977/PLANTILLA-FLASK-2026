@@ -1,0 +1,50 @@
+/* Tarjeta de presentación de perfil */
+.profile-bcard {
+  max-width: 540px;
+  margin: 0 auto;
+  padding: 1.5rem 1rem;
+  color: var(--bs-body-color);
+}
+
+.profile-edit-btn {
+  color: var(--bs-body-color);
+  text-decoration: none;
+  font-size: 1.25rem;
+  padding: 0.25rem;
+}
+
+.profile-avatar i {
+  color: var(--bs-body-color);
+  opacity: 0.8;
+}
+
+.profile-name {
+  font-size: 1.75rem;
+  line-height: 1.4;
+  margin-bottom: 1rem;
+}
+
+.profile-value {
+  display: inline-block;
+  min-width: 2rem;
+  padding: 0 0.25rem;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.2s;
+}
+
+.profile-value:empty::before {
+  content: attr(data-placeholder);
+  color: var(--text-muted);
+}
+
+.profile-value.editing {
+  border-bottom: 1px dashed currentColor;
+  outline: none;
+}
+
+.profile-detail {
+  color: var(--bs-body-color);
+  opacity: 0.85;
+  font-size: 0.95rem;
+}
+

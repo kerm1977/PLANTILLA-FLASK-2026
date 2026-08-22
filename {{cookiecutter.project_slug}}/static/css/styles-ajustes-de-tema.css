@@ -1,0 +1,15 @@
+/* Ajustes de tema */
+.theme-swatch {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: 2px solid rgba(0, 0, 0, 0.15);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  transition: transform 0.15s;
+}
+
+.theme-swatch:hover,
+.theme-swatch:focus {
+  transform: scale(1.15);
+}
+

@@ -1,0 +1,33 @@
+/* Botón hero (overlay sobre el video del home) */
+.hero-btn {
+  background-color: var(--hero-btn-bg-light, #ffffff);
+  color: var(--hero-btn-color-light, #333333);
+  padding: 12px 28px;
+  border: none;
+  border-radius: var(--hero-btn-radius, 6px);
+  text-transform: uppercase;
+  font-weight: bold;
+  letter-spacing: 1px;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+[data-bs-theme="dark"] .hero-btn {
+  background-color: var(--hero-btn-bg-dark, #2a2a2e);
+  color: var(--hero-btn-color-dark, #f1f3f8);
+}
+
+.hero-btn:hover,
+.hero-btn:focus-visible {
+  background-color: var(--hero-btn-hover-bg-light, #f1f1f1);
+  color: var(--hero-btn-hover-color-light, #222222);
+}
+
+[data-bs-theme="dark"] .hero-btn:hover,
+[data-bs-theme="dark"] .hero-btn:focus-visible {
+  background-color: var(--hero-btn-hover-bg-dark, #3a3a3f);
+  color: var(--hero-btn-hover-color-dark, #ffffff);
+}
+
