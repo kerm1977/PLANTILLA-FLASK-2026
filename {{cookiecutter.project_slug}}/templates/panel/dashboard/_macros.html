@@ -1,0 +1,20 @@
+{% macro color_picker(field_name, value, label) %}
+<div class="color-picker" data-color-picker>
+  <label class="form-label small d-block">{{ label }}</label>
+  <input type="hidden" name="{{ field_name }}" class="color-value" value="{{ value }}">
+  <button type="button" class="color-picker-trigger" style="background: {{ value }};" aria-label="{{ label }}"></button>
+  <div class="color-picker-popover d-none">
+    <div class="color-wheel-wrap">
+      <canvas class="color-wheel" width="160" height="160"></canvas>
+      <div class="color-wheel-marker"></div>
+    </div>
+    <input type="range" class="color-lightness form-range" min="0" max="100" value="50">
+    <input type="text" class="color-hex form-control form-control-sm" value="{{ value }}" maxlength="7">
+    <div class="color-pastels">
+      {% for c in pastel_palette %}
+      <div class="color-pastel-swatch" style="background: {{ c }};" data-color="{{ c }}" title="{{ c }}"></div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% endmacro %}

@@ -1,0 +1,17 @@
+<button type="button" class="collapsible-tab mt-3" data-bs-toggle="collapse" data-bs-target="#quoteEmailSection" aria-expanded="false" aria-controls="quoteEmailSection">
+    <span><i class="bi bi-envelope-at me-2"></i>{{ _('Correo de cotizaciones') }}</span>
+    <i class="bi bi-chevron-down collapsible-tab-icon"></i>
+  </button>
+  <div class="collapse" id="quoteEmailSection" data-bs-parent="#dashboardAccordion">
+    <form method="POST" action="{{ url_for('main.dashboard') }}" class="perfil-row mt-2" style="flex-wrap: wrap;">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <input type="hidden" name="save_quote_email_config" value="1">
+      <div class="perfil-label" style="white-space: normal;">{{ _('Correo electrónico de destino') }}</div>
+      <div class="perfil-value" style="display: flex; gap: 0.5rem; flex-wrap: wrap; justify-content: flex-end;">
+        <input type="email" name="quote_email" class="form-control" value="{{ quote_email_config.email }}" placeholder="correo@ejemplo.com" style="max-width: 280px; min-width: 180px;">
+        <button type="submit" class="btn btn-success">
+          <i class="bi bi-check-lg"></i> {{ _('Guardar') }}
+        </button>
+      </div>
+    </form>
+  </div>

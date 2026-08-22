@@ -1,0 +1,21 @@
+<button type="button" class="collapsible-tab mt-3" data-bs-toggle="collapse" data-bs-target="#termsConditionsSection" aria-expanded="{% if request.args.get('section') == 'termsConditions' %}true{% else %}false{% endif %}" aria-controls="termsConditionsSection">
+    <span><i class="bi bi-file-text me-2"></i>{{ _('Administración de términos y condiciones') }}</span>
+    <i class="bi bi-chevron-down collapsible-tab-icon"></i>
+  </button>
+  <div class="collapse{% if request.args.get('section') == 'termsConditions' %} show{% endif %}" id="termsConditionsSection" data-bs-parent="#dashboardAccordion">
+    <form method="POST" action="{{ url_for('main.dashboard') }}" class="perfil-data">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <input type="hidden" name="save_terms_conditions" value="1">
+
+      <div class="perfil-row flex-column align-items-start">
+        <label class="perfil-label w-100" for="terms_content">{{ _('Contenido de términos y condiciones') }}</label>
+        {{ wysiwyg_editor('terms_content', terms_config.content, 20) }}
+      </div>
+
+      <div class="text-end mt-3">
+        <button type="submit" class="btn btn-success btn-sm">
+          <i class="bi bi-check-lg"></i> {{ _('Guardar términos') }}
+        </button>
+      </div>
+    </form>
+  </div>

@@ -1,0 +1,20 @@
+<button type="button" class="collapsible-tab" data-bs-toggle="collapse" data-bs-target="#temaSection" aria-expanded="false" aria-controls="temaSection">
+    <span><i class="bi bi-palette2 me-2"></i>{{ _('Tema actual') }}</span>
+    <i class="bi bi-chevron-down collapsible-tab-icon"></i>
+  </button>
+  <div class="collapse" id="temaSection" data-bs-parent="#dashboardAccordion">
+    <div class="perfil-data">
+      <div class="perfil-row">
+        <span class="perfil-label">{{ _('Tema actual') }}</span>
+        <span class="perfil-value" id="current-theme" data-light="{{ _('Claro') }}" data-dark="{{ _('Oscuro') }}">—</span>
+      </div>
+      <div class="text-center mt-4">
+        <button type="button" class="btn btn-outline-primary me-2" onclick="window.setTheme('light')">
+          <i class="bi bi-sun"></i> {{ _('Claro') }}
+        </button>
+        <button type="button" class="btn btn-outline-primary" onclick="window.setTheme('dark')">
+          <i class="bi bi-moon"></i> {{ _('Oscuro') }}
+        </button>
+      </div>
+    </div>
+  </div>

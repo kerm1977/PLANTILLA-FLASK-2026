@@ -1,0 +1,21 @@
+<button type="button" class="collapsible-tab mt-3" data-bs-toggle="collapse" data-bs-target="#whatsappSection" aria-expanded="false" aria-controls="whatsappSection">
+    <span><i class="bi bi-whatsapp me-2"></i>{{ _('Administrar botón de WhatsApp') }}</span>
+    <i class="bi bi-chevron-down collapsible-tab-icon"></i>
+  </button>
+  <div class="collapse" id="whatsappSection" data-bs-parent="#dashboardAccordion">
+    <p class="text-center text-muted small mb-3 mt-3">
+      {{ _('Define el número de teléfono al que redirige el botón flotante de WhatsApp visible en todas las páginas. Escribe solo el código de país y el número, sin espacios ni símbolos (ejemplo: 50688887777).') }}
+    </p>
+    <form method="POST" action="{{ url_for('main.dashboard') }}" class="row g-3 justify-content-center">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <div class="col-md-6">
+        <label class="form-label small">{{ _('Número de WhatsApp (con código de país)') }}</label>
+        <input type="text" name="whatsapp_phone" class="form-control" value="{{ whatsapp_config.phone }}" placeholder="50688887777">
+      </div>
+      <div class="col-12 text-center">
+        <button type="submit" name="save_whatsapp_config" value="1" class="btn btn-success">
+          <i class="bi bi-save"></i> {{ _('Guardar número') }}
+        </button>
+      </div>
+    </form>
+  </div>

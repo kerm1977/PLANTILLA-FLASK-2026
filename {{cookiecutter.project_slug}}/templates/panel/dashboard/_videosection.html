@@ -1,0 +1,168 @@
+<button type="button" class="collapsible-tab mt-3" data-bs-toggle="collapse" data-bs-target="#videoSection" aria-expanded="false" aria-controls="videoSection">
+    <span><i class="bi bi-film me-2"></i>{{ _('Ajustes de carrusel') }}</span>
+    <i class="bi bi-chevron-down collapsible-tab-icon"></i>
+  </button>
+  <div class="collapse" id="videoSection" data-bs-parent="#dashboardAccordion">
+  <p class="text-center text-muted small mb-3 mt-3">
+    {{ _('Elige si la página de inicio muestra un video o un carrusel de imágenes. Si seleccionas imágenes, el video no se utilizará.') }}
+  </p>
+
+  <form method="POST" action="{{ url_for('main.dashboard') }}" class="text-center mb-4">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <div class="btn-group mb-2" role="group" aria-label="{{ _('Modo de contenido inicial') }}">
+      <input type="radio" class="btn-check" name="home_media_mode" id="modeVideo" value="video" autocomplete="off" onchange="document.getElementById('intervalWrapper').style.display='none'; document.getElementById('videoModeBlock').style.display='block'; document.getElementById('imagesModeBlock').style.display='none';" {{ 'checked' if home_media_config.mode == 'video' else '' }}>
+      <label class="btn btn-outline-primary" for="modeVideo"><i class="bi bi-camera-video"></i> {{ _('Video') }}</label>
+
+      <input type="radio" class="btn-check" name="home_media_mode" id="modeImages" value="images" autocomplete="off" onchange="document.getElementById('intervalWrapper').style.display='block'; document.getElementById('videoModeBlock').style.display='none'; document.getElementById('imagesModeBlock').style.display='block';" {{ 'checked' if home_media_config.mode == 'images' else '' }}>
+      <label class="btn btn-outline-primary" for="modeImages"><i class="bi bi-images"></i> {{ _('Imágenes') }}</label>
+    </div>
+
+    <div class="mb-2" id="intervalWrapper" style="{{ 'display:none;' if home_media_config.mode != 'images' else '' }}">
+      <label class="form-label small d-block">{{ _('Cambiar imagen cada') }}</label>
+      <select name="home_media_interval" class="form-select" style="max-width: 200px; margin: 0 auto;">
+        {% for sec in home_image_intervals %}
+        <option value="{{ sec }}" {% if home_media_config.interval == sec %}selected{% endif %}>{{ sec }} {{ _('segundos') }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <button type="submit" name="save_home_media_mode" value="1" class="btn btn-success btn-sm">
+      <i class="bi bi-save"></i> {{ _('Guardar modo') }}
+    </button>
+  </form>
+
+  <div id="videoModeBlock" style="{{ 'display:none;' if home_media_config.mode == 'images' else '' }}">
+  <h6 class="text-center mb-2"><i class="bi bi-camera-video"></i> {{ _('Videos') }}</h6>
+  <p class="text-center text-muted small mb-3">
+    {{ _('Puedes agregar de 1 a 3 videos que se reproducirán en orden en la página de inicio. El video debe tener una relación de aspecto 16:9 (por ejemplo, 1920x1080 o 1280x720) para que se vea correctamente sin recortes.') }}
+  </p>
+
+  <div class="home-video-thumbs">
+    {% for s in home_slots %}
+    <div class="home-video-thumb">
+      <span class="home-video-thumb-badge">{{ s.slot }}</span>
+      {% if s.url %}
+        <video src="{{ s.url }}" muted preload="metadata"></video>
+        <div class="home-video-thumb-actions">
+          <form method="POST" action="{{ url_for('main.dashboard') }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <input type="hidden" name="move" value="1">
+            <input type="hidden" name="slot_a" value="{{ s.slot }}">
+            <input type="hidden" name="slot_b" value="{{ s.slot - 1 }}">
+            <button type="submit" class="btn btn-sm btn-outline-secondary" title="{{ _('Mover a la izquierda') }}" {% if s.slot == 1 %}disabled{% endif %}>
+              <i class="bi bi-arrow-left"></i>
+            </button>
+          </form>
+          <form method="POST" action="{{ url_for('main.dashboard') }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <input type="hidden" name="remove_slot" value="{{ s.slot }}">
+            <button type="submit" class="btn btn-sm btn-outline-danger" title="{{ _('Eliminar') }}" data-confirm="{{ _('¿Eliminar este video?') }}">
+              <i class="bi bi-trash"></i>
+            </button>
+          </form>
+          <form method="POST" action="{{ url_for('main.dashboard') }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <input type="hidden" name="move" value="1">
+            <input type="hidden" name="slot_a" value="{{ s.slot }}">
+            <input type="hidden" name="slot_b" value="{{ s.slot + 1 }}">
+            <button type="submit" class="btn btn-sm btn-outline-secondary" title="{{ _('Mover a la derecha') }}" {% if s.slot == home_slots|length %}disabled{% endif %}>
+              <i class="bi bi-arrow-right"></i>
+            </button>
+          </form>
+        </div>
+      {% else %}
+        <div class="home-video-thumb-empty">
+          <i class="bi bi-camera-video-off"></i>
+          <span class="small">{{ _('Sin video') }}</span>
+        </div>
+      {% endif %}
+    </div>
+    {% endfor %}
+  </div>
+
+  {% set slots_full = home_slots | selectattr('url') | list | length >= home_slots | length %}
+  {% if slots_full %}
+  <p class="text-center text-muted small">
+    <i class="bi bi-info-circle"></i> {{ _('Ya hay 3 videos. Elimina uno para poder agregar otro.') }}
+  </p>
+  {% else %}
+  <form method="POST" action="{{ url_for('main.dashboard') }}" enctype="multipart/form-data" class="text-center">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <div class="mb-3 d-flex justify-content-center">
+      <input type="file" name="home_video" id="home_video" class="form-control" style="max-width: 320px;" accept="video/mp4,video/webm,video/ogg" required>
+    </div>
+    <button type="submit" class="btn btn-success">
+      <i class="bi bi-upload"></i> {{ _('Subir video') }}
+    </button>
+  </form>
+  {% endif %}
+  </div>
+
+  <div id="imagesModeBlock" style="{{ 'display:none;' if home_media_config.mode != 'images' else '' }}">
+  <h6 class="text-center mb-2"><i class="bi bi-images"></i> {{ _('Imágenes') }}</h6>
+  <p class="text-center text-muted small mb-3">
+    {{ _('Puedes agregar de 1 a 6 imágenes que se mostrarán en carrusel cuando el modo sea "Imágenes".') }}
+  </p>
+
+  <div class="home-video-thumbs">
+    {% for s in home_image_slots %}
+    <div class="home-video-thumb">
+      <span class="home-video-thumb-badge">{{ s.slot }}</span>
+      {% if s.url %}
+        <img src="{{ s.url }}" alt="{{ _('Imagen') }} {{ s.slot }}">
+        <div class="home-video-thumb-actions">
+          <form method="POST" action="{{ url_for('main.dashboard') }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <input type="hidden" name="move_image" value="1">
+            <input type="hidden" name="img_slot_a" value="{{ s.slot }}">
+            <input type="hidden" name="img_slot_b" value="{{ s.slot - 1 }}">
+            <button type="submit" class="btn btn-sm btn-outline-secondary" title="{{ _('Mover a la izquierda') }}" {% if s.slot == 1 %}disabled{% endif %}>
+              <i class="bi bi-arrow-left"></i>
+            </button>
+          </form>
+          <form method="POST" action="{{ url_for('main.dashboard') }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <input type="hidden" name="remove_image_slot" value="{{ s.slot }}">
+            <button type="submit" class="btn btn-sm btn-outline-danger" title="{{ _('Eliminar') }}" data-confirm="{{ _('¿Eliminar esta imagen?') }}">
+              <i class="bi bi-trash"></i>
+            </button>
+          </form>
+          <form method="POST" action="{{ url_for('main.dashboard') }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <input type="hidden" name="move_image" value="1">
+            <input type="hidden" name="img_slot_a" value="{{ s.slot }}">
+            <input type="hidden" name="img_slot_b" value="{{ s.slot + 1 }}">
+            <button type="submit" class="btn btn-sm btn-outline-secondary" title="{{ _('Mover a la derecha') }}" {% if s.slot == home_image_slots|length %}disabled{% endif %}>
+              <i class="bi bi-arrow-right"></i>
+            </button>
+          </form>
+        </div>
+      {% else %}
+        <div class="home-video-thumb-empty">
+          <i class="bi bi-image"></i>
+          <span class="small">{{ _('Sin imagen') }}</span>
+        </div>
+      {% endif %}
+    </div>
+    {% endfor %}
+  </div>
+
+  {% set image_slots_full = home_image_slots | selectattr('url') | list | length >= home_image_slots | length %}
+  {% if image_slots_full %}
+  <p class="text-center text-muted small">
+    <i class="bi bi-info-circle"></i> {{ _('Ya hay 6 imágenes. Elimina una para poder agregar otra.') }}
+  </p>
+  {% else %}
+  <form method="POST" action="{{ url_for('main.dashboard') }}" enctype="multipart/form-data" class="text-center">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <input type="hidden" name="upload_home_image" value="1">
+    <div class="mb-3 d-flex justify-content-center">
+      <input type="file" name="home_image" id="home_image" class="form-control" style="max-width: 320px;" accept="image/jpeg,image/png,image/webp" required>
+    </div>
+    <button type="submit" class="btn btn-success">
+      <i class="bi bi-upload"></i> {{ _('Subir imagen') }}
+    </button>
+  </form>
+  {% endif %}
+  </div>
+  </div>

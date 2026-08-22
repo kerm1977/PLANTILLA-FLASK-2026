@@ -1,0 +1,25 @@
+<button type="button" class="collapsible-tab mt-3" data-bs-toggle="collapse" data-bs-target="#traduccionesSection" aria-expanded="false" aria-controls="traduccionesSection">
+    <span><i class="bi bi-translate me-2"></i>{{ _('Traducciones') }}</span>
+    <i class="bi bi-chevron-down collapsible-tab-icon"></i>
+  </button>
+  <div class="collapse" id="traduccionesSection" data-bs-parent="#dashboardAccordion">
+    <p class="text-center text-muted small mb-3 mt-3">
+      {{ _('Escanea las plantillas y el código en busca de textos nuevos (llamadas a la función de traducción) y los agrega como pendientes a cada idioma. No sobrescribe las traducciones ya existentes.') }}
+    </p>
+    <ul class="list-unstyled text-center mb-3">
+      {% for lang, st in translation_status.items() %}
+      <li class="small">
+        <strong>{{ lang.upper() }}</strong> —
+        {{ _('total') }}: {{ st.total }},
+        {{ _('pendientes') }}: {{ st.missing }}
+      </li>
+      {% endfor %}
+    </ul>
+    <form method="POST" action="{{ url_for('main.dashboard') }}" class="text-center">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <input type="hidden" name="sync_translations" value="1">
+      <button type="submit" class="btn btn-success">
+        <i class="bi bi-arrow-repeat"></i> {{ _('Actualizar traducciones') }}
+      </button>
+    </form>
+  </div>

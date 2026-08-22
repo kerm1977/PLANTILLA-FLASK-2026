@@ -1,0 +1,54 @@
+<button type="button" class="collapsible-tab mt-3" data-bs-toggle="collapse" data-bs-target="#socialSection" aria-expanded="false" aria-controls="socialSection">
+    <span><i class="bi bi-share me-2"></i>{{ _('Administrar redes sociales') }}</span>
+    <i class="bi bi-chevron-down collapsible-tab-icon"></i>
+  </button>
+  <div class="collapse" id="socialSection" data-bs-parent="#dashboardAccordion">
+    <p class="text-center text-muted small mb-3 mt-3">
+      {{ _('Agrega el enlace de cada red social y actívala o desactívala con el interruptor. Más adelante se definirá dónde se mostrarán.') }}
+    </p>
+    <form method="POST" action="{{ url_for('main.dashboard') }}" class="row g-3 justify-content-center">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+      <div class="col-md-8 d-flex align-items-center gap-2">
+        <i class="bi bi-instagram fs-4"></i>
+        <input type="url" name="social_instagram_url" class="form-control" value="{{ social_config.instagram.url }}" placeholder="https://instagram.com/usuario">
+        <div class="form-check form-switch m-0">
+          <input class="form-check-input" type="checkbox" role="switch" name="social_instagram_enabled" value="1" id="socialInstagram" {{ 'checked' if social_config.instagram.enabled else '' }}>
+          <label class="form-check-label small" for="socialInstagram">{{ _('Activo') }}</label>
+        </div>
+      </div>
+
+      <div class="col-md-8 d-flex align-items-center gap-2">
+        <i class="bi bi-facebook fs-4"></i>
+        <input type="url" name="social_facebook_url" class="form-control" value="{{ social_config.facebook.url }}" placeholder="https://facebook.com/usuario">
+        <div class="form-check form-switch m-0">
+          <input class="form-check-input" type="checkbox" role="switch" name="social_facebook_enabled" value="1" id="socialFacebook" {{ 'checked' if social_config.facebook.enabled else '' }}>
+          <label class="form-check-label small" for="socialFacebook">{{ _('Activo') }}</label>
+        </div>
+      </div>
+
+      <div class="col-md-8 d-flex align-items-center gap-2">
+        <i class="bi bi-twitter-x fs-4"></i>
+        <input type="url" name="social_x_url" class="form-control" value="{{ social_config.x.url }}" placeholder="https://x.com/usuario">
+        <div class="form-check form-switch m-0">
+          <input class="form-check-input" type="checkbox" role="switch" name="social_x_enabled" value="1" id="socialX" {{ 'checked' if social_config.x.enabled else '' }}>
+          <label class="form-check-label small" for="socialX">{{ _('Activo') }}</label>
+        </div>
+      </div>
+
+      <div class="col-md-8 d-flex align-items-center gap-2">
+        <i class="bi bi-tiktok fs-4"></i>
+        <input type="url" name="social_tiktok_url" class="form-control" value="{{ social_config.tiktok.url }}" placeholder="https://tiktok.com/@usuario">
+        <div class="form-check form-switch m-0">
+          <input class="form-check-input" type="checkbox" role="switch" name="social_tiktok_enabled" value="1" id="socialTiktok" {{ 'checked' if social_config.tiktok.enabled else '' }}>
+          <label class="form-check-label small" for="socialTiktok">{{ _('Activo') }}</label>
+        </div>
+      </div>
+
+      <div class="col-12 text-center">
+        <button type="submit" name="save_social_config" value="1" class="btn btn-success">
+          <i class="bi bi-save"></i> {{ _('Guardar redes sociales') }}
+        </button>
+      </div>
+    </form>
+  </div>

@@ -1,0 +1,21 @@
+<button type="button" class="collapsible-tab mt-3" data-bs-toggle="collapse" data-bs-target="#privacyPolicySection" aria-expanded="{% if request.args.get('section') == 'privacyPolicy' %}true{% else %}false{% endif %}" aria-controls="privacyPolicySection">
+    <span><i class="bi bi-shield-check me-2"></i>{{ _('Administración de políticas de privacidad') }}</span>
+    <i class="bi bi-chevron-down collapsible-tab-icon"></i>
+  </button>
+  <div class="collapse{% if request.args.get('section') == 'privacyPolicy' %} show{% endif %}" id="privacyPolicySection" data-bs-parent="#dashboardAccordion">
+    <form method="POST" action="{{ url_for('main.dashboard') }}" class="perfil-data">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <input type="hidden" name="save_privacy_policy" value="1">
+
+      <div class="perfil-row flex-column align-items-start">
+        <label class="perfil-label w-100" for="privacy_content">{{ _('Contenido de la política de privacidad') }}</label>
+        {{ wysiwyg_editor('privacy_content', privacy_config.content, 20) }}
+      </div>
+
+      <div class="text-end mt-3">
+        <button type="submit" class="btn btn-success btn-sm">
+          <i class="bi bi-check-lg"></i> {{ _('Guardar política') }}
+        </button>
+      </div>
+    </form>
+  </div>

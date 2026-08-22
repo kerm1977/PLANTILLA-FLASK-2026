@@ -1,0 +1,23 @@
+<button type="button" class="collapsible-tab mt-3" data-bs-toggle="collapse" data-bs-target="#cotizadorSection" aria-expanded="false" aria-controls="cotizadorSection">
+    <span><i class="bi bi-clipboard2-check me-2"></i>{{ _('Administración de cotización') }}</span>
+    <i class="bi bi-chevron-down collapsible-tab-icon"></i>
+  </button>
+  <div class="collapse" id="cotizadorSection" data-bs-parent="#dashboardAccordion">
+    <p class="text-center text-muted small mb-2 mt-3">
+      {{ _('Administra las preguntas del formulario de cotización (wizard). Puedes editar el texto, tipo, opciones y orden, o eliminar y agregar nuevas preguntas.') }}
+    </p>
+
+    <form method="POST" action="{{ url_for('main.dashboard') }}" class="mb-3">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <input type="hidden" name="save_quote_button_config" value="1">
+      <div class="form-check form-switch d-flex justify-content-center align-items-center gap-2 p-2" style="border: 1px solid var(--card-border); border-radius: 0.5rem; background: var(--card-bg);">
+        <input class="form-check-input" type="checkbox" role="switch" id="showQuoteButton" name="quote_button_visible" value="1" {{ 'checked' if quote_button_config.visible else '' }} onchange="this.form.submit()">
+        <label class="form-check-label" for="showQuoteButton">{{ _('Mostrar botón del cotizador en el menú') }}</label>
+      </div>
+    </form>
+
+    <div class="accordion" id="quoteStepsAccordion">
+    {% set current_step = namespace(value=None) %}
+    {% for f in quote_fields %}
+      {% if f.step != current_step.value %}
+        {% if current_step.value is not none %}</div></div>

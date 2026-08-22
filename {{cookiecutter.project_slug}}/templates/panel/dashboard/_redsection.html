@@ -1,0 +1,112 @@
+<button type="button" class="collapsible-tab mt-3" data-bs-toggle="collapse" data-bs-target="#redSection" aria-expanded="false" aria-controls="redSection">
+    <span><i class="bi bi-hdd-network me-2"></i>{{ _('Administración de red') }}</span>
+    <i class="bi bi-chevron-down collapsible-tab-icon"></i>
+  </button>
+  <div class="collapse" id="redSection" data-bs-parent="#dashboardAccordion">
+    <p class="text-center text-muted small mb-3 mt-3">
+      {{ _('Configura y genera los archivos necesarios para subir esta aplicación a PythonAnywhere.') }}
+    </p>
+
+    <h6 class="mt-4 mb-2"><i class="bi bi-gear"></i> {{ _('Datos de la cuenta PythonAnywhere') }}</h6>
+    <form method="POST" action="{{ url_for('main.dashboard') }}" class="row g-3 justify-content-center" id="networkForm">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <div class="col-md-5">
+        <label class="form-label small">{{ _('Usuario de PythonAnywhere') }}</label>
+        <input type="text" name="pa_username" class="form-control" value="{{ deploy_config.pa_username }}" placeholder="miusuario">
+      </div>
+      <div class="col-md-5">
+        <label class="form-label small">{{ _('Nombre del proyecto (carpeta)') }}</label>
+        <input type="text" name="project_slug" class="form-control" value="{{ deploy_config.project_slug }}">
+      </div>
+      <div class="col-md-5">
+        <label class="form-label small">{{ _('Versión de Python') }}</label>
+        <select name="python_version" class="form-select">
+          {% for v in pa_python_versions %}
+          <option value="{{ v }}" {% if v == deploy_config.python_version %}selected{% endif %}>{{ v }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-md-5">
+        <label class="form-label small">{{ _('Dominio') }}</label>
+        <input type="text" name="domain" class="form-control" value="{{ deploy_config.domain }}" placeholder="miusuario.pythonanywhere.com">
+      </div>
+      <div class="col-12 text-center d-flex flex-wrap gap-2 justify-content-center">
+        <button type="submit" name="save_network_config" value="1" class="btn btn-success">
+          <i class="bi bi-save"></i> {{ _('Guardar configuración') }}
+        </button>
+        <button type="submit" name="download_wsgi" value="1" class="btn btn-outline-primary">
+          <i class="bi bi-file-earmark-arrow-down"></i> {{ _('Descargar wsgi.py') }}
+        </button>
+      </div>
+    </form>
+
+    <hr class="my-4">
+
+    <h6 class="mb-2"><i class="bi bi-key"></i> {{ _('Variables de entorno (.env de producción)') }}</h6>
+    <form method="POST" action="{{ url_for('main.dashboard') }}" class="row g-3 justify-content-center">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <div class="col-md-5">
+        <label class="form-label small">SECRET_KEY</label>
+        <div class="input-group">
+          <input type="text" name="secret_key" id="secretKeyInput" class="form-control" autocomplete="off">
+          <button type="button" class="btn btn-outline-secondary" id="genSecretKey" title="{{ _('Generar') }}">
+            <i class="bi bi-shuffle"></i>
+          </button>
+        </div>
+      </div>
+      <div class="col-md-5">
+        <label class="form-label small">JWT_SECRET_KEY</label>
+        <div class="input-group">
+          <input type="text" name="jwt_secret_key" id="jwtSecretKeyInput" class="form-control" autocomplete="off">
+          <button type="button" class="btn btn-outline-secondary" id="genJwtKey" title="{{ _('Generar') }}">
+            <i class="bi bi-shuffle"></i>
+          </button>
+        </div>
+      </div>
+      <div class="col-md-5">
+        <label class="form-label small">DATABASE_URL</label>
+        <input type="text" name="database_url" class="form-control" placeholder="sqlite+aiosqlite:///app.db">
+      </div>
+      <div class="col-md-5">
+        <label class="form-label small">CORS_ORIGINS</label>
+        <input type="text" name="cors_origins" class="form-control" value="*">
+      </div>
+      <div class="col-md-3">
+        <label class="form-label small">MAIL_SERVER</label>
+        <input type="text" name="mail_server" class="form-control">
+      </div>
+      <div class="col-md-3">
+        <label class="form-label small">MAIL_PORT</label>
+        <input type="text" name="mail_port" class="form-control" value="587">
+      </div>
+      <div class="col-md-3">
+        <label class="form-label small">MAIL_USERNAME</label>
+        <input type="text" name="mail_username" class="form-control">
+      </div>
+      <div class="col-md-3">
+        <label class="form-label small">MAIL_PASSWORD</label>
+        <input type="password" name="mail_password" class="form-control">
+      </div>
+      <div class="col-12 text-center">
+        <button type="submit" name="download_env" value="1" class="btn btn-outline-primary">
+          <i class="bi bi-file-earmark-arrow-down"></i> {{ _('Descargar .env') }}
+        </button>
+      </div>
+    </form>
+
+    <hr class="my-4">
+
+    <h6 class="mb-2"><i class="bi bi-list-check"></i> {{ _('Pasos para subir el proyecto a PythonAnywhere') }}</h6>
+    <ol class="small">
+      <li>{{ _('Sube el código a PythonAnywhere (Git clone o consola Bash con git pull, o subiendo un .zip desde la pestaña Files).') }}</li>
+      <li>{{ _('En la consola Bash de PythonAnywhere, crea el entorno virtual e instala dependencias:') }}
+        <code>mkvirtualenv --python=/usr/bin/python{{ deploy_config.python_version }} {{ deploy_config.project_slug }}-venv && pip install -r requirements.txt</code>
+      </li>
+      <li>{{ _('Coloca el archivo .env descargado arriba en la raíz del proyecto en PythonAnywhere.') }}</li>
+      <li>{{ _('Ve a la pestaña Web y crea una nueva Web app con configuración manual (Manual configuration), eligiendo la versión de Python') }} {{ deploy_config.python_version }}.</li>
+      <li>{{ _('En Virtualenv, indica la ruta:') }} <code>/home/{{ deploy_config.pa_username or 'TU_USUARIO' }}/.virtualenvs/{{ deploy_config.project_slug }}-venv</code></li>
+      <li>{{ _('En Code &gt; WSGI configuration file, reemplaza el contenido por el archivo wsgi.py descargado arriba.') }}</li>
+      <li>{{ _('En Static files, agrega una entrada con URL') }} <code>/static/</code> {{ _('y Directory') }} <code>/home/{{ deploy_config.pa_username or 'TU_USUARIO' }}/{{ deploy_config.project_slug }}/static/</code></li>
+      <li>{{ _('Pulsa el botón verde Reload para aplicar los cambios y visita tu dominio:') }} <code>{{ deploy_config.domain or (deploy_config.pa_username or 'TU_USUARIO') + '.pythonanywhere.com' }}</code></li>
+    </ol>
+  </div>

@@ -1,0 +1,82 @@
+<button type="button" class="collapsible-tab mt-3" data-bs-toggle="collapse" data-bs-target="#formFieldsSection" aria-expanded="{% if request.args.get('section') == 'formFields' %}true{% else %}false{% endif %}" aria-controls="formFieldsSection">
+    <span><i class="bi bi-ui-checks me-2"></i>{{ _('Administración de formulario de registro') }}</span>
+    <i class="bi bi-chevron-down collapsible-tab-icon"></i>
+  </button>
+  <div class="collapse{% if request.args.get('section') == 'formFields' %} show{% endif %}" id="formFieldsSection" data-bs-parent="#dashboardAccordion">
+    <p class="text-center text-muted small mb-2 mt-3">
+      {{ _('Activa o desactiva campos del formulario de registro, marca cuáles son obligatorios y agrega campos personalizados para solicitar más información.') }}
+    </p>
+
+    <form method="POST" action="{{ url_for('main.dashboard') }}" class="perfil-row align-items-center">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <input type="hidden" name="save_form_fields_config" value="1">
+      <span class="perfil-label flex-grow-1">{{ _('Formularios activos') }}</span>
+      <div class="form-check form-switch m-0">
+        <input class="form-check-input" type="checkbox" name="form_fields_enabled" id="formFieldsEnabled" value="1" {{ 'checked' if form_fields_config.enabled else '' }} onchange="this.form.submit()">
+      </div>
+    </form>
+
+    <hr class="my-3">
+
+    <h6 class="text-center mb-3"><i class="bi bi-plus-circle"></i> {{ _('Agregar campo personalizado') }}</h6>
+    <form method="POST" action="{{ url_for('main.dashboard') }}" class="perfil-data">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <input type="hidden" name="add_form_field" value="1">
+      <div class="perfil-row">
+        <label class="perfil-label" for="formFieldName">{{ _('Nombre del campo') }}</label>
+        <input type="text" name="form_field_name" id="formFieldName" class="form-control" maxlength="80">
+      </div>
+      <div class="perfil-row">
+        <label class="perfil-label" for="formFieldType">{{ _('Tipo de dato') }}</label>
+        <select name="form_field_type" id="formFieldType" class="form-select">
+          {% for ft in form_field_types %}
+          <option value="{{ ft }}">{{ form_field_type_labels[ft] }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="perfil-row align-items-center">
+        <span class="perfil-label flex-grow-1">{{ _('Obligatorio') }}</span>
+        <div class="form-check form-switch m-0">
+          <input class="form-check-input" type="checkbox" name="form_field_required" id="formFieldRequired" value="1">
+        </div>
+      </div>
+      <div class="text-end mt-3">
+        <button type="submit" class="btn btn-success btn-sm">
+          <i class="bi bi-plus-lg"></i> {{ _('Agregar campo') }}
+        </button>
+      </div>
+    </form>
+
+    {% if form_fields_config.fields %}
+    <hr class="my-3">
+    <h6 class="text-center mb-2"><i class="bi bi-list-check"></i> {{ _('Campos configurados') }}</h6>
+    <div class="list-group list-group-flush" style="background: transparent;">
+      {% for field in form_fields_config.fields %}
+      <div class="list-group-item d-flex justify-content-between align-items-center gap-2" style="background: transparent; border-color: var(--bs-border-color);">
+        <div class="overflow-hidden">
+          <strong class="d-block text-truncate">{{ field.name }}</strong>
+          <span class="small text-muted">{{ form_field_type_labels[field.data_type] }} — {{ _('Obligatorio') if field.required else _('Opcional') }}</span>
+        </div>
+        <div class="d-flex align-items-center gap-2 flex-shrink-0">
+          <form method="POST" action="{{ url_for('main.dashboard') }}" class="d-inline m-0">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <input type="hidden" name="toggle_form_field" value="1">
+            <input type="hidden" name="toggle_form_field_id" value="{{ field.id }}">
+            <div class="form-check form-switch m-0">
+              <input class="form-check-input" type="checkbox" onchange="this.form.submit()" {{ 'checked' if field.active else '' }}>
+            </div>
+          </form>
+          <form method="POST" action="{{ url_for('main.dashboard') }}" class="d-inline m-0" data-confirm="{{ _('¿Eliminar este campo?') }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <input type="hidden" name="delete_form_field" value="1">
+            <input type="hidden" name="delete_form_field_id" value="{{ field.id }}">
+            <button type="submit" class="btn btn-sm btn-danger">
+              <i class="bi bi-trash"></i>
+            </button>
+          </form>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+  </div>

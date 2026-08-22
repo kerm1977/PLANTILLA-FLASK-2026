@@ -1,0 +1,103 @@
+<button type="button" class="collapsible-tab mt-3" data-bs-toggle="collapse" data-bs-target="#heroSection" aria-expanded="false" aria-controls="heroSection">
+    <span><i class="bi bi-card-heading me-2"></i>{{ _('Sección Hero (sobre el video)') }}</span>
+    <i class="bi bi-chevron-down collapsible-tab-icon"></i>
+  </button>
+  <div class="collapse" id="heroSection" data-bs-parent="#dashboardAccordion">
+    <p class="text-center text-muted small mb-3 mt-3">
+      {{ _('Edita el título, la descripción y el botón que aparecen superpuestos sobre el video de inicio, además de su alineación y tamaño.') }}
+    </p>
+    <form method="POST" action="{{ url_for('main.dashboard') }}" class="row g-3 justify-content-center">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <div class="col-md-8">
+        <label class="form-label small">{{ _('Título') }}</label>
+        <input type="text" name="hero_title" class="form-control" value="{{ hero_config.title }}">
+      </div>
+      <div class="col-md-8">
+        <label class="form-label small">{{ _('Descripción') }}</label>
+        <textarea name="hero_description" class="form-control" rows="2">{{ hero_config.description }}</textarea>
+      </div>
+      <div class="col-md-8">
+        <label class="form-label small">{{ _('Texto del botón') }}</label>
+        <input type="text" name="hero_button_text" class="form-control" value="{{ hero_config.button_text }}">
+      </div>
+      <div class="col-md-4">
+        <label class="form-label small">{{ _('Alineación') }}</label>
+        <select name="hero_align" class="form-select">
+          <option value="left" {% if hero_config.align == 'left' %}selected{% endif %}>{{ _('Izquierda') }}</option>
+          <option value="center" {% if hero_config.align == 'center' %}selected{% endif %}>{{ _('Centro') }}</option>
+          <option value="right" {% if hero_config.align == 'right' %}selected{% endif %}>{{ _('Derecha') }}</option>
+        </select>
+      </div>
+      <div class="col-md-4">
+        <label class="form-label small">{{ _('Tamaño del título') }}</label>
+        <select name="hero_title_size" class="form-select">
+          <option value="sm" {% if hero_config.title_size == 'sm' %}selected{% endif %}>{{ _('Pequeño') }}</option>
+          <option value="md" {% if hero_config.title_size == 'md' %}selected{% endif %}>{{ _('Mediano') }}</option>
+          <option value="lg" {% if hero_config.title_size == 'lg' %}selected{% endif %}>{{ _('Grande') }}</option>
+          <option value="xl" {% if hero_config.title_size == 'xl' %}selected{% endif %}>{{ _('Extra grande') }}</option>
+        </select>
+      </div>
+      <div class="col-md-4">
+        <label class="form-label small">{{ _('Tamaño de la descripción') }}</label>
+        <select name="hero_description_size" class="form-select">
+          <option value="sm" {% if hero_config.description_size == 'sm' %}selected{% endif %}>{{ _('Pequeño') }}</option>
+          <option value="md" {% if hero_config.description_size == 'md' %}selected{% endif %}>{{ _('Mediano') }}</option>
+          <option value="lg" {% if hero_config.description_size == 'lg' %}selected{% endif %}>{{ _('Grande') }}</option>
+          <option value="xl" {% if hero_config.description_size == 'xl' %}selected{% endif %}>{{ _('Extra grande') }}</option>
+        </select>
+      </div>
+      <div class="col-md-4">
+        <label class="form-label small">{{ _('Tamaño del botón') }}</label>
+        <select name="hero_button_size" class="form-select">
+          <option value="sm" {% if hero_config.button_size == 'sm' %}selected{% endif %}>{{ _('Pequeño') }}</option>
+          <option value="md" {% if hero_config.button_size == 'md' %}selected{% endif %}>{{ _('Mediano') }}</option>
+          <option value="lg" {% if hero_config.button_size == 'lg' %}selected{% endif %}>{{ _('Grande') }}</option>
+          <option value="xl" {% if hero_config.button_size == 'xl' %}selected{% endif %}>{{ _('Extra grande') }}</option>
+        </select>
+      </div>
+      <div class="col-12">
+        <h6 class="mt-2 mb-2"><i class="bi bi-brightness-high"></i> {{ _('Colores del botón · Modo claro') }}</h6>
+      </div>
+      <div class="col-auto text-center">
+        {{ color_picker('hero_button_bg_color_light', hero_config.button_bg_color_light, _('Fondo')) }}
+      </div>
+      <div class="col-auto text-center">
+        {{ color_picker('hero_button_text_color_light', hero_config.button_text_color_light, _('Texto')) }}
+      </div>
+      <div class="col-auto text-center">
+        {{ color_picker('hero_button_hover_bg_color_light', hero_config.button_hover_bg_color_light, _('Fondo (hover)')) }}
+      </div>
+      <div class="col-auto text-center">
+        {{ color_picker('hero_button_hover_text_color_light', hero_config.button_hover_text_color_light, _('Texto (hover)')) }}
+      </div>
+      <div class="col-12">
+        <h6 class="mt-2 mb-2"><i class="bi bi-moon-stars"></i> {{ _('Colores del botón · Modo oscuro') }}</h6>
+      </div>
+      <div class="col-auto text-center">
+        {{ color_picker('hero_button_bg_color_dark', hero_config.button_bg_color_dark, _('Fondo')) }}
+      </div>
+      <div class="col-auto text-center">
+        {{ color_picker('hero_button_text_color_dark', hero_config.button_text_color_dark, _('Texto')) }}
+      </div>
+      <div class="col-auto text-center">
+        {{ color_picker('hero_button_hover_bg_color_dark', hero_config.button_hover_bg_color_dark, _('Fondo (hover)')) }}
+      </div>
+      <div class="col-auto text-center">
+        {{ color_picker('hero_button_hover_text_color_dark', hero_config.button_hover_text_color_dark, _('Texto (hover)')) }}
+      </div>
+      <div class="col-md-4">
+        <label class="form-label small">{{ _('Redondel del botón') }}</label>
+        <select name="hero_button_radius" class="form-select">
+          <option value="0" {% if hero_config.button_radius == '0' %}selected{% endif %}>{{ _('Cuadrado') }}</option>
+          <option value="6" {% if hero_config.button_radius == '6' %}selected{% endif %}>{{ _('Suave') }}</option>
+          <option value="16" {% if hero_config.button_radius == '16' %}selected{% endif %}>{{ _('Redondeado') }}</option>
+          <option value="999" {% if hero_config.button_radius == '999' %}selected{% endif %}>{{ _('Píldora') }}</option>
+        </select>
+      </div>
+      <div class="col-12 text-center">
+        <button type="submit" name="save_hero_config" value="1" class="btn btn-success">
+          <i class="bi bi-save"></i> {{ _('Guardar cambios') }}
+        </button>
+      </div>
+    </form>
+  </div>
