@@ -3,7 +3,7 @@
 {% block main_class %}top-main{% endblock %}
 
 {% block content %}
-<div class="container py-4">
+<div class="container-fluid py-4">
   <h1 class="mb-4">{{ _('Noticumbres') }}</h1>
 
   {% if posts %}
@@ -13,7 +13,7 @@
       <div class="row g-0 h-100">
         {% if post.image %}
         <div class="col-md-6">
-          <img src="{{ url_for('static', filename=post.image) }}" alt="{{ post.title }}" class="img-fluid w-100" style="object-fit: cover; height: 200px;">
+          <img src="{{ url_for('static', filename=post.image) }}" alt="{{ post.title }}" class="img-fluid w-100" style="object-fit: cover; height: 400px;">
         </div>
         {% endif %}
         <div class="col-md-{% if post.image %}6{% else %}12{% endif %}">
